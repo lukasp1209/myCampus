@@ -21,7 +21,8 @@ Die Plattform wird folgende Funktionen abdecken:
 ### **Nutzungsprofile (Stakeholder)**
 Die Plattform wird von verschiedenen Benutzergruppen genutzt, die jeweils unterschiedliche Funktionen und Verantwortlichkeiten haben. Universitätsadministratoren, die in der Regel Professoren sind, verwalten das Zeitplansystem und übernehmen die Benutzerverwaltung. Sie legen Kurse und Veranstaltungen an, planen Prüfungen und stellen sicher, dass Noten korrekt eingetragen werden. Professoren nutzen das System zur Verwaltung ihrer Kurse, zur Eingabe von Noten und zur Organisation von Prüfungen. Studierende greifen auf das System zu, um ihren Stundenplan einzusehen, ihre Noten zu überprüfen und sich für Prüfungen anzumelden.
 
-![Fall Studie (1)](https://github.com/user-attachments/assets/ef579fcb-e03e-4948-8daa-dbf1e3ae0362)
+![Fall Studie (2)](https://github.com/user-attachments/assets/8ac9e843-e5b9-4e78-bd36-cf0a2b763cfc)
+
 
 | **Stakeholder-Typ** | **Stakeholder** | **Rolle und Verantwortlichkeiten** |
 |----------------------|----------------|--------------------------------|
@@ -33,7 +34,8 @@ Die Plattform wird von verschiedenen Benutzergruppen genutzt, die jeweils unters
 
 Die Benutzerreise beschreibt die verschiedenen Phasen, die ein Nutzer beim Interagieren mit der Plattform durchläuft. 
 
-![Fall Studie](https://github.com/user-attachments/assets/455bb320-89bd-46a1-b945-d2c40cd5e814)
+![Fall Studie (3)](https://github.com/user-attachments/assets/bcf064c7-ab89-4805-9a35-8a3998f63cfa)
+
 
 In der **Onboarding-Phase** erhalten neue Benutzer ihre Anmeldeinformationen von der Universitätsverwaltung. Nach dem ersten Login können sie ihr Passwort ändern und persönliche Einstellungen anpassen. Eine Einführungstour oder eine Dokumentation hilft ihnen, sich mit den Funktionen der Plattform vertraut zu machen.
 
