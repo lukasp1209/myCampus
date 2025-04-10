@@ -66,6 +66,20 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  core-backend:
+    build:
+      context: ./mycampus-backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"  # Map container port 80 to host port 5000
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=mssql;Database=mycampus_db;User Id=sa;Password=MyStr0ngPassword@;
+    depends_on:
+      mssql:
+        condition: service_healthy
+    restart: unless-stopped
 volumes:
   postgres-data:
   mssql-data:
