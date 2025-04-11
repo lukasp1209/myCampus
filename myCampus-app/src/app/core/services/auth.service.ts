@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { environment } from '../../../../src/environments/environment';
 import { UserLoginRequest } from '../models/user-login-request.model';
 import { UserLoginResponse } from '../models/user-login-response.model';
 import { jwtDecode } from 'jwt-decode';
-import { tap } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
@@ -26,10 +26,15 @@ export class AuthService {
           const role = decodedToken.role;
 
           this.cookieService.set('role', role, { expires: 1 });
-
           this.cookieService.set('token', response.token, { expires: 1 });
 
           this.currentUser.next(response);
+        }),
+        catchError((error) => {
+          const errorMessage =
+            error?.error?.metadata?.message || 'An error occurred during login';
+          alert(errorMessage);
+          return throwError(errorMessage);
         })
       );
   }
