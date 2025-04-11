@@ -1,35 +1,52 @@
 <div class="login-container">
   <h2>Login</h2>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div>
+    <div class="form-group">
       <label for="email">E-Mail</label>
-      <input id="email" formControlName="email" type="email" />
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        [class.invalid]="
+          loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+        "
+      />
       <div
         *ngIf="
           loginForm.get('email')?.invalid && loginForm.get('email')?.touched
         "
+        class="error"
       >
-        Bitte eine gültige E-Mail-Adresse eingeben.
+        Bitte gib eine gültige E-Mail-Adresse ein.
       </div>
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="password">Passwort</label>
-      <input id="password" formControlName="password" type="password" />
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        [class.invalid]="
+          loginForm.get('password')?.invalid &&
+          loginForm.get('password')?.touched
+        "
+      />
       <div
         *ngIf="
           loginForm.get('password')?.invalid &&
           loginForm.get('password')?.touched
         "
+        class="error"
       >
         Passwort muss mindestens 6 Zeichen lang sein.
       </div>
     </div>
 
     <button type="submit" [disabled]="loginForm.invalid">Anmelden</button>
-
-    <div *ngIf="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
   </form>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
 </div>

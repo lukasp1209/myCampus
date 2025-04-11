@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { LoginComponent } from './features/auth/pages/login/login.component';
 import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
-import { UserService } from './core/services/user.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [AppComponent, LoginComponent],
@@ -21,14 +21,7 @@ import { UserService } from './core/services/user.service';
     AppRoutingModule,
     RouterModule.forRoot([]),
   ],
-  providers: [
-    UserService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
-      multi: true,
-    },
-  ],
+  providers: [CookieService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
