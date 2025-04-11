@@ -1,0 +1,32 @@
+I want you to write a polished and coherent User Story based on the following input. 
+Please enhance the wording, structure, and clarity to make it professional and well-written.
+Include Acceptance Criteria that align with the User Story. Here’s the input to work from:
+
+User Story:
+
+As a user, 
+I want to log into the system with my username and password 
+so that I can access my account securely.
+
+Acceptance Criteria:
+
+User enters username and password and clicks login.
+If correct, they see their account dashboard.
+If wrong, they get an error message.
+Login should work fast.
+Please rewrite this into a concise, professional User Story with clear, detailed Acceptance Criteria.
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+As a registered user, 
+I want to authenticate into the system using my username and password 
+so that I can securely access my personal account and its features.
+
+Acceptance Criteria:
+
+Given a registered user enters a valid username and password and clicks the "Login" button, they are redirected to their account dashboard within 2 seconds.
+Given a user enters an incorrect username or password and clicks the "Login" button, an error message displays stating, "Invalid credentials, please try again."
+Given a user submits valid credentials, the system verifies them against the database and grants access only if they match.
+The login process must complete in under 3 seconds under normal system load.
