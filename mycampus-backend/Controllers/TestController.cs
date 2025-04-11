@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using mycampus_backend.Data;
 using mycampus_backend.Models;
 using mycampus_backend.Services;
 
@@ -7,20 +9,20 @@ namespace mycampus_backend.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class TestController : Controller
+    public class TestController : ControllerBase
     {
-        private readonly ITestService _testService;
+        private readonly ApplicationDbContext _context;
 
-        public TestController(ITestService testService)
+        public TestController(ApplicationDbContext context)
         {
-            _testService = testService;
+            _context = context;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<TestModel>> Get()
+        public async Task<IActionResult> Get()
         {
-            var messages = _testService.GetAllMessages();
-            return Ok(messages);
+            var testModels = await _context.TestModels.ToListAsync();
+            return Ok(testModels);
         }
     }
 }
