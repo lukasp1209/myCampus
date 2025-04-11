@@ -11,6 +11,6 @@ namespace mycampus_backend.Data
         }
 
         // DbSets für deine Modelle
-        public DbSet<TestModel> TestModels { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
