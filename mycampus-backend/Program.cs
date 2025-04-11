@@ -1,5 +1,7 @@
 using mycampus_backend.Repositories;
 using mycampus_backend.Services;
+using Microsoft.EntityFrameworkCore;
+using mycampus_backend.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +13,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register custom services
-builder.Services.AddScoped<ITestRepository, TestRepository>();
-builder.Services.AddScoped<ITestService, TestService>();
+//builder.Services.AddScoped<ITestRepository, TestRepository>();
+//builder.Services.AddScoped<ITestService, TestService>();
+
+var connectionstring =
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+Console.WriteLine($"Connection String: {connectionstring}");
 
 var app = builder.Build();
 
