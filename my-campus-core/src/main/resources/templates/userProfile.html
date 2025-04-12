@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head  th:replace="fragments/commonHead :: head">
+
+</head>
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>User Profile</h1>
+            <a href="/user" class="btn btn-secondary btn-sm">Back</a>
+        </div>
+        <div class="profile-card">
+            <h2 class="user-name" th:text="${user.firstName + ' ' + user.lastName}">John Doe</h2>
+            <p class="user-email" th:text="${user.email}">johndoe@example.com</p>
+            <p class="user-role" th:text="${user.role}">ROLE_STUDENT</p>
+            <p class="user-birthdate" th:text="${user.birthDate != null ? #temporals.format(user.birthDate, 'yyyy/MM/dd') : 'Birthdate not available'}">01/01/2000</p>
+            <p class="user-address" th:text="${user.address.street + ' ' + user.address.houseNumber + ', ' + user.address.city + '. ' + user.address.zip +', ' + user.address.country}">123 Main St, Springfield, USA</p>
+        </div>
+        <div class="profile-actions">
+            <a class="btn btn-primary btn-sm">Edit Profile</a>
+            <button th:href="@{/user/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm">Delete</button>
+        </div>
+    </div>
+</body>
+</html>

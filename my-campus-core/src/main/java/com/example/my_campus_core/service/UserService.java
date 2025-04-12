@@ -1,12 +1,17 @@
 package com.example.my_campus_core.service;
 
+import java.util.List;
+
 import com.example.my_campus_core.dto.UserDto;
 
 public interface UserService {
     // Define the methods that will be implemented in the UserServiceImpl class
     void registerUser(UserDto userDto);
 
-    void updateUserDetails(String username, String newDetails);
+    List<UserDto> getUsersAsAdmin(int page);
 
-    void deleteUser(String username);
+    int totalUsers(int size);
+
+    UserDto getUserById(int userId);
+
 }

@@ -29,10 +29,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findFirstByEmail(username);
         // Get the role of the user
-        // String role = user.getRole();
+        String role = user.getRole();
 
         // Create a SimpleGrantedAuthority instance for the role
-        GrantedAuthority authority = new SimpleGrantedAuthority("ADMIN");
+        GrantedAuthority authority = new SimpleGrantedAuthority(role);
         if (user != null) {
             User authUser = new User(user.getEmail(), user.getPassword(), Collections.singleton(authority));
             return authUser;
