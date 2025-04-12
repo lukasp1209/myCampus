@@ -1,5 +1,7 @@
 package com.example.my_campus_core.models;
 
+import java.util.Date;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +26,7 @@ public class UserEntity {
     private String lastName;
     private String email;
     private String password;
-    private String birthDate;
+    private Date birthDate;
     private String role;
 
     @OneToOne(cascade = CascadeType.ALL)

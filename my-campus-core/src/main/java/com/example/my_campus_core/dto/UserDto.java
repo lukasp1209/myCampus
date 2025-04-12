@@ -1,5 +1,7 @@
 package com.example.my_campus_core.dto;
 
+import java.util.Date;
+
 import com.example.my_campus_core.models.Address;
 
 import lombok.Data;
@@ -11,6 +13,6 @@ public class UserDto {
     private String lastName;
     private String email;
     private Address address;
-    private String birthDate;
+    private Date birthDate;
     private String role;
 }
