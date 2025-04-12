@@ -79,7 +79,7 @@ public class SecurityConfig {
                             // // If the user has the role USER, redirect to /shop
                             // response.sendRedirect("/");
                             // }
-                            response.sendRedirect("/user/register");
+                            response.sendRedirect("/");
                         }))
                 .build();
     }

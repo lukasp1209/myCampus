@@ -41,4 +41,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
     }
 
+    public boolean isHisProfile(String email, int userId) {
+        UserEntity user = userRepository.findFirstByEmail(email);
+        if (user != null && user.getId() == userId) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
