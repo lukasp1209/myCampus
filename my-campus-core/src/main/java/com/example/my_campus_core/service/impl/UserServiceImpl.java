@@ -1,8 +1,12 @@
 package com.example.my_campus_core.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.my_campus_core.dto.UserDto;
@@ -52,16 +56,50 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserDetails(String username, String newDetails) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateUserDetails'");
+    public List<UserDto> getUsersAsAdmin(int page) {
+        int size = 20; // Number of users per page
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UserEntity> users = userRepository.findAll(pageable);
+
+        List<UserDto> userDtos = users.stream().map(user -> {
+            UserDto userDto = new UserDto();
+            userDto.setId(user.getId());
+            userDto.setFirstName(user.getFirstName());
+            userDto.setLastName(user.getLastName());
+            userDto.setEmail(user.getEmail());
+            userDto.setAddress(user.getAddress());
+            userDto.setBirthDate(user.getBirthDate());
+            userDto.setRole(user.getRole());
+            return userDto;
+        }).toList();
+
+        return userDtos;
     }
 
     @Override
-    public void deleteUser(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteUser'");
+    public int totalUsers(int size) {
+        int totalUsers = (int) userRepository.count(); // Get the total number of users
+        int totalPages = (int) Math.ceil((double) totalUsers / size); // Calculate total pages
+        return totalPages;
     }
-    // Implement the methods defined in the UserService interface here
+
+    @Override
+    public UserDto getUserById(int userId) {
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            UserEntity user = userOptional.get();
+            UserDto userDto = new UserDto();
+            userDto.setId(user.getId());
+            userDto.setFirstName(user.getFirstName());
+            userDto.setLastName(user.getLastName());
+            userDto.setEmail(user.getEmail());
+            userDto.setAddress(user.getAddress());
+            userDto.setBirthDate(user.getBirthDate());
+            userDto.setRole(user.getRole());
+            return userDto;
+        } else {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+    }
 
 }

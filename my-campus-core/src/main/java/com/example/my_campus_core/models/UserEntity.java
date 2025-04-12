@@ -1,6 +1,11 @@
 package com.example.my_campus_core.models;
 
+import java.time.LocalDate;
 import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -26,7 +31,9 @@ public class UserEntity {
     private String lastName;
     private String email;
     private String password;
-    private Date birthDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
     private String role;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -34,3 +41,6 @@ public class UserEntity {
 }
 // Email: admin@example.com
 // Password: $vEn6XVH9KT
+
+// Email: student@example.com
+// Passoword: xeKwCAxZyQn
