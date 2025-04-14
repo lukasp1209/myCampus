@@ -99,4 +99,21 @@ public class CourseServiceImpl implements CourseService {
         courseDto.setStudents(students);
         return courseDto;
     }
+
+    @Override
+    public List<CourseDto> getCoursesByUserId(int userId, String userRole) {
+        List<Course> courses = "ROLE_STUDENT".equals(userRole)
+                ? courseRepository.findByStudentsId(userId)
+                : courseRepository.findByProfessorId(userId);
+        List<CourseDto> courseDtos = new ArrayList<>();
+        for (Course course : courses) {
+            CourseDto courseDto = new CourseDto();
+            courseDto.setId(course.getId());
+            courseDto.setName(course.getName());
+            courseDto.setDescription(course.getDescription());
+            courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+            courseDtos.add(courseDto);
+        }
+        return courseDtos;
+    }
 }

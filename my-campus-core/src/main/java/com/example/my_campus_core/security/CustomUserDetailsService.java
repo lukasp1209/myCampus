@@ -50,4 +50,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
     }
 
+    public int getUserIdByEmail(String email) {
+        return userRepository.findFirstByEmail(email).getId();
+    }
+
+    public String getUserRoleByEmail(String email) {
+        return userRepository.findFirstByEmail(email).getRole();
+    }
+
 }

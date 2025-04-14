@@ -11,4 +11,6 @@ public interface CourseService {
 
     CourseDto getCourseById(int courseId); // Method to retrieve a course by its ID
 
+    List<CourseDto> getCoursesByUserId(int studentId, String userRole); // Method to retrieve courses by student ID
+
 }
