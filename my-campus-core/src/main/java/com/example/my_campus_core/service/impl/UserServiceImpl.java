@@ -1,5 +1,6 @@
 package com.example.my_campus_core.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.my_campus_core.dto.UserDto;
+import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.UserService;
@@ -28,12 +30,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(UserDto userDto) {
-
+    public List<ResponseDto> registerUser(UserDto userDto) {
+        ResponseDto toast = new ResponseDto();
+        ResponseDto infoMessage = new ResponseDto();
+        List<ResponseDto> responseDtos = new ArrayList<>();
         UserEntity existingUser = userRepository.findByEmail(userDto.getEmail()); // Check if a user with the same email
         // already exists
         if (existingUser != null) {
-            throw new IllegalArgumentException("User with this email already exists.");
+            toast.setStatus("error");
+            toast.setMessage("User with this email already exists.");
+            infoMessage.setStatus("error");
+            infoMessage.setMessage("User with email " + userDto.getEmail() + " already exists.");
+            responseDtos.add(toast);
+            responseDtos.add(infoMessage);
+            return responseDtos;
         }
 
         String password = passwordGenerator.generate();
@@ -50,9 +60,14 @@ public class UserServiceImpl implements UserService {
         user.setBirthDate(userDto.getBirthDate());
         user.setRole(userDto.getRole());
         user.setPassword(hashedPassword); // Set the generated password
-
         userRepository.save(user); // Save the user to the database
-
+        toast.setStatus("success");
+        toast.setMessage("User registered successfully."); // Include the generated password
+        infoMessage.setStatus("success");
+        infoMessage.setMessage("User registered successfully. Password: " + password);
+        responseDtos.add(toast);
+        responseDtos.add(infoMessage);
+        return responseDtos;
     }
 
     @Override
@@ -68,6 +83,7 @@ public class UserServiceImpl implements UserService {
             userDto.setLastName(user.getLastName());
             userDto.setEmail(user.getEmail());
             userDto.setAddress(user.getAddress());
+            userDto.setStatus(user.getStatus());
             userDto.setBirthDate(user.getBirthDate());
             userDto.setRole(user.getRole());
             return userDto;
@@ -104,7 +120,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsersByNameAndRole(String name, String role) {
-        List<UserEntity> professors = userRepository.findByRoleAndLastNameContainingIgnoreCase(role, name);
+        List<UserEntity> professors = userRepository.findByRoleAndStatusNotAndLastNameContainingIgnoreCase(role,
+                "Inactive", name);
         return professors.stream().map(user -> {
             UserDto userDto = new UserDto();
             userDto.setId(user.getId());
@@ -116,6 +133,28 @@ public class UserServiceImpl implements UserService {
             userDto.setRole(user.getRole());
             return userDto;
         }).toList();
+    }
+
+    @Override
+    public ResponseDto changeUserStatus(int userId, String status) {
+        System.out.println("UserID " + userId);
+        ResponseDto responseDto = new ResponseDto();
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+        if (!user.getStatus().equals(status)) { // Only update if the status is different
+            user.setStatus(status);
+            System.out.println("Status changed to: " + user.getStatus());
+            userRepository.save(user);
+            responseDto.setStatus("success");
+            responseDto.setMessage("User with ID " + userId + " status changed to: " + status);
+        } else {
+            System.out.println("Status is already: " + status);
+            responseDto.setStatus("success");
+            responseDto.setMessage("User with ID " + userId + " already has status: " + status);
+
+        }
+
+        return responseDto;
     }
 
 }

@@ -17,6 +17,7 @@ public class UserDto {
     private String lastName;
     private String email;
     private Address address;
+    private String status;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "yyyy-MM-dd")

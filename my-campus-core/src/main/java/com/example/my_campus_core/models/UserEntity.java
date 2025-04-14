@@ -39,6 +39,7 @@ public class UserEntity {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     private String role;
+    private String status = "Pending";
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
     @ManyToMany(mappedBy = "students")
