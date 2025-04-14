@@ -16,19 +16,23 @@
                 <tr>
                     <th>Course ID</th>
                     <th>Course Name</th>
-                    <th>Instructor</th>
+                    <th>Professor</th>
+                    <th>Students</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Example row -->
-                <tr>
-                    <td>101</td>
-                    <td>Introduction to Programming</td>
-                    <td>John Doe</td>
+                <tr th:each="course : ${courses}">
+                    <td th:text="${course.id}">101</td>
+                    <td th:text="${course.name}">Introduction to Programming</td>
+                    <td th:text="${course.professor.firstName + ' ' + course.professor.lastName}">John Doe</td>
                     <td>
-                        <button class="btn btn-sm btn-warning">Edit</button>
-                        <button class="btn btn-sm btn-danger">Delete</button>
+                        <span th:each="student : ${course.students}" th:text="${student.firstName + ' ' + student.lastName}" class="badge bg-primary me-1"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{/course/{courseId}(courseId=${course.id})}" class="btn btn-sm btn-info">View</a>
+                        <a th:href="@{/course/edit/{courseId}(courseId=${course.id})}" class="btn btn-sm btn-warning">Edit</a>
                     </td>
                 </tr>
                 <!-- Add dynamic rows here -->

@@ -17,6 +17,9 @@
                     <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
                         <a class="nav-link active" aria-current="page" href="/course/managment">Course Management</a>
                     </li>
+                    <li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')">
+                        <a class="nav-link active" aria-current="page" href="/courses">Courses</a>
+                    </li>
                     <li class="nav-item">
                         </ul>
                         <ul class="navbar-nav ms-auto">
