@@ -80,6 +80,7 @@ public class CourseServiceImpl implements CourseService {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
+        userDto.setStatus(user.getStatus());
         return userDto;
     }
 

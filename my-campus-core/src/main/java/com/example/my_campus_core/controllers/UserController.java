@@ -1,18 +1,24 @@
 package com.example.my_campus_core.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import com.example.my_campus_core.dto.UserDto;
+import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.security.CustomUserDetailsService;
 import com.example.my_campus_core.security.SecurityUtil;
 import com.example.my_campus_core.service.UserService;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class UserController {
@@ -57,10 +63,22 @@ public class UserController {
     }
 
     @PostMapping("/user/register")
-    public String registerUser(@ModelAttribute UserDto userDto) {
+    public String registerUser(@ModelAttribute UserDto userDto, RedirectAttributes redirectAttributes) {
         System.out.println(userDto);
-        userService.registerUser(userDto);
-        return "./register";
+        List<ResponseDto> response = userService.registerUser(userDto);
+        ResponseDto toast = response.get(0); // Get the toast message
+        ResponseDto infoMessage = response.get(1); // Get the info message
+        redirectAttributes.addFlashAttribute("toast", toast);
+        redirectAttributes.addFlashAttribute("infoMessage", infoMessage); // Add flash attributes for messages
+        return "redirect:/user/register";
+    }
+
+    @PostMapping("/user/{userId}/status/change")
+    public String changeUserStatus(@PathVariable int userId, @RequestParam String status, Model model,
+            RedirectAttributes redirectAttributes) {
+        ResponseDto response = userService.changeUserStatus(userId, status); // Change the user's status
+        redirectAttributes.addFlashAttribute("response", response); // Add a flash attribute for the message
+        return "redirect:/user"; // Redirect to the user management page after changing status
     }
 
 }
