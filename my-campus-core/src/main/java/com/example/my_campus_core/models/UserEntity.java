@@ -49,3 +49,6 @@ public class UserEntity {
 
 // Email: student@example.com
 // Passoword: xeKwCAxZyQn
+
+// Email: professor@example.com
+// Password: l(fWRK*d7^u

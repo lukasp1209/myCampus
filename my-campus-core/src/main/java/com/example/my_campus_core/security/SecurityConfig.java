@@ -43,6 +43,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests(requests -> requests
                         .requestMatchers(
+                                "/course/managment",
+                                "/course/add")
+                        .hasRole("ADMIN")
+                        .requestMatchers(
                                 "/user/register",
                                 "/login",
                                 "/api/user/v1/**",

@@ -54,5 +54,17 @@
             <p class="user-role" th:text="${user.role}">ROLE_STUDENT</p>
         </div>
     </div>
+    <div class="container" sec:authorize="hasRole('ROLE_PROFESOR')" th:if="${!isHisProfile}">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>User Profile</h1>
+            <a href="/courses" class="btn btn-secondary btn-sm">Back</a>
+        </div>
+        <div class="profile-card">
+            <h2 class="user-name" th:text="${user.firstName + ' ' + user.lastName}">John Doe</h2>
+            <p class="user-email" th:text="${user.email}">johndoe@example.com</p>
+            <p class="user-role" th:text="${user.role}">ROLE_STUDENT</p>
+        </div>
+    </div>
+
 </body>
 </html>
