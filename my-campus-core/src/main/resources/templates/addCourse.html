@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/commonHead :: head" pageTitle>
+</head>
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+    <div class="container mt-5">
+        <h1 class="text-center">Add Course</h1>
+        <form action="/course/add" method="post">
+            <div class="mb-3">
+                <label for="courseName" class="form-label">Course Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+
+            <div th:replace="fragments/searchSelectProfessor :: searchSelectProfessor"></div>
+
+            <hr class="my-4">
+            <div th:replace="fragments/searchSelectStudent :: searchSelectStudent"></div>
+            <div id="additionalStudents" class="container"></div>
+            <div class="mb-3">
+                <label for="courseDescription" class="form-label">Course Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+            </div>
+            <button type="submit" name="action" value="submit" class="btn btn-primary">Add Course</button>
+    </div>
+</body>
+</html>

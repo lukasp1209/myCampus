@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commonHead :: head" pageTitle="Course Management"></head>
+
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+
+    <div class="container mt-4">
+        <h1 class="text-center">Course Management</h1>
+        <div class="text-end mb-3">
+            <a class="btn btn-success" href="/course/add">Add Course</a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Course ID</th>
+                    <th>Course Name</th>
+                    <th>Instructor</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Example row -->
+                <tr>
+                    <td>101</td>
+                    <td>Introduction to Programming</td>
+                    <td>John Doe</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning">Edit</button>
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </td>
+                </tr>
+                <!-- Add dynamic rows here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

@@ -2,6 +2,7 @@ package com.example.my_campus_core.models;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -11,11 +12,13 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import jakarta.persistence.GenerationType;
 
 @Data
@@ -23,6 +26,7 @@ import jakarta.persistence.GenerationType;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
+@ToString(exclude = { "address", "courses" })
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +39,10 @@ public class UserEntity {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     private String role;
-
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
+    @ManyToMany(mappedBy = "students")
+    private List<Course> courses;
 }
 // Email: admin@example.com
 // Password: $vEn6XVH9KT
