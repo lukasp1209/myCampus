@@ -12,6 +12,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     UserEntity findFirstByEmail(String email);
 
+    List<UserEntity> findByRoleAndLastNameContainingIgnoreCase(String role, String lastName);
+
     // Custom query methods can be defined here if needed
     // For example, findByUsername, findByEmail, etc.
 

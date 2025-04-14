@@ -14,4 +14,6 @@ public interface UserService {
 
     UserDto getUserById(int userId);
 
+    List<UserDto> getUsersByNameAndRole(String name, String role); // Add this method to the interface
+
 }
