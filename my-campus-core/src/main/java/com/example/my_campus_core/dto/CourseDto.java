@@ -13,7 +13,7 @@ public class CourseDto {
     private String description;
 
     private int professorId;
-    private UserEntity professor;
+    private UserDto professor;
     private List<Integer> studentsIds;
-    private List<UserEntity> students;
+    private List<UserDto> students;
 }

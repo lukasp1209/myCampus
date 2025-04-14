@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.example.my_campus_core.dto.CourseDto;
+import com.example.my_campus_core.dto.UserDto;
 import com.example.my_campus_core.models.Course;
 import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
@@ -40,4 +41,62 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.save(course);
     }
 
+    @Override
+    public List<CourseDto> getAllCourses() {
+        List<Course> courses = courseRepository.findAll();
+        List<CourseDto> courseDtos = new ArrayList<>();
+
+        for (Course course : courses) {
+            CourseDto courseDto = new CourseDto();
+            courseDto.setId(course.getId());
+            courseDto.setName(course.getName());
+            courseDto.setDescription(course.getDescription());
+            courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+            List<Integer> studentIds = course.getStudents().stream()
+                    .map(UserEntity::getId)
+                    .toList();
+            courseDto.setStudents(getStudentsInCourse(studentIds));
+            courseDtos.add(courseDto);
+        }
+        return courseDtos;
+    }
+
+    public List<UserDto> getStudentsInCourse(List<Integer> studentIds) {
+        List<UserDto> students = new ArrayList<>();
+
+        for (int studentId : studentIds) {
+            UserEntity student = userRepository.findById(studentId)
+                    .orElseThrow(() -> new IllegalArgumentException("User with ID " + studentId + " does not exist"));
+            if (student != null) {
+                students.add(mapUserToUserDto(student));
+            }
+        }
+        return students;
+    }
+
+    public UserDto mapUserToUserDto(UserEntity user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setEmail(user.getEmail());
+        return userDto;
+    }
+
+    @Override
+    public CourseDto getCourseById(int courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Course with ID " + courseId + " does not exist"));
+        List<Integer> studentIds = course.getStudents().stream()
+                .map(UserEntity::getId)
+                .toList();
+        List<UserDto> students = getStudentsInCourse(studentIds);
+        CourseDto courseDto = new CourseDto();
+        courseDto.setId(course.getId());
+        courseDto.setName(course.getName());
+        courseDto.setDescription(course.getDescription());
+        courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+        courseDto.setStudents(students);
+        return courseDto;
+    }
 }

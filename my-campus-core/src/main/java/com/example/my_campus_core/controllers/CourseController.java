@@ -2,8 +2,10 @@ package com.example.my_campus_core.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.my_campus_core.dto.CourseDto;
@@ -23,8 +25,16 @@ public class CourseController {
     }
 
     @GetMapping("/course/managment")
-    public String getCourseManagmentPage() {
+    public String getCourseManagmentPage(Model model) {
+        model.addAttribute("courses", courseService.getAllCourses()); // Add the list of courses to the model
         return "./courseManagment"; // Return the name of the course management view (e.g., courseManagment.html)
+    }
+
+    @GetMapping("/course/{courseId}")
+    public String getCoursePage(@PathVariable int courseId, Model model) {
+        model.addAttribute("course", courseService.getCourseById(courseId));
+        ; // Retrieve the course by ID and add it to the model
+        return "./course"; // Return the name of the course view (e.g., course.html)
     }
 
     @GetMapping("/course/add")
