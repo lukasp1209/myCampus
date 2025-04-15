@@ -19,4 +19,6 @@ public interface UserService {
 
     ResponseDto changeUserStatus(int userId, String status); // Add this method to the interface
 
+    UserDto getUserByEmail(String email);
+
 }
