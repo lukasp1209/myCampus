@@ -18,7 +18,18 @@
      <div sec:authorize="!hasRole('ROLE_ADMIN')" th:if="${!isHisProfile}">
         <div th:replace="fragments/userProfile/studentProfessorNotSelfProfile :: studentProfessorNotSelfProfile"></div>
      </div>
-     <div th:replace="fragments/toasts/userProfileUpdatedToast :: userProfileUpdatedToast" th:with="response"></div>
+
+     <div th:if="${response}">
+        <div th:if="${response.status == 'success'}">
+            <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
+        </div>
+        <div th:if="${response.status == 'error'}">
+            <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
+        </div>
+     </div>
+
+
+
     <script th:replace="fragments/javaScript :: javaScript"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
