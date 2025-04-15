@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commonHead :: head" pageTitle="Course Management"></head>
+
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+
+    <div class="container mt-4">
+        <h1 class="text-center">Course Management</h1>
+        <div class="text-end mb-3">
+            <a class="btn btn-success" href="/course/add">Add Course</a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Course ID</th>
+                    <th>Course Name</th>
+                    <th>Professor</th>
+                    <th>Students</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Example row -->
+                <tr th:each="course : ${courses}">
+                    <td th:text="${course.id}">101</td>
+                    <td th:text="${course.name}">Introduction to Programming</td>
+                    <td th:text="${course.professor.firstName + ' ' + course.professor.lastName}">John Doe</td>
+                    <td>
+                        <span th:each="student : ${course.students}" th:text="${student.firstName + ' ' + student.lastName}" class="badge bg-primary me-1"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{/course/{courseId}(courseId=${course.id})}" class="btn btn-sm btn-info">View</a>
+                        <a th:href="@{/course/edit/{courseId}(courseId=${course.id})}" class="btn btn-sm btn-warning">Edit</a>
+                    </td>
+                </tr>
+                <!-- Add dynamic rows here -->
+            </tbody>
+        </table>
+    </div>
+    <script th:replace="fragments/javaScript :: javaScript"></script>
+</body>
+
+</html>

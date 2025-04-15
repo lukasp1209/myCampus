@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\mycampus-backend",
+    "\\mycampus-backend\\Controllers",
+    "\\mycampus-backend\\Data",
+    "\\mycampus-backend\\Models",
+    "\\mycampus-backend\\Properties",
+    "\\mycampus-backend\\Repositories",
+    "\\mycampus-backend\\Services"
+  ],
+  "SelectedNode": "\\mycampus-backend\\Program.cs",
+  "PreviewInSolutionExplorer": false
+}

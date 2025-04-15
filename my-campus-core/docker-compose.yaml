@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: core_backend
+    ports:
+      # Exposed for external tools
+      - "1111:5432"  
+    volumes:
+      - postgres-core-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      # Access pgAdmin at http://localhost:5050
+      - "5050:80"  
+    depends_on:
+      - postgres
+  my-campus-core:
+    build: ./
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/core-backend
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL-AUTO=update
+      - SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+      postgres:
+        condition: service_healthy 
+  
+volumes:
+  postgres-core-data:

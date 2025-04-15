@@ -1,0 +1,23 @@
+<script th:inline="javascript" th:fragment="javaScript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const email = /*[[${#authentication.principal.username}]]*/ '';
+            const apiUrl = `http://localhost:8080/api/user/v1/info?email=${encodeURIComponent(email)}`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const myProfileElement = document.getElementById("myProfile");
+                    myProfileElement.textContent = data.firstName + ' ' + data.lastName;
+                    myProfileElement.href = '/user/' + data.id;
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        });
+
+    </script>
