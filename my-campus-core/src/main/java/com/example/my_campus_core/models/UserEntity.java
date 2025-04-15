@@ -44,6 +44,7 @@ public class UserEntity {
     private Address address;
     @ManyToMany(mappedBy = "students")
     private List<Course> courses;
+
 }
 // Email: admin@example.com
 // Password: $vEn6XVH9KT

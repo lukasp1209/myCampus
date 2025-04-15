@@ -1,5 +1,7 @@
 package com.example.my_campus_core.service.impl;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,6 +112,7 @@ public class UserServiceImpl implements UserService {
             userDto.setLastName(user.getLastName());
             userDto.setEmail(user.getEmail());
             userDto.setAddress(user.getAddress());
+            userDto.setStatus(user.getStatus());
             userDto.setBirthDate(user.getBirthDate());
             userDto.setRole(user.getRole());
             return userDto;
@@ -157,4 +160,40 @@ public class UserServiceImpl implements UserService {
         return responseDto;
     }
 
+    @Override
+    public UserDto getUserByEmail(String email) {
+        String decodedEmail;
+        try {
+            decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            System.err.println("Error decoding email: " + e.getMessage());
+            throw new IllegalArgumentException("Invalid email format: " + email, e);
+        }
+        UserEntity user = userRepository.findByEmail(decodedEmail);
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setEmail(user.getEmail());
+        userDto.setAddress(user.getAddress());
+        userDto.setBirthDate(user.getBirthDate());
+        userDto.setRole(user.getRole());
+
+        return userDto;
+    }
+
+    @Override
+    public ResponseDto editUserProfile(UserDto userDto) {
+        ResponseDto responseDto = new ResponseDto();
+        UserEntity user = userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userDto.getId()));
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setAddress(userDto.getAddress());
+        System.out.println("Address " + userDto.getAddress());
+        userRepository.saveAndFlush(user);
+        responseDto.setStatus("success");
+        responseDto.setMessage("Profile updated successfully.");
+        return responseDto;
+    }
 }
