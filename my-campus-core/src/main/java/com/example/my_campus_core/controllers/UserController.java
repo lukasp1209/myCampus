@@ -87,7 +87,7 @@ public class UserController {
         List<ResponseDto> response = userService.registerUser(userDto);
         ResponseDto toast = response.get(0); // Get the toast message
         ResponseDto infoMessage = response.get(1); // Get the info message
-        redirectAttributes.addFlashAttribute("toast", toast);
+        redirectAttributes.addFlashAttribute("response", toast);
         redirectAttributes.addFlashAttribute("infoMessage", infoMessage); // Add flash attributes for messages
         return "redirect:/user/register";
     }
