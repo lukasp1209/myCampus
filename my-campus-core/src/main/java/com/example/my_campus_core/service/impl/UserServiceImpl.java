@@ -169,7 +169,6 @@ public class UserServiceImpl implements UserService {
             System.err.println("Error decoding email: " + e.getMessage());
             throw new IllegalArgumentException("Invalid email format: " + email, e);
         }
-        System.out.println("Decoded email: " + decodedEmail);
         UserEntity user = userRepository.findByEmail(decodedEmail);
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
@@ -181,5 +180,20 @@ public class UserServiceImpl implements UserService {
         userDto.setRole(user.getRole());
 
         return userDto;
+    }
+
+    @Override
+    public ResponseDto editUserProfile(UserDto userDto) {
+        ResponseDto responseDto = new ResponseDto();
+        UserEntity user = userRepository.findById(userDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userDto.getId()));
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setAddress(userDto.getAddress());
+        System.out.println("Address " + userDto.getAddress());
+        userRepository.saveAndFlush(user);
+        responseDto.setStatus("success");
+        responseDto.setMessage("Profile updated successfully.");
+        return responseDto;
     }
 }

@@ -21,4 +21,6 @@ public interface UserService {
 
     UserDto getUserByEmail(String email);
 
+    ResponseDto editUserProfile(UserDto userDto);
+
 }

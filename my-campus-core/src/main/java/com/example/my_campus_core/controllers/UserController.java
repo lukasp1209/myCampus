@@ -57,6 +57,25 @@ public class UserController {
         return "./userProfile"; // Return the name of the user profile view (e.g., userProfile.html)
     }
 
+    @GetMapping("/user/{userId}/edit")
+    public String getEditUserPage(@PathVariable int userId, Model model) {
+        if (customUserDetailsService.isHisProfile(SecurityUtil.getSessionUser(), userId)) {
+            model.addAttribute("user", userService.getUserById(userId));
+            return "./editUser"; // Return the name of the edit user view (e.g., editUser.html)
+        } else {
+            return "redirect:/"; // Redirect to the user management page if not authorized
+        }
+    }
+
+    @PostMapping("/user/{userId}/edit")
+    public String editUser(@PathVariable int userId, @ModelAttribute UserDto userDto,
+            RedirectAttributes redirectAttributes) {
+        userDto.setId(userId);
+        ResponseDto response = userService.editUserProfile(userDto);
+        redirectAttributes.addFlashAttribute("response", response);
+        return "redirect:/user/" + userId; // Redirect to the user's profile page after editing
+    }
+
     @GetMapping("/user/register")
     public String showRegistrationForm() {
         return "./register"; // Return the name of the registration view (e.g., register.html)
