@@ -2,6 +2,8 @@ package com.example.my_campus_core.models;
 
 import java.util.List;
 
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,4 +35,5 @@ public class Course {
     @ManyToMany
     @JoinTable(name = "course_student", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
     private List<UserEntity> students;
+
 }
