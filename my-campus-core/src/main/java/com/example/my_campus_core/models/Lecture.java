@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,8 +40,10 @@ public class Lecture {
     @PlanningVariable(valueRangeProviderRefs = "roomRange")
     @ManyToOne
     private Room room;
+    @OneToOne
+    private UserEntity professor; // The professor assigned to this lecture
 
-    public UserEntity getProfessor() {
+    public UserEntity getProfessors() {
         return course.getProfessor();
     }
 

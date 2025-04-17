@@ -36,7 +36,7 @@ public class ScheduleConstraintProvider implements ConstraintProvider {
                 return factory
                                 .forEachUniquePair(Lecture.class,
                                                 Joiners.equal(Lecture::getTimeSlot),
-                                                Joiners.equal(Lecture::getProfessor))
+                                                Joiners.equal(Lecture::getProfessors))
                                 .penalize("Professor conflict", HardSoftScore.ONE_HARD);
         }
 

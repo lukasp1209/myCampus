@@ -28,6 +28,8 @@ public class ScheduleSolution {
 
     private List<Course> courseList;
 
+    private List<UserEntity> professorList;
+
     @PlanningEntityCollectionProperty
     private List<Lecture> lectureList;
 

@@ -1,15 +1,127 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/commonHead :: head" pageTitle="Home">
+    <style>
+        .time-slot-header {
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+        .room-header {
+            background-color: #e9ecef;
+        }
+        .lecture-card {
+            transition: all 0.3s ease;
+        }
+        .lecture-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .professor-badge {
+            background-color: #e2f0fd;
+            color: #0d6efd;
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
     <nav th:replace="fragments/navbar :: navbar"></nav>
-
 
     <div class="container mt-5">
         <div class="text-center">
             <h1>Welcome to MyCampus</h1>
             <p th:text="'Hello, ' + ${userName} + '!'"></p>
+        </div>
+    </div>
+
+    <div class="container py-4" th:if="${solution}">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-5">Class Schedule</h1>
+            <div class="badge bg-primary rounded-pill">
+                Score: <span th:text="${solution.score}">-2hard/0soft</span>
+            </div>
+        </div>
+
+        <!-- Schedule Table -->
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered m-0">
+                        <thead>
+                            <tr>
+                                <th class="time-slot-header">Time Slot</th>
+                                <th th:each="room : ${solution.roomList}" 
+                                    th:text="${room.name}"
+                                    class="room-header text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="timeslot : ${solution.timeSlotList}">
+                                <td class="time-slot-header">
+                                    <div th:text="${timeslot.dayOfWeek}">MONDAY</div>
+                                    <div class="text-muted small">
+                                        <span th:text="${timeslot.startTime}">09:00</span> - 
+                                        <span th:text="${timeslot.endTime}">10:00</span>
+                                    </div>
+                                </td>
+                                <td th:each="room : ${solution.roomList}"
+                                    class="align-middle">
+                                    <div th:each="lecture : ${solution.lectureList}"
+                                         th:if="${lecture.timeSlot.id == timeslot.id and lecture.room.id == room.id}">
+                                        <div class="card lecture-card mb-2">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-1" th:text="${lecture.course.name}">Course Name</h6>
+                                                <div class="d-flex justify-content-between small mb-1">
+                                                    <span class="badge bg-info text-dark" 
+                                                          th:text="${lecture.course.id}">Course ID</span>
+                                                    <span class="text-muted" 
+                                                          th:text="${'Lec ' + lecture.id}">Lec 1</span>
+                                                </div>
+                                                <!-- NEW: Professor Information -->
+                                                <div  class="mt-1">
+                                                    <span class="badge bg-info text-dark"  th:text="${lecture.professor.firstName} + ' ' + ${lecture.professor.lastName} + ', ' + ${lecture.professor.id}">
+                                                    </span>
+                                                </div>
+                                                <div th:unless="${lecture.professor}" class="mt-1">
+                                                    <span class="badge bg-warning text-dark">Professor not assigned</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Time Slots</h5>
+                        <p class="card-text" th:text="${solution.timeSlotList.size()}">3</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Rooms</h5>
+                        <p class="card-text" th:text="${solution.roomList.size()}">3</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Lectures Scheduled</h5>
+                        <p class="card-text" th:text="${solution.lectureList.size()}">7</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
