@@ -83,7 +83,6 @@ public class UserController {
 
     @PostMapping("/user/register")
     public String registerUser(@ModelAttribute UserDto userDto, RedirectAttributes redirectAttributes) {
-        System.out.println(userDto);
         List<ResponseDto> response = userService.registerUser(userDto);
         ResponseDto toast = response.get(0); // Get the toast message
         ResponseDto infoMessage = response.get(1); // Get the info message
