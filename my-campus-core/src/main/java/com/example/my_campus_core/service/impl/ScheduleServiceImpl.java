@@ -56,4 +56,18 @@ public class ScheduleServiceImpl implements ScheduleService {
         return totalRooms;
     }
 
+    @Override
+    public List<RoomDto> getAllRoomsIgnoreRooms(List<Integer> roomIds) {
+        List<Room> rooms = roomRepository.findAllByIdNotIn(roomIds);
+        if (rooms.isEmpty()) {
+            return List.of();
+        }
+        return rooms.stream().filter(room -> !roomIds.contains(room.getId())).map(room -> {
+            RoomDto roomDto = new RoomDto();
+            roomDto.setId(room.getId());
+            roomDto.setName(room.getName());
+            return roomDto;
+        }).toList();
+    }
+
 }

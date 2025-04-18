@@ -12,4 +12,6 @@ public interface ScheduleService {
     List<RoomDto> getAllRooms();
 
     Integer totalNumberRooms();
+
+    List<RoomDto> getAllRoomsIgnoreRooms(List<Integer> roomIds);
 }
