@@ -82,8 +82,9 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule/managment/schedule/add")
-    public String getScheduleWeeklySchedulePage() {
-        return new String();
+    public String getScheduleWeeklySchedulePage(Model model) {
+        model.addAttribute("rooms", scheduleService.getAllRooms());
+        return "./scheduleWeeklySchedule";
     }
 
     @PostMapping("schedule/managment/rooms/add")

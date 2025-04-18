@@ -1,0 +1,122 @@
+<div class="col-lg-3" th:fragment="scheduleWeeklyScheduleAddCardRooms">
+    <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card-header bg-white border-0 py-3">
+            <h3 class="h5 mb-0 text-dark">
+                <i class="bi bi-door-open me-2"></i>
+                Rooms
+            </h3>
+        </div>
+        <div class="card-body">
+            <div>
+                <div class="mb-3">
+                    <label for="roomName" class="form-label">Select Room</label>
+                    <select class="form-select" id="roomName" name="roomName" required>
+                        <option value="" disabled selected>Select a room</option>
+                    </select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-dark" id="addRoomButton">
+                        <i class="bi bi-plus-circle me-2"></i> Add Room
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const roomSelect = document.getElementById('roomName');
+        roomSelect.addEventListener('focus', function () {
+            // Clear existing dynamic options (keep only the first default option)
+            while (roomSelect.options.length > 1) {
+                roomSelect.remove(1);
+            } 
+            // Get all elements with room-id attribute
+            const roomElements = document.querySelectorAll('[room-id]');
+            // Extract room IDs and convert to numbers
+            const roomIds = Array.from(roomElements).map(el => {
+                const id = el.getAttribute('room-id');
+                return id ? parseInt(id, 10) : null;
+            }).filter(id => !isNaN(id)); // Filter out any invalid numbers
+            
+            // Encode the roomIds properly for the URL
+            const queryParams = new URLSearchParams();
+            roomIds.forEach(id => queryParams.append('ignoreRoomIds', id));
+            // Make API call
+            fetch(`/api/v1/schedule/rooms?${queryParams.toString()}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.length > 0) {
+                        // Add new options from the API response
+                        data.forEach(room => {
+                            const option = document.createElement('option');
+                            option.value = room.name; // or whatever property contains the name
+                            option.textContent = room.name; // or formatted display text
+                            option.setAttribute('room-id', room.id);
+                            roomSelect.appendChild(option);
+                        });
+                    } else {
+                        // Add a "no rooms available" option
+                        const option = document.createElement('option');
+                        option.value = "";
+                        option.textContent = "No additional rooms available";
+                        option.disabled = true;
+                        roomSelect.appendChild(option);
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    // Add error message option
+                    const option = document.createElement('option');
+                    option.value = "";
+                    option.textContent = "Error loading rooms";
+                    option.disabled = true;
+                    roomSelect.appendChild(option);
+                });
+        });
+    </script>
+    <script>
+        document.getElementById('addRoomButton').addEventListener('click', function() {
+    // Get the select element
+    const roomNameSelect = document.getElementById('roomName');
+    // Get the selected option
+    const selectedOption = roomNameSelect.options[roomNameSelect.selectedIndex];
+    // Get the value of the selected option
+    const roomName = selectedOption.value;
+    // Get the room-id attribute of the selected option
+    const roomId = selectedOption.getAttribute('room-id');
+    if (roomName && roomId) {
+        // Create a new div element
+        const roomCardDiv = document.createElement('div');
+        // Set the room-id as the id of the new div
+        roomCardDiv.id = `room-${roomId}`;
+
+        roomCardDiv.innerHTML = `
+            <div class="card h-100 border-0 shadow-sm rounded-0">
+        <div class="card-body" room-id="${roomId}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-2">${roomName}</h5>
+                <button type="button" class="btn p-0 border-0" style="line-height: 1;" onclick="removeRoom(${roomId})">
+                    <i class="bi bi-x-lg"></i> 
+                </button>
+            </div>
+            <p class="card-text text-muted mb-3">Room ID: <span">${roomId}</span></p>
+            <input type="text" name="roomId" value="${roomId}" hidden/>
+        </div>
+        
+        `
+        document.getElementById('roomGrid').appendChild(roomCardDiv);
+        const roomSelect = document.getElementById('roomName');
+        roomSelect.innerHTML = ''; // Clear the select options
+        roomSelect.innerHTML = `<option value="" disabled selected>Select a room</option>`
+        
+        
+    
+    }
+})
+    </script>
+</div>

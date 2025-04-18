@@ -1,0 +1,175 @@
+<div class="mb-4 position-relative" th:fragment="searchCourse">
+    <label for="courseName" class="form-label fw-semibold">Search Courses</label>
+    <div class="input-group">
+        <input type="text" class="form-control py-1 px-2 border-2" id="courseName" name="courseName"
+               placeholder="Start typing to search courses..." required>
+        <span class="input-group-text bg-white border-2 py-1">
+            <i class="bi bi-search text-muted"></i>
+        </span>
+    </div>
+    
+    <!-- Hidden input to store selected course ID -->
+    <input type="hidden" id="selectedCourseId" name="selectedCourseId">
+    
+    <!-- Search Results Dropdown -->
+    <div id="searchResults" class="position-absolute w-100 mt-1 shadow-sm" style="display: none; z-index: 9999;">
+        <div class="list-group border-2 border-top-0 rounded-top-0 rounded-bottom-2" >
+            <div class="list-group-item disabled small text-muted py-1 px-2" id="searchStatus">
+                Type at least 3 characters to search
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course Details Form (initially hidden) -->
+    <div id="courseDetailsForm" class="mt-3 p-3 border rounded" style="display: none;">
+        <h5 class="mb-3">Course Details</h5>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="detailId" class="form-label">Course ID</label>
+                <input type="text" class="form-control" id="detailId" disabled>
+            </div>
+            <div class="col-md-6">
+                <label for="detailName" class="form-label">Course Name</label>
+                <input type="text" class="form-control" id="detailName" disabled>
+            </div>
+            <div class="col-md-6">
+                <label for="detailProfessorFirstName" class="form-label">Professor First Name</label>
+                <input type="text" class="form-control" id="detailProfessorFirstName" disabled>
+            </div>
+            <div class="col-md-6">
+                <label for="detailProfessorLastName" class="form-label">Professor Last Name</label>
+                <input type="text" class="form-control" id="detailProfessorLastName" disabled>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const courseInput = document.getElementById('courseName');
+        const resultsContainer = document.getElementById('searchResults');
+        const statusElement = document.getElementById('searchStatus');
+        const selectedCourseIdInput = document.getElementById('selectedCourseId');
+        const courseDetailsForm = document.getElementById('courseDetailsForm');
+        
+        // Form field elements
+        const detailId = document.getElementById('detailId');
+        const detailName = document.getElementById('detailName');
+        const detailProfessorFirstName = document.getElementById('detailProfessorFirstName');
+        const detailProfessorLastName = document.getElementById('detailProfessorLastName');
+        
+        // Store selected course data
+        let selectedCourse = null;
+        
+        if (!courseInput || !resultsContainer || !statusElement || !selectedCourseIdInput || !courseDetailsForm) {
+            console.error('Required elements not found');
+            return;
+        }
+        
+        courseInput.addEventListener('input', function() {
+            const input = this.value.trim();
+            
+            // Clear selection if input changes
+            if (input !== selectedCourse?.name) {
+                selectedCourse = null;
+                selectedCourseIdInput.value = '';
+                courseDetailsForm.style.display = 'none';
+            }
+            
+            if (input.length === 0) {
+                resultsContainer.style.display = 'none';
+                statusElement.textContent = 'Type at least 3 characters to search';
+                return;
+            }
+
+            if (input.length < 3) {
+                resultsContainer.style.display = 'block';
+                statusElement.textContent = 'Keep typing... (minimum 3 characters)';
+                return;
+            }
+
+            fetch(`/api/v1/course/search?search=${encodeURIComponent(input)}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    resultsContainer.innerHTML = '';
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "list-group border-2 border-top-0 rounded-top-0 rounded-bottom-2";
+                    
+                    if (data.length > 0) {
+                        data.forEach(course => {
+                            const item = document.createElement('a');
+                            item.href = '#';
+                            item.className = "list-group-item list-group-item-action py-2 px-3";
+
+                            item.innerHTML = `
+                                <div class="d-flex justify-content-between">
+                                    <span>Course: ${course.name}</span>
+                                </div>
+                                ${course.professor ? `<div class="small mt-1">Professor: ${course.professor.firstName} ${course.professor.lastName}</div>` : ''}
+                            `;
+                            
+                            item.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                courseInput.value = course.name;
+                                selectedCourse = course;
+                                selectedCourseIdInput.value = course.id;
+                                resultsContainer.style.display = 'none';
+                                
+                                // Update the details form
+                                updateCourseDetailsForm(course);
+                                courseDetailsForm.style.display = 'block';
+                                
+                                console.log('Selected course:', selectedCourse);
+                            });
+                            wrapper.appendChild(item);
+                        });
+                        resultsContainer.appendChild(wrapper);
+                    } else {
+                        const noResults = document.createElement('div');
+                        noResults.className = "list-group-item py-2 px-3 text-muted";
+                        noResults.textContent = "No courses found matching your search";
+                        wrapper.appendChild(noResults);
+                        resultsContainer.appendChild(wrapper);
+                    }
+                    resultsContainer.style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    resultsContainer.innerHTML = '';
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "list-group border-2 border-top-0 rounded-top-0 rounded-bottom-2";
+                    
+                    const errorItem = document.createElement('div');
+                    errorItem.className = "list-group-item py-2 px-3 text-danger";
+                    errorItem.textContent = "Error loading results. Please try again.";
+                    wrapper.appendChild(errorItem);
+                    resultsContainer.appendChild(wrapper);
+                    resultsContainer.style.display = 'block';
+                });
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#courseName') && !e.target.closest('#searchResults')) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+        
+        // Function to update the course details form
+        function updateCourseDetailsForm(course) {
+            detailId.value = course.id || '';
+            detailName.value = course.name || '';
+            
+            if (course.professor) {
+                detailProfessorFirstName.value = course.professor.firstName || '';
+                detailProfessorLastName.value = course.professor.lastName || '';
+            } else {
+                detailProfessorFirstName.value = '';
+                detailProfessorLastName.value = '';
+            }
+        }
+    });
+</script>
