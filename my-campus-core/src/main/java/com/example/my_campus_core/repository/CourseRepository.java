@@ -12,6 +12,8 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     List<Course> findByProfessorId(int professorId);
 
+    List<Course> findByNameContainingIgnoreCase(String name);
+
     // Custom query methods can be defined here if needed
     // For example, findByProfessorId, findByStudentId, etc.
 

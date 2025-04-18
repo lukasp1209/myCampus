@@ -117,4 +117,29 @@ public class CourseServiceImpl implements CourseService {
         }
         return courseDtos;
     }
+
+    @Override
+    public List<CourseDto> searchForCourses(String searchTerm) {
+        List<Course> courses = courseRepository.findByNameContainingIgnoreCase(searchTerm);
+        if (courses.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<CourseDto> courseDtos = new ArrayList<>();
+
+        for (Course course : courses) {
+            if (course.getName().toLowerCase().contains(searchTerm.toLowerCase())) {
+                CourseDto courseDto = new CourseDto();
+                courseDto.setId(course.getId());
+                courseDto.setName(course.getName());
+                courseDto.setDescription(course.getDescription());
+                courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+                List<Integer> studentIds = course.getStudents().stream()
+                        .map(UserEntity::getId)
+                        .toList();
+                courseDto.setStudents(getStudentsInCourse(studentIds));
+                courseDtos.add(courseDto);
+            }
+        }
+        return courseDtos;
+    }
 }
