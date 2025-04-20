@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 
 public class TimeSlot {
+    private int id;
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;

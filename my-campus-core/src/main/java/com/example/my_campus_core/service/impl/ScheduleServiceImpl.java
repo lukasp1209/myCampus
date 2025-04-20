@@ -110,16 +110,18 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<CourseDto> courses = new ArrayList<>();
         List<RoomDto> rooms = new ArrayList<>();
         List<TimeSlot> timeSlots = new ArrayList<>();
-
+        int slotCounter = 1;
         for (DayOfWeek day : DayOfWeek.values()) {
             if (day.getValue() >= DayOfWeek.MONDAY.getValue() &&
                     day.getValue() <= DayOfWeek.FRIDAY.getValue()) {
                 for (int i = 0; i < 3; i++) {
                     TimeSlot slot = new TimeSlot();
+                    slot.setId(slotCounter);
                     slot.setDayOfWeek(day);
                     slot.setStartTime(LocalTime.of(9, 0).plusHours(i * 3));
                     slot.setEndTime(LocalTime.of(12, 0).plusHours(i * 3));
                     timeSlots.add(slot);
+                    slotCounter += 1;
                 }
 
             }
@@ -144,7 +146,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             List<CourseDto> courses,
             List<RoomDto> rooms,
             List<TimeSlot> timeSlots) {
-        System.out.println("I WAS HERE");
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8081/api/v1/schedule/generate";
 
