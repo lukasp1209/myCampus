@@ -43,7 +43,7 @@
                                 <a th:href="@{/user/{id}(id=${user.id})}" class="btn btn-success btn-sm">View</a>
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                th:attr="disabled=${user.status != 'Active'}, 
+                                th:attr="disabled=${user.status == 'Inactive'}, 
                                 data-bs-target='#changeStatusModal-'+${user.id}">
                                     Change Status
                                 </button>
