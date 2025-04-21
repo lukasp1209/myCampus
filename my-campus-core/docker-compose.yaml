@@ -32,10 +32,6 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/core-backend
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_JPA_HIBERNATE_DDL-AUTO=update
-      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       postgres:
         condition: service_healthy 
