@@ -37,8 +37,7 @@ public class ScheduleController {
     @GetMapping("schedule/managment")
     public String getScheduleManagmentPage(@RequestParam(defaultValue = "0") int weekOffset, Model model) {
         model.addAttribute("datesInWeek", scheduleService.schedulePageGeneration(weekOffset));
-        model.addAttribute("days",
-                Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"));
+        model.addAttribute("schedule", scheduleService.getFullScheduleForWeek(weekOffset));
         return "./scheduleManagment";
     }
 

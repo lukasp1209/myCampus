@@ -39,6 +39,9 @@
                         <a href="/schedule/managment/rooms" class="btn btn-outline-light me-2">
                             <i class="bi bi-door-open me-2"></i> View Rooms
                         </a>
+                        <a class="btn btn-outline-light me-2" th:if="!${schedule}" th:href="@{/schedule/managment/schedule/add(weekOffset=${param.weekOffset == null ? 0 : param.weekOffset[0]})}">
+                            <i class="bi bi-plus-circle"></i> Generate Schedule
+                        </a>
                     </div>
                 </div>
             </div>

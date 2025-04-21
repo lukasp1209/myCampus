@@ -23,4 +23,6 @@ public interface ScheduleService {
     ScheduleDto scheduleGeneration(ScheduleRequestDto scheduleRequestDto, int weekOffset);
 
     List<LocalDate> schedulePageGeneration(int weekOffset);
+
+    ScheduleDto getFullScheduleForWeek(int weekOffset);
 }

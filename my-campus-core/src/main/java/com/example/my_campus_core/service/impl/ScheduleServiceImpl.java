@@ -226,4 +226,17 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<LocalDate> workdays = timeUtil.getCurrentWeekWorkdays(weekOffset);
         return workdays;
     }
+
+    @Override
+    public ScheduleDto getFullScheduleForWeek(int weekOffset) {
+        List<LocalDate> datesInWeek = schedulePageGeneration(weekOffset);
+        Schedule schedule = scheduleRepository.findByDateFromAndDateTo(datesInWeek.get(0), datesInWeek.get(4));
+        try {
+            ScheduleDto scheduleDto = Mappers.scheduleToScheduleDto(schedule);
+            return scheduleDto;
+        } catch (Exception e) {
+            System.err.println("Error" + e);
+            return null;
+        }
+    }
 }
