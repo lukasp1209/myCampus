@@ -35,6 +35,10 @@ public class CourseServiceImpl implements CourseService {
             System.out.println("Student ID: " + studentId);
             UserEntity student = userRepository.findById(studentId)
                     .orElseThrow(() -> new IllegalArgumentException("User with ID " + studentId + " does not exist"));
+            if (student.getStatus() == "Pending") {
+                student.setStatus("Active");
+                userRepository.saveAndFlush(student);
+            }
             students.add(student);
         }
         course.setStudents(students);

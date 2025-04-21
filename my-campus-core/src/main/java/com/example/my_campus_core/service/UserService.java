@@ -15,9 +15,9 @@ public interface UserService {
 
     UserDto getUserById(int userId);
 
-    List<UserDto> getUsersByNameAndRole(String name, String role); // Add this method to the interface
+    List<UserDto> getUsersByNameAndRole(String name, String role);
 
-    ResponseDto changeUserStatus(int userId, String status); // Add this method to the interface
+    ResponseDto changeUserStatus(int userId, String status);
 
     UserDto getUserByEmail(String email);
 
