@@ -39,7 +39,6 @@ public class ScheduleController {
         model.addAttribute("datesInWeek", scheduleService.schedulePageGeneration(weekOffset));
         model.addAttribute("days",
                 Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"));
-        System.out.println(scheduleService.schedulePageGeneration(weekOffset));
         return "./scheduleManagment";
     }
 
@@ -56,6 +55,11 @@ public class ScheduleController {
         return "./scheduleWeeklySchedule";
     }
 
+    @GetMapping("/schedule/managment/schedule/generated")
+    public String getGeneratedSchedulePage() {
+        return "./generatedSchedule";
+    }
+
     @PostMapping("/schedule/managment/schedule/add")
     public String makeSchedule(@RequestParam(defaultValue = "0") int weekOffset,
             @ModelAttribute ScheduleRequestDto scheduleRequestDto,
@@ -67,10 +71,10 @@ public class ScheduleController {
             redirectAttributes.addFlashAttribute("response", responseDto);
             return "redirect:/schedule/managment/schedule/add";
         }
-        scheduleService.scheduleGeneration(scheduleRequestDto, weekOffset);
-
+        redirectAttributes.addFlashAttribute("schedule",
+                scheduleService.scheduleGeneration(scheduleRequestDto, weekOffset));
         redirectAttributes.addFlashAttribute("response", responseDto);
-        return "redirect:/schedule/managment/schedule/add";
+        return "redirect:/schedule/managment/schedule/generated";
     }
 
     @PostMapping("schedule/managment/rooms/add")

@@ -3,30 +3,37 @@ package com.example.my_campus_core.service.impl;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.my_campus_core.dto.CourseDto;
+import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
-import com.example.my_campus_core.dto.UserDto;
+import com.example.my_campus_core.dto.ScheduleDto;
 import com.example.my_campus_core.dto.request.ScheduleBodyDto;
 import com.example.my_campus_core.dto.request.ScheduleRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
+import com.example.my_campus_core.dto.response.ScheduleSolutionResponseDto;
 import com.example.my_campus_core.models.Course;
+import com.example.my_campus_core.models.Lecture;
 import com.example.my_campus_core.models.Room;
+import com.example.my_campus_core.models.Schedule;
 import com.example.my_campus_core.models.TimeSlot;
 import com.example.my_campus_core.repository.CourseRepository;
 import com.example.my_campus_core.repository.RoomRepository;
+import com.example.my_campus_core.repository.ScheduleRepository;
+import com.example.my_campus_core.repository.TimeSlotRepository;
+import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
@@ -34,13 +41,21 @@ import com.example.my_campus_core.util.Mappers;
 public class ScheduleServiceImpl implements ScheduleService {
     private RoomRepository roomRepository;
     private CourseRepository courseRepository;
+    private UserRepository userRepository;
+    private ScheduleRepository scheduleRepository;
+    private TimeSlotRepository timeSlotRepository;
     private Mappers mapper;
     private com.example.my_campus_core.util.TimeUtil timeUtil;
 
     @Autowired
-    public ScheduleServiceImpl(RoomRepository roomRepository, CourseRepository courseRepository) {
+    public ScheduleServiceImpl(RoomRepository roomRepository, CourseRepository courseRepository,
+            UserRepository userRepository, ScheduleRepository scheduleRepository,
+            TimeSlotRepository timeSlotRepository) {
         this.roomRepository = roomRepository;
         this.courseRepository = courseRepository;
+        this.userRepository = userRepository;
+        this.scheduleRepository = scheduleRepository;
+        this.timeSlotRepository = timeSlotRepository;
     }
 
     @Override
@@ -106,7 +121,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public void scheduleGeneration(ScheduleRequestDto scheduleRequestDto, int weekOffset) {
+    public ScheduleDto scheduleGeneration(ScheduleRequestDto scheduleRequestDto, int weekOffset) {
         List<CourseDto> courses = new ArrayList<>();
         List<RoomDto> rooms = new ArrayList<>();
         List<TimeSlot> timeSlots = new ArrayList<>();
@@ -121,9 +136,9 @@ public class ScheduleServiceImpl implements ScheduleService {
                     slot.setStartTime(LocalTime.of(9, 0).plusHours(i * 3));
                     slot.setEndTime(LocalTime.of(12, 0).plusHours(i * 3));
                     timeSlots.add(slot);
+
                     slotCounter += 1;
                 }
-
             }
         }
 
@@ -139,10 +154,17 @@ public class ScheduleServiceImpl implements ScheduleService {
             rooms.add(roomDto);
         }
 
-        scheduleGenerationRequest(courses, rooms, timeSlots);
+        ScheduleSolutionResponseDto scheduleSolution = scheduleGenerationRequest(courses, rooms, timeSlots).getBody();
+
+        System.out.println(scheduleSolution.getLectureList());
+        List<LocalDate> weekDates = schedulePageGeneration(weekOffset);
+
+        Schedule schedule = saveSchedule(scheduleSolution, weekDates.get(0), weekDates.get(4));
+        ScheduleDto scheduleDto = Mappers.scheduleToScheduleDto(schedule);
+        return scheduleDto;
     }
 
-    public void scheduleGenerationRequest(
+    public ResponseEntity<ScheduleSolutionResponseDto> scheduleGenerationRequest(
             List<CourseDto> courses,
             List<RoomDto> rooms,
             List<TimeSlot> timeSlots) {
@@ -160,13 +182,43 @@ public class ScheduleServiceImpl implements ScheduleService {
         HttpEntity<ScheduleBodyDto> requestEntity = new HttpEntity<>(scheduleBodyDto, headers);
 
         // Make POST request
-        ResponseEntity<String> response = restTemplate.postForEntity(
+        ResponseEntity<ScheduleSolutionResponseDto> response = restTemplate.postForEntity(
                 url,
                 requestEntity,
-                String.class);
+                ScheduleSolutionResponseDto.class);
 
-        System.out.println("Response: " + response);
+        return response;
 
+    }
+
+    public Schedule saveSchedule(ScheduleSolutionResponseDto scheduleSolution, LocalDate dateFrom, LocalDate dateTo) {
+        Schedule schedule = new Schedule();
+        List<Lecture> lectures = new ArrayList<>();
+        for (LectureDto lecture : scheduleSolution.getLectureList()) {
+            Lecture newLecture = new Lecture();
+            newLecture.setCourse(courseRepository.findById(lecture.getCourse().getId()).orElseThrow(null));
+            newLecture.setTimeSlot(lecture.getTimeSlot());
+            newLecture.setRoom(lecture.getRoom());
+            newLecture.setProfessor(userRepository.findById(lecture.getProfessor().getId()).orElseThrow(null));
+            lectures.add(newLecture);
+        }
+        schedule.setLectureList(lectures);
+        List<Room> rooms = new ArrayList<>();
+        for (RoomDto room : scheduleSolution.getRoomList()) {
+            Room newRoom = roomRepository.findById(room.getId()).orElseThrow(null);
+            rooms.add(newRoom);
+        }
+        schedule.setRoomList(rooms);
+        List<TimeSlot> timeSlots = new ArrayList<>();
+
+        for (TimeSlot timeSlot : scheduleSolution.getTimeSlotList()) {
+            TimeSlot newTimeSlot = timeSlotRepository.findById(timeSlot.getId()).orElseThrow(null);
+            timeSlots.add(newTimeSlot);
+        }
+        schedule.setTimeSlotList(timeSlots);
+        schedule.setDateFrom(dateFrom);
+        schedule.setDateTo(dateTo);
+        return scheduleRepository.save(schedule);
     }
 
     @Override

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commonHead :: head" pageTitle="Weekly Schedule">
+</head>
+
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+    <div class="container-fluid px-0">
+        <div class="bg-dark text-white py-4 mb-4">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-0 text-white">
+                            <i class="bi bi-calendar-week me-2"></i>
+                            Generated Schedule
+                        </h1>
+                        <p class="mb-0 text-white-50">Schedule generated for <span></span> - 20.4.2025 </p>
+                    </div>
+                    <div>
+                        <a th:href="@{/schedule/managment}" class="btn btn-outline-light me-2">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<!-- Main Content -->
+<main class="container my-5">
+    <div th:replace="fragments/scheduleTable :: scheduleTable" th:with="schedule=${schedule}"> </div>
+
+<div th:if="${response}">
+    <div th:if="${response.status == 'success'}">
+        <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
+    </div>
+    <div th:if="${response.status == 'error'}">
+        <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+    crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('generateScheduleBtn').addEventListener('click', function() {
+          var spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'));
+          spinnerModal.show();
+        });
+    </script>
+</body>
+
+</html>

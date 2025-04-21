@@ -13,7 +13,7 @@
                     <div>
                         <h1 class="display-5 fw-bold mb-0 text-white">
                             <i class="bi bi-calendar-week me-2"></i>
-                            Weekly Schedule
+                            Manage Schedule
                         </h1>
                         <p class="mb-0 text-white-50">Manage Weekly Scheduel</p>
                     </div>
@@ -33,13 +33,12 @@
 
 <!-- Main Content -->
 <main class="container my-5">
-
  <div class="row g-4">
     <div class="col-lg-9 container mt-4">
         <form th:action="@{/schedule/managment/schedule/add(weekOffset=${param.weekOffset != null ? param.weekOffset[0] : 0 })}"  method="post" role="form">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1>Schedule</h1>
-                <button type="submit" class="btn btn-dark">Generate Schedule</button>
+                <button type="submit" class="btn btn-dark" id="generateScheduleBtn">Generate Schedule</button>
 
             </div>
             <h2 class="mb-4">Courses to schedule</h2>
@@ -79,10 +78,28 @@
         <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
     </div>
 </div>
-    <!-- <script th:replace="fragments/javaScript :: javaScript"></script> -->
+
+<div class="modal fade" id="spinnerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: transparent; border: none;">
+        <div class="modal-body text-center">
+          <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-light mt-2">Generating schedule...</p>
+        </div>
+      </div>
+    </div>
+  </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
     crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('generateScheduleBtn').addEventListener('click', function() {
+          var spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'));
+          spinnerModal.show();
+        });
+    </script>
 </body>
 
 </html>

@@ -24,11 +24,8 @@ public class ScheduleController {
 
     @PostMapping("/generate")
     public ResponseEntity generateSchedule(@RequestBody RequestDto requestDto) {
-
-        // System.out.println(requestDto);
         ScheduleSolution response = scheduleService.generate(requestDto);
-        System.out.println("Hellp" + response);
-        return new ResponseEntity<>("Recived" + response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 }

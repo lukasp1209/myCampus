@@ -1,14 +1,19 @@
 package com.example.my_campus_core.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import com.example.my_campus_core.dto.CourseDto;
+import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
+import com.example.my_campus_core.dto.ScheduleDto;
 import com.example.my_campus_core.dto.UserDto;
 import com.example.my_campus_core.models.Course;
+import com.example.my_campus_core.models.Lecture;
 import com.example.my_campus_core.models.Room;
+import com.example.my_campus_core.models.Schedule;
 import com.example.my_campus_core.models.UserEntity;
 
 @Component
@@ -46,5 +51,39 @@ public class Mappers {
         courseDto.setStudents(students);
 
         return courseDto;
+    }
+
+    public static LectureDto lectureToLectureDto(Lecture lecture) {
+        LectureDto lectureDto = new LectureDto();
+        lectureDto.setId(lecture.getId());
+        lectureDto.setCourse(lecture.getCourse());
+        lectureDto.setProfessor(userEntityToDto(lecture.getProfessor()));
+        lectureDto.setRoom(lecture.getRoom());
+        lectureDto.setTimeSlot(lecture.getTimeSlot());
+
+        return lectureDto;
+    }
+
+    public static ScheduleDto scheduleToScheduleDto(Schedule schedule) {
+        ScheduleDto scheduleDto = new ScheduleDto();
+        scheduleDto.setId(schedule.getId());
+        scheduleDto.setDateFrom(schedule.getDateFrom());
+        scheduleDto.setDateTo(schedule.getDateTo());
+
+        List<LectureDto> lectureDtos = new ArrayList<>();
+        for (Lecture lecture : schedule.getLectureList()) {
+            LectureDto lectureDto = lectureToLectureDto(lecture);
+            lectureDtos.add(lectureDto);
+        }
+        scheduleDto.setLectureList(lectureDtos);
+        List<RoomDto> roomDtos = new ArrayList<>();
+
+        for (Room room : schedule.getRoomList()) {
+            RoomDto newRoomDto = roomToRoomDto(room);
+            roomDtos.add(newRoomDto);
+        }
+        scheduleDto.setRoomList(roomDtos);
+        scheduleDto.setTimeSlotList(schedule.getTimeSlotList());
+        return scheduleDto;
     }
 }
