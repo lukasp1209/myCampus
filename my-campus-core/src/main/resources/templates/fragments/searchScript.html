@@ -39,7 +39,18 @@
         }
   
         try {
-          const response = await fetch(`${this.config.apiEndpoint}?search=${encodeURIComponent(query)}`);
+          // Collect ignoreIds from hidden inputs (only for students)
+          let url = `${this.config.apiEndpoint}?search=${encodeURIComponent(query)}`;
+          if (this.config.entityType === 'student') {
+            const ignoreIds = Array.from(this.cardsContainer.querySelectorAll(`input[name="${this.config.hiddenInputName}"]`))
+              .map(input => input.value)
+              .filter(id => id); // Ensure no empty values
+            if (ignoreIds.length > 0) {
+              url += `&ignoreIds=${encodeURIComponent(ignoreIds.join(','))}`;
+            }
+          }
+  
+          const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
