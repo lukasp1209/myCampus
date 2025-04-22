@@ -13,5 +13,6 @@ public interface CourseService {
 
     List<CourseDto> getCoursesByUserId(int studentId, String userRole); // Method to retrieve courses by student ID
 
-    List<CourseDto> searchForCourses(String searchTerm); // Method to search for courses by name or description
+    List<CourseDto> searchForCourses(String searchTerm); // Method to search for courses by name or
+                                                         // description
 }

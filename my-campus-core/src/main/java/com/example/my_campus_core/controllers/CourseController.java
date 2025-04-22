@@ -56,6 +56,11 @@ public class CourseController {
         return "./courses";
     }
 
+    @GetMapping("/course/edit/{courseId}")
+    public String getCourseEditPage(@PathVariable int courseId) {
+        return "./editCourse";
+    }
+
     @GetMapping("/course/add")
     public String getAddCoursePage() {
         return "./addCourse"; // Return the name of the add course view (e.g., addCourse.html)

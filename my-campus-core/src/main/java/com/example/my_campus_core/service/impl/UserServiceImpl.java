@@ -122,9 +122,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsersByNameAndRole(String name, String role) {
-        List<UserEntity> professors = userRepository.findByRoleAndStatusNotAndLastNameContainingIgnoreCase(role,
-                "Inactive", name);
+    public List<UserDto> getUsersByNameAndRole(String name, String role, List<Integer> ignoreId) {
+        List<UserEntity> professors = userRepository.findByRoleAndStatusNotAndLastNameContainingIgnoreCaseAndIdNotIn(
+                role,
+                "Inactive", name, ignoreId);
         return professors.stream().map(user -> {
             UserDto userDto = new UserDto();
             userDto.setId(user.getId());

@@ -1,0 +1,139 @@
+<script th:fragment="searchScript">
+    class SearchComponent {
+      constructor(element, config = {}) {
+        this.element = element;
+        this.input = element.querySelector('.search-input');
+        this.resultsContainer = element.querySelector('.search-results');
+        this.cardsContainer = element.querySelector('.cards-container');
+        this.spinner = element.querySelector('#searchSpinner');
+        this.searchButton = element.querySelector('#searchButton');
+        this.config = {
+          apiEndpoint: config.apiEndpoint || 'http://localhost:8080/api/user/v1/search/students',
+          entityType: config.entityType || 'student',
+          singleSelection: config.singleSelection || false,
+          maxResults: config.maxResults || 20,
+          hiddenInputName: config.hiddenInputName || 'ignoreStudentId'
+        };
+        this.debounceFetch = this.debounce(this.fetchResults.bind(this), 300);
+        this.init();
+      }
+  
+      // Debounce function
+      debounce(func, delay) {
+        let timeoutId;
+        return (...args) => {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => func(...args), delay);
+        };
+      }
+  
+      // Fetch search results
+      async fetchResults(query) {
+        this.resultsContainer.innerHTML = '';
+        this.resultsContainer.style.display = 'none';
+        this.spinner.style.display = 'inline-block';
+  
+        if (query.length < 2) {
+          this.spinner.style.display = 'none';
+          return;
+        }
+  
+        try {
+          const response = await fetch(`${this.config.apiEndpoint}?search=${encodeURIComponent(query)}`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          const items = data || [];
+  
+          if (items.length === 0) {
+            this.resultsContainer.innerHTML = '<div class="list-group-item">No results found</div>';
+          } else {
+            items.slice(0, this.config.maxResults).forEach(item => {
+              const div = document.createElement('div');
+              div.className = 'list-group-item';
+              div.textContent = `${item.firstName} ${item.lastName}`;
+              div.addEventListener('click', () => this.selectResult(item));
+              this.resultsContainer.appendChild(div);
+            });
+          }
+          this.resultsContainer.style.display = 'block';
+        } catch (error) {
+          this.resultsContainer.innerHTML = '<div class="list-group-item">Error fetching data</div>';
+          this.resultsContainer.style.display = 'block';
+        } finally {
+          this.spinner.style.display = 'none';
+        }
+      }
+  
+      // Handle result selection
+      selectResult(result) {
+        this.input.value = ''; // Clear the input
+        this.resultsContainer.style.display = 'none';
+        
+        if (this.config.singleSelection) {
+          // Clear existing cards (only one allowed)
+          this.cardsContainer.innerHTML = '';
+          // Disable input and button
+          this.input.disabled = true;
+          this.searchButton.disabled = true;
+        }
+        
+        this.createCard(result);
+      }
+  
+      // Create a card with a hidden input and a remove button
+      createCard(result) {
+        const card = document.createElement('div');
+        card.className = 'card result-card mb-3';
+        card.innerHTML = `
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="card-title">${result.firstName} ${result.lastName} | ${result.email}</div>
+              <div class="d-flex gap-2">
+                <input type="text" class="form-control mb-2" name="${this.config.hiddenInputName}" value="${result.id}" hidden>
+                <button class="btn btn-dark btn-sm remove-card">Remove</button>
+              </div>
+            </div>
+          </div>
+        `;
+        card.querySelector('.remove-card').addEventListener('click', () => {
+          card.remove();
+          // Re-enable input and button if single-selection and no cards remain
+          if (this.config.singleSelection && this.cardsContainer.children.length === 0) {
+            this.input.disabled = false;
+            this.searchButton.disabled = false;
+          }
+        });
+        this.cardsContainer.appendChild(card);
+      }
+  
+      // Initialize event listeners
+      init() {
+        this.input.addEventListener('input', () => this.debounceFetch(this.input.value));
+        this.searchButton.addEventListener('click', () => this.debounceFetch(this.input.value));
+  
+        // Hide results when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!this.element.contains(e.target)) {
+            this.resultsContainer.style.display = 'none';
+          }
+        });
+      }
+    }
+  
+    // Initialize all search components with their configurations
+    document.querySelectorAll('.search-component').forEach(element => {
+      const entityType = element.dataset.entityType || 'student';
+      const config = {
+        apiEndpoint: entityType === 'professor' 
+          ? 'http://localhost:8080/api/user/v1/search/professors'
+          : 'http://localhost:8080/api/user/v1/search/students',
+        entityType: entityType,
+        singleSelection: entityType === 'professor',
+        maxResults: 20,
+        hiddenInputName: entityType === 'professor' ? 'ignoreProfessorId' : 'ignoreStudentId'
+      };
+      new SearchComponent(element, config);
+    });
+  </script>
