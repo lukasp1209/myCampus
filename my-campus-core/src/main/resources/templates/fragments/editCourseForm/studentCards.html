@@ -1,0 +1,25 @@
+<div th:fragment="studentCards" th:object="${course}">
+<div class="card result-card mb-3" th:if="${course}" th:each="student : ${course.students}">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="card-title" th:text="${student.firstName + ' ' + student.lastName + ' | ' + student.email}"></div>
+            <div class="d-flex gap-2">
+                <input type="text" class="form-control mb-2" th:if="${student.role == 'ROLE_STUDENT'}" th:name="ignoreStudentId" th:value="${student.id}" hidden>
+                <input type="text" th:value="${student.id}" th:name="studentsIds" hidden>
+                <button type="button" class="btn btn-dark btn-sm remove-card" onclick="removeCard(this)">Remove</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function removeCard(button) {
+        const card = button.closest(".card");
+        if (card) {
+            card.remove();
+        } else {
+            console.error("Card not found for removal.");
+        }
+    }
+
+</script>
+</div>

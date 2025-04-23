@@ -3,25 +3,33 @@ package com.example.my_campus_core.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.my_campus_core.dto.CourseDto;
 import com.example.my_campus_core.dto.UserDto;
+import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.models.Course;
 import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.CourseService;
+import com.example.my_campus_core.util.Mappers;
 
 @Service
 public class CourseServiceImpl implements CourseService {
 
     private CourseRepository courseRepository;
     private UserRepository userRepository;
+    private Mappers mappers;
 
-    public CourseServiceImpl(CourseRepository courseRepository, UserRepository userRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, UserRepository userRepository, Mappers mappers) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
+        this.mappers = mappers;
     }
 
     @Override
@@ -46,8 +54,10 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseDto> getAllCourses() {
-        List<Course> courses = courseRepository.findAll();
+    public List<CourseDto> getAllCourses(int page) {
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+        Page<Course> courses = courseRepository.findAll(pageable);
         List<CourseDto> courseDtos = new ArrayList<>();
 
         for (Course course : courses) {
@@ -55,7 +65,7 @@ public class CourseServiceImpl implements CourseService {
             courseDto.setId(course.getId());
             courseDto.setName(course.getName());
             courseDto.setDescription(course.getDescription());
-            courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+            courseDto.setProfessor(mappers.userEntityToDto(course.getProfessor()));
             List<Integer> studentIds = course.getStudents().stream()
                     .map(UserEntity::getId)
                     .toList();
@@ -72,20 +82,10 @@ public class CourseServiceImpl implements CourseService {
             UserEntity student = userRepository.findById(studentId)
                     .orElseThrow(() -> new IllegalArgumentException("User with ID " + studentId + " does not exist"));
             if (student != null) {
-                students.add(mapUserToUserDto(student));
+                students.add(mappers.userEntityToDto(student));
             }
         }
         return students;
-    }
-
-    public UserDto mapUserToUserDto(UserEntity user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setEmail(user.getEmail());
-        userDto.setStatus(user.getStatus());
-        return userDto;
     }
 
     @Override
@@ -96,11 +96,12 @@ public class CourseServiceImpl implements CourseService {
                 .map(UserEntity::getId)
                 .toList();
         List<UserDto> students = getStudentsInCourse(studentIds);
+
         CourseDto courseDto = new CourseDto();
         courseDto.setId(course.getId());
         courseDto.setName(course.getName());
         courseDto.setDescription(course.getDescription());
-        courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+        courseDto.setProfessor(mappers.userEntityToDto(course.getProfessor()));
         courseDto.setStudents(students);
         return courseDto;
     }
@@ -116,7 +117,7 @@ public class CourseServiceImpl implements CourseService {
             courseDto.setId(course.getId());
             courseDto.setName(course.getName());
             courseDto.setDescription(course.getDescription());
-            courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+            courseDto.setProfessor(mappers.userEntityToDto(course.getProfessor()));
             courseDtos.add(courseDto);
         }
         return courseDtos;
@@ -136,7 +137,7 @@ public class CourseServiceImpl implements CourseService {
                 courseDto.setId(course.getId());
                 courseDto.setName(course.getName());
                 courseDto.setDescription(course.getDescription());
-                courseDto.setProfessor(mapUserToUserDto(course.getProfessor()));
+                courseDto.setProfessor(mappers.userEntityToDto(course.getProfessor()));
                 List<Integer> studentIds = course.getStudents().stream()
                         .map(UserEntity::getId)
                         .toList();
@@ -145,5 +146,41 @@ public class CourseServiceImpl implements CourseService {
             }
         }
         return courseDtos;
+    }
+
+    @Override
+    public ResponseDto updateCourse(CourseDto courseDto) {
+        ResponseDto responseDto = new ResponseDto();
+        Course course = courseRepository.findById(courseDto.getId()).orElseThrow(null);
+        if (course != null) {
+            course.setName(courseDto.getName());
+            course.setProfessor(userRepository.findById(courseDto.getProfessorId()).orElseThrow(null));
+            List<UserEntity> updatedStudents = new ArrayList<>();
+            for (int student : courseDto.getStudentsIds()) {
+                UserEntity updatedStudent = userRepository.findById(student).orElseThrow(null);
+                updatedStudents.add(updatedStudent);
+            }
+            course.setStudents(updatedStudents);
+            course.setDescription(courseDto.getDescription());
+
+            courseRepository.saveAndFlush(course);
+
+            responseDto.setStatus("success");
+            responseDto.setMessage("Course " + course.getName() + " successfully updated.");
+
+        } else {
+            responseDto.setStatus("error");
+            responseDto.setMessage("Error. Course " + courseDto.getName() + " was not updated.");
+        }
+
+        return responseDto;
+    }
+
+    @Override
+    public int totalCourses(int size) {
+        int totalCourses = (int) courseRepository.count();
+        int totalPages = (int) Math.ceil((double) totalCourses / size);
+
+        return totalPages;
     }
 }

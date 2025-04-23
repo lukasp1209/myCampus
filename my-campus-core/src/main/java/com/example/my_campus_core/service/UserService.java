@@ -15,7 +15,7 @@ public interface UserService {
 
     UserDto getUserById(int userId);
 
-    List<UserDto> getUsersByNameAndRole(String name, String role);
+    List<UserDto> getUsersByNameAndRole(String name, String role, List<Integer> ignoreId);
 
     ResponseDto changeUserStatus(int userId, String status);
 
