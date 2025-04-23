@@ -40,7 +40,9 @@
           </div>
           <div class="search-results"></div>
         </div>
-        <div class="cards-container mt-3"></div>
+        <div class="cards-container mt-3">
+            <div th:replace="fragments/editCourseForm/studentCards :: studentCards" th:with="course = ${course}"></div>
+        </div>
       </div>
     </div>
   </div>

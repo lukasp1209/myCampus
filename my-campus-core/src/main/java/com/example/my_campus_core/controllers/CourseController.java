@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.my_campus_core.dto.CourseDto;
+import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.security.CustomUserDetailsService;
 import com.example.my_campus_core.security.SecurityUtil;
 import com.example.my_campus_core.service.CourseService;
 import com.example.my_campus_core.service.UserService;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class CourseController {
@@ -34,8 +37,8 @@ public class CourseController {
     }
 
     @GetMapping("/course/managment")
-    public String getCourseManagmentPage(Model model) {
-        model.addAttribute("courses", courseService.getAllCourses()); // Add the list of courses to the model
+    public String getCourseManagmentPage(@RequestParam(defaultValue = "0") int page, Model model) {
+        model.addAttribute("courses", courseService.getAllCourses(page)); // Add the list of courses to the model
         return "./courseManagment"; // Return the name of the course management view (e.g., courseManagment.html)
     }
 
@@ -57,8 +60,19 @@ public class CourseController {
     }
 
     @GetMapping("/course/edit/{courseId}")
-    public String getCourseEditPage(@PathVariable int courseId) {
+    public String getCourseEditPage(@PathVariable int courseId, Model model) {
+        model.addAttribute("course", courseService.getCourseById(courseId));
+        System.out.println("Students: " + courseService.getCourseById(courseId).getStudents());
         return "./editCourse";
+    }
+
+    @PostMapping("/course/edit/{courseId}")
+    public String updateCourse(@PathVariable int courseId, @ModelAttribute CourseDto courseDto,
+            RedirectAttributes redirectAttributes) {
+
+        ResponseDto response = courseService.updateCourse(courseDto);
+        redirectAttributes.addFlashAttribute("response", response);
+        return "redirect:/course/managment";
     }
 
     @GetMapping("/course/add")

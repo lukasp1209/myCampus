@@ -17,6 +17,7 @@ import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.UserService;
+import com.example.my_campus_core.util.Mappers;
 import com.example.my_campus_core.util.PasswordGenerator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -24,11 +25,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UserServiceImpl implements UserService {
     private PasswordGenerator passwordGenerator;
     private UserRepository userRepository;
+    private Mappers mappers;
 
     @Autowired
-    public UserServiceImpl(PasswordGenerator passwordGenerator, UserRepository userRepository) {
+    public UserServiceImpl(PasswordGenerator passwordGenerator, UserRepository userRepository, Mappers mappers) {
         this.passwordGenerator = passwordGenerator;
         this.userRepository = userRepository;
+        this.mappers = mappers;
     }
 
     @Override
@@ -79,15 +82,7 @@ public class UserServiceImpl implements UserService {
         Page<UserEntity> users = userRepository.findAll(pageable);
 
         List<UserDto> userDtos = users.stream().map(user -> {
-            UserDto userDto = new UserDto();
-            userDto.setId(user.getId());
-            userDto.setFirstName(user.getFirstName());
-            userDto.setLastName(user.getLastName());
-            userDto.setEmail(user.getEmail());
-            userDto.setAddress(user.getAddress());
-            userDto.setStatus(user.getStatus());
-            userDto.setBirthDate(user.getBirthDate());
-            userDto.setRole(user.getRole());
+            UserDto userDto = mappers.userEntityToDto(user);
             return userDto;
         }).toList();
 

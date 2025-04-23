@@ -1,0 +1,69 @@
+<div th:fragment="editCourseForm">
+    <style>
+        .form-card {
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .form-control:focus {
+            border-color: #212529;
+            box-shadow: 0 0 0 0.25rem rgba(33, 37, 41, 0.1);
+        }
+        .btn-submit {
+            transition: all 0.2s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 form-card">
+                <div class="card-body p-4">
+                    <form th:action="@{/course/edit/{id}(id=${course.id})}" th:object="${course}" method="post">
+                        <!-- Course Name Field -->
+                        <div class="mb-4">
+                            <label for="name" class="form-label fw-semibold">Course Name</label>
+                            <input type="text" class="form-control py-2 px-3" 
+                                   id="name" th:field="*{name}" th:name="name"
+                                   placeholder="Enter course name" required>
+                            <div class="form-text text-muted small">The official name of the course</div>
+                        </div>
+                        <input type="text" th:value="*{id}" th:name="id" hidden>
+                        <!-- Professor and Student Search fields -->
+                         <h6>Search for professor</h6>
+                        <div th:replace="fragments/searchSelectProfessor :: searchSelectProfessor"></div>
+                        <hr class="my-4">
+                        <h6>Search for students</h6>
+                        <div th:replace="fragments/searchSelectStudent :: searchSelectStudent"></div>
+
+
+                        <!-- Description Field -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label fw-semibold">Description</label>
+                            <textarea class="form-control py-2 px-3" id="description" 
+                                      th:field="*{description}" rows="4"
+                                      placeholder="Enter course description"></textarea>
+                            <div class="form-text text-muted small">Detailed information about the course content</div>
+                        </div>
+                        
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end mt-4">
+                            <a th:href="@{/course/managment}" class="btn btn-outline-dark me-3 px-4">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-dark px-4 btn-submit">
+                                <i class="bi bi-save me-2"></i> Save Course
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>

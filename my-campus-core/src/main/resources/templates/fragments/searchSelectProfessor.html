@@ -28,7 +28,7 @@
       <div class="search-component" data-entity-type="professor">
         <div class="position-relative">
           <div class="input-group">
-            <input type="text" class="form-control search-input" placeholder="Type professors name..." autocomplete="off">
+            <input type="text" id="searchForProfessorsInput" class="form-control search-input" placeholder="Type professors name..." autocomplete="off">
             <button class="btn btn-dark" type="button" id="searchButton">
               <i class="bi bi-search"></i>
             </button>
@@ -40,7 +40,9 @@
           </div>
           <div class="search-results"></div>
         </div>
-        <div class="cards-container mt-3"></div>
+        <div class="cards-container mt-3">
+          <div th:replace="fragments/editCourseForm/professorCard :: professorCard" th:with="course = ${course}"></div>
+        </div>
       </div>
     </div>
   </div>

@@ -12,7 +12,8 @@
           entityType: config.entityType || 'student',
           singleSelection: config.singleSelection || false,
           maxResults: config.maxResults || 20,
-          hiddenInputName: config.hiddenInputName || 'ignoreStudentId'
+          hiddenInputName: config.hiddenInputName || 'ignoreStudentId',
+          hiddenInputNameDto: config.hiddenInputNameDto || 'studentsIds' 
         };
         this.debounceFetch = this.debounce(this.fetchResults.bind(this), 300);
         this.init();
@@ -103,6 +104,7 @@
               <div class="card-title">${result.firstName} ${result.lastName} | ${result.email}</div>
               <div class="d-flex gap-2">
                 <input type="text" class="form-control mb-2" name="${this.config.hiddenInputName}" value="${result.id}" hidden>
+                <input type="text" name="${this.config.hiddenInputNameDto}" value="${result.id}" hidden>
                 <button class="btn btn-dark btn-sm remove-card">Remove</button>
               </div>
             </div>
@@ -143,7 +145,10 @@
         entityType: entityType,
         singleSelection: entityType === 'professor',
         maxResults: 20,
-        hiddenInputName: entityType === 'professor' ? 'ignoreProfessorId' : 'ignoreStudentId'
+        hiddenInputName: entityType === 'professor' ? 'ignoreProfessorId' : 'ignoreStudentId',
+        hiddenInputNameDto: entityType === 'professor' ? 'professorId' : 'studentsIds'
+
+
       };
       new SearchComponent(element, config);
     });
