@@ -39,6 +39,8 @@ public class CourseController {
     @GetMapping("/course/managment")
     public String getCourseManagmentPage(@RequestParam(defaultValue = "0") int page, Model model) {
         model.addAttribute("courses", courseService.getAllCourses(page)); // Add the list of courses to the model
+        model.addAttribute("totalPages", courseService.totalCourses(10));
+        System.out.println("Total Pages " + courseService.totalCourses(10));
         return "./courseManagment"; // Return the name of the course management view (e.g., courseManagment.html)
     }
 

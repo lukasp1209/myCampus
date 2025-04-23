@@ -18,4 +18,6 @@ public interface CourseService {
                                                          // description
 
     ResponseDto updateCourse(CourseDto courseDto);
+
+    int totalCourses(int size);
 }

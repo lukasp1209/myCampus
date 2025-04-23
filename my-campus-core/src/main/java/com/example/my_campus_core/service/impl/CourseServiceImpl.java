@@ -175,4 +175,12 @@ public class CourseServiceImpl implements CourseService {
 
         return responseDto;
     }
+
+    @Override
+    public int totalCourses(int size) {
+        int totalCourses = (int) courseRepository.count();
+        int totalPages = (int) Math.ceil((double) totalCourses / size);
+
+        return totalPages;
+    }
 }

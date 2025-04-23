@@ -41,7 +41,9 @@
           <div class="search-results"></div>
         </div>
         <div class="cards-container mt-3">
-          <div th:replace="fragments/editCourseForm/professorCard :: professorCard" th:with="course = ${course}"></div>
+          <div th:if="${course}">
+            <div th:replace="fragments/editCourseForm/professorCard :: professorCard" th:with="course = ${course}"></div>
+          </div>
         </div>
       </div>
     </div>

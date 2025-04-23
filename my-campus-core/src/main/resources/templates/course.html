@@ -1,65 +1,132 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head th:replace="fragments/commonHead :: head"></head>
+<head th:replace="fragments/commonHead :: head" pageTitle="Course Details">
+    <style>
+        .detail-card {
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .btn-action {
+            transition: all 0.2s ease;
+        }
+        .btn-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(33, 37, 41, 0.03);
+        }
+    </style>
+</head>
 
 <body>
     <nav th:replace="fragments/navbar :: navbar"></nav>
 
-    <div class="container mt-4">
-        <div class="card p-4">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h1 class="card-title" th:text="${course.name}" >Course Name</h1>
-                    <div>
-                        <a href="/course/managment" class="btn btn-secondary"
-                            sec:authorize="hasRole('ROLE_ADMIN')">Back</a>
-                        <a href="/courses" class="btn btn-secondary" sec:authorize="!hasRole('ROLE_ADMIN')">Back</a>
-                        <a href="/courses/edit/1" class="btn btn-primary" sec:authorize="hasRole('ROLE_ADMIN')">Edit</a>
-                        <button class="btn btn-danger" sec:authorize="hasRole('ROLE_ADMIN')">Delete</button>
-                    </div>
+    <!-- Header Section -->
+    <div class="bg-dark text-white py-4 mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 fw-bold mb-0 text-white">
+                        <i class="bi bi-book me-2"></i>
+                        <span th:text="${course.name}">Course Name</span>
+                    </h1>
                 </div>
-                <p class="card-text">
-                    <strong>Description:</strong> <span th:text="${course.description}">Desc</span>
-                </p>
-                <p class="card-text">
-                    <strong>Professor:</strong> <span
-                        th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Prof name</span> |
-                    <span th:text="${course.professor.email}"></span>
-                </p>
-                <div sec:authorize="!hasRole('ROLE_STUDENT')">
-                    <table class="table mt-4">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="student : ${course.students}">
-                                <td th:text="${student.id}">1</td>
-                                <td th:text="${student.firstName}">John</td>
-                                <td th:text="${student.lastName}">Doe</td>
-                                <td th:text="${student.email}">john.doe@example.com</td>
-                                <td th:text="${student.status}"></td>
-                                <td>
-                                    <a th:href="@{/user/{id}(id=${student.id})}" class="btn btn-info btn-sm">View
-                                        Profile</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div>
+                    <a th:href="@{/course/managment}" class="btn btn-outline-light" sec:authorize="hasRole('ROLE_ADMIN')">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </a>
+                    <a th:href="@{/courses}" class="btn btn-outline-light" sec:authorize="!hasRole('ROLE_ADMIN')">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </a>
+                    <a th:href="@{/course/edit/{id}(id=${course.id})}" 
+                       class="btn btn-outline-light" 
+                       sec:authorize="hasRole('ROLE_ADMIN')">
+                        <i class="bi bi-pencil me-2"></i> Edit Course
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-    <script th:replace="fragments/javaScript :: javaScript"></script>
-</body>
 
+    <!-- Main Content Container -->
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm detail-card">
+                    <div class="card-body p-4">
+                        <!-- Course Info Section -->
+                        <div class="mb-5">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="fw-bold mb-0">Course Details</h2>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="fw-semibold">Description</h5>
+                                <p class="text-muted" th:text="${course.description}">Course description</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="fw-semibold">Professor</h5>
+                                <p class="text-muted mb-1">
+                                    <span th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Professor Name</span>
+                                </p>
+                                <p class="text-muted">
+                                    <i class="bi bi-envelope me-2"></i>
+                                    <span th:text="${course.professor.email}">professor@example.com</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Students Table (for non-students) -->
+                        <div sec:authorize="!hasRole('ROLE_STUDENT')">
+                            <hr class="my-4 border-1 opacity-10">
+                            
+                            <h5 class="fw-semibold mb-3">Enrolled Students</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="student : ${course.students}">
+                                            <td th:text="${student.id}">1</td>
+                                            <td th:text="${student.firstName}">John</td>
+                                            <td th:text="${student.lastName}">Doe</td>
+                                            <td>
+                                                <i class="bi bi-envelope me-2 text-muted"></i>
+                                                <span th:text="${student.email}">john.doe@example.com</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge" 
+                                                      th:classappend="${student.status == 'ACTIVE'} ? 'bg-success' : 'bg-warning'"
+                                                      th:text="${student.status}">ACTIVE</span>
+                                            </td>
+                                            <td>
+                                                <a th:href="@{/user/{id}(id=${student.id})}" 
+                                                   class="btn btn-sm btn-outline-dark btn-action">
+                                                    <i class="bi bi-person me-1"></i> Profile
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script sec:authorize="!hasRole('ROLE_ADMIN')" th:replace="fragments/javaScript :: javaScript"></script>
+</body>
 </html>
-</div>
