@@ -35,13 +35,13 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public String showUserManagmentPage(
+    public String getUserManagmentPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             Model model) {
         // List<User> userPage = userService.getUsers(page, 20); // 20 users per page
         model.addAttribute("users", userService.getUsersAsAdmin(page));
-        model.addAttribute("page", 0);
+        model.addAttribute("page", page);
 
         model.addAttribute("totalPages", userService.totalUsers(size)); // Calculate total pages
 
