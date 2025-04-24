@@ -8,7 +8,7 @@
         this.spinner = element.querySelector('#searchSpinner');
         this.searchButton = element.querySelector('#searchButton');
         this.config = {
-          apiEndpoint: config.apiEndpoint || 'http://localhost:8080/api/user/v1/search/students',
+          apiEndpoint: config.apiEndpoint || '/api/user/v1/search/students',
           entityType: config.entityType || 'student',
           singleSelection: config.singleSelection || false,
           maxResults: config.maxResults || 20,
@@ -140,8 +140,8 @@
       const entityType = element.dataset.entityType || 'student';
       const config = {
         apiEndpoint: entityType === 'professor' 
-          ? 'http://localhost:8080/api/user/v1/search/professors'
-          : 'http://localhost:8080/api/user/v1/search/students',
+          ? '/api/user/v1/search/professors'
+          : '/api/user/v1/search/students',
         entityType: entityType,
         singleSelection: entityType === 'professor',
         maxResults: 20,
