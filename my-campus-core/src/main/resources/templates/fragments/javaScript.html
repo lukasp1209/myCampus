@@ -1,7 +1,7 @@
 <script th:inline="javascript" th:fragment="javaScript">
         document.addEventListener("DOMContentLoaded", function () {
             const email = /*[[${#authentication.principal.username}]]*/ '';
-            const apiUrl = `http://localhost:8080/api/user/v1/info?email=${encodeURIComponent(email)}`;
+            const apiUrl = `/api/user/v1/info?email=${encodeURIComponent(email)}`;
 
             fetch(apiUrl)
                 .then(response => {
