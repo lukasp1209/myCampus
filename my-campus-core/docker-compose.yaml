@@ -29,7 +29,7 @@ services:
   my-campus-core:
     build: ./
     ports:
-      - "8080:8080"
+      - "80:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/core_backend
       - SCHEDULE_SERVICE_URL=http://schedule-service:8081
