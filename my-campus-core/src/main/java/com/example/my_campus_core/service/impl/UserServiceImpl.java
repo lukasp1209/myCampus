@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);
 
-        System.out.println(password);
         UserEntity user = new UserEntity();
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());

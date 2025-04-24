@@ -43,20 +43,21 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
                                 .authorizeRequests(requests -> requests
                                                 .requestMatchers(
-                                                                "/course/managment",
-                                                                "/course/add")
-                                                .hasRole("ADMIN")
-                                                .requestMatchers(
-                                                                "/user/register",
+                                                                // "/user/register",
                                                                 "/login",
-                                                                "/api/**",
-                                                                "/api/user/v1/**",
-                                                                "/api/user/v1/info",
+                                                                "/setup",
+                                                                // "/api/**",
+                                                                // "/api/user/v1/**",
+                                                                // "/api/user/v1/info",
                                                                 "/css/**",
                                                                 "/js/**",
                                                                 "/product/**",
                                                                 "/static/**")
                                                 .permitAll()
+                                                .requestMatchers(
+                                                                "/course/managment",
+                                                                "/course/add")
+                                                .hasRole("ADMIN")
                                                 .anyRequest().authenticated())
                                 .formLogin(form -> form
                                                 .loginPage("/login")

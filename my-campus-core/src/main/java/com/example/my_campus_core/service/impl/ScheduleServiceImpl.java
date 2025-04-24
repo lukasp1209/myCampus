@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
@@ -46,6 +47,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     private TimeSlotRepository timeSlotRepository;
     private Mappers mapper;
     private com.example.my_campus_core.util.TimeUtil timeUtil;
+    @Value("${schedule-service.url}")
+    private String scheduleServiceUrl;
 
     @Autowired
     public ScheduleServiceImpl(RoomRepository roomRepository, CourseRepository courseRepository,
@@ -169,7 +172,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             List<RoomDto> rooms,
             List<TimeSlot> timeSlots) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "http://localhost:8081/api/v1/schedule/generate";
+        String url = scheduleServiceUrl + "/api/v1/schedule/generate";
 
         // Create request headers
         HttpHeaders headers = new HttpHeaders();

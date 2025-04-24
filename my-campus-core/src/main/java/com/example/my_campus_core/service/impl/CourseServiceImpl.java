@@ -59,9 +59,10 @@ public class CourseServiceImpl implements CourseService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
         Page<Course> courses = courseRepository.findAll(pageable);
         List<CourseDto> courseDtos = new ArrayList<>();
-
+        System.out.println("ABC" + courses);
         for (Course course : courses) {
             CourseDto courseDto = new CourseDto();
+            System.out.println("TBC " + course);
             courseDto.setId(course.getId());
             courseDto.setName(course.getName());
             courseDto.setDescription(course.getDescription());
