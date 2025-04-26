@@ -5,8 +5,11 @@ import java.util.List;
 
 import com.example.my_campus_core.dto.RoomDto;
 import com.example.my_campus_core.dto.ScheduleDto;
+import com.example.my_campus_core.dto.request.ExamRequestDto;
 import com.example.my_campus_core.dto.request.ScheduleRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
+import com.example.my_campus_core.models.Exam;
+import com.example.my_campus_core.models.TimeSlot;
 
 public interface ScheduleService {
 
@@ -25,4 +28,11 @@ public interface ScheduleService {
     List<LocalDate> schedulePageGeneration(int weekOffset);
 
     ScheduleDto getFullScheduleForWeek(int weekOffset);
+
+    List<TimeSlot> getAvailableTimeSlotsForExam(String date);
+
+    List<RoomDto> getAvailableRoomsForTimeSlot(String date, int timeSlotId);
+
+    void addExamToSchedule(String date, Exam exam);
+
 }

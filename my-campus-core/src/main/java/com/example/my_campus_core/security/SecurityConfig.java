@@ -46,7 +46,7 @@ public class SecurityConfig {
                                                                 // "/user/register",
                                                                 "/login",
                                                                 "/setup",
-                                                                // "/api/**",
+                                                                "/api/**",
                                                                 // "/api/user/v1/**",
                                                                 // "/api/user/v1/info",
                                                                 "/css/**",

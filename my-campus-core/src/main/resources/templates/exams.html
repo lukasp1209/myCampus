@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/commonHead :: head" pageTitle="Add Course">
+</head>
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav> 
+    <div class="bg-dark text-white py-4 mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 fw-bold mb-0 text-white">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Exams
+                    </h1>
+                </div>
+                <div>
+                    <a th:href="@{/}" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

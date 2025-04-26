@@ -32,6 +32,10 @@ public class Schedule {
     @JoinTable(name = "schedule_lectures", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "lecture_id"))
     private List<Lecture> lectureList = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "schedule_exams", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "exam_id"))
+    private List<Exam> examsList = new ArrayList<>();
+
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "schedule_rooms", joinColumns = @JoinColumn(name = "schedule_id"), inverseJoinColumns = @JoinColumn(name = "room_id"))
     private List<Room> roomList = new ArrayList<>();
