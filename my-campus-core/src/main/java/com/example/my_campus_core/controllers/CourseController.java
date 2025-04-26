@@ -17,7 +17,6 @@ import com.example.my_campus_core.service.ExamService;
 import com.example.my_campus_core.service.UserService;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class CourseController {
@@ -56,6 +55,8 @@ public class CourseController {
     public String getCoursePage(@PathVariable int courseId, Model model) {
         model.addAttribute("course", courseService.getCourseById(courseId));
         model.addAttribute("setExam", !examService.examForCourseExists(courseId));
+        model.addAttribute("exam", examService.getExamCourseId(courseId));
+        System.out.println(examService.getExamCourseId(courseId));
         return "./course"; // Return the name of the course view (e.g., course.html)
     }
 

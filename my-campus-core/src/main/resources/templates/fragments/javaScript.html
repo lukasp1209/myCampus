@@ -3,6 +3,7 @@
             const email = /*[[${#authentication.principal.username}]]*/ '';
             const apiUrl = `/api/user/v1/info?email=${encodeURIComponent(email)}`;
 
+
             fetch(apiUrl)
                 .then(response => {
                     if (!response.ok) {
@@ -12,6 +13,7 @@
                 })
                 .then(data => {
                     const myProfileElement = document.getElementById("myProfile");
+                    const hiddenInput = document.getElementById("hiddenCurrentUserId");
                     myProfileElement.textContent = data.firstName + ' ' + data.lastName;
                     myProfileElement.href = '/user/' + data.id;
                 })

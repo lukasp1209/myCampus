@@ -4,124 +4,145 @@
 <head th:replace="fragments/commonHead :: head" pageTitle="Course Details">
     <style>
         .detail-card {
-            border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border-radius: 0;
+            border: 1px solid #dee2e6;
         }
-
-        .btn-action {
-            transition: all 0.2s ease;
+        
+        .bg-dark {
+            background-color: #212529 !important;
         }
-
-        .btn-action:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
+        
         .table-hover tbody tr:hover {
-            background-color: rgba(33, 37, 41, 0.03);
+            background-color: rgba(33, 37, 41, 0.05);
+        }
+        
+        .btn-outline-dark:hover {
+            color: #fff;
+            background-color: #212529;
+            border-color: #212529;
+        }
+        
+        .text-muted {
+            color: #6c757d !important;
         }
     </style>
 </head>
 
-<body>
+<body class="bg-light">
     <nav th:replace="fragments/navbar :: navbar"></nav>
 
     <!-- Header Section -->
-    <div class="bg-dark text-white py-4 mb-4">
+    <header class="bg-dark text-white py-4 mb-4 border-bottom">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="display-5 fw-bold mb-0 text-white">
+                    <h1 class="h2 fw-bold mb-0 text-white">
                         <i class="bi bi-book me-2"></i>
                         <span th:text="${course.name}">Course Name</span>
                     </h1>
                 </div>
-                <div>
-                    <a th:href="@{/course/managment}" class="btn btn-outline-light"
+                <div class="d-flex gap-2">
+                    <a th:href="@{/course/managment}" class="btn btn-outline-light btn-sm"
                         sec:authorize="hasRole('ROLE_ADMIN')">
                         <i class="bi bi-arrow-left me-1"></i> Back
                     </a>
-                    <a th:href="@{/courses}" class="btn btn-outline-light" sec:authorize="!hasRole('ROLE_ADMIN')">
+                    <a th:href="@{/courses}" class="btn btn-outline-light btn-sm" sec:authorize="!hasRole('ROLE_ADMIN')">
                         <i class="bi bi-arrow-left me-1"></i> Back
                     </a>
-                    <a th:href="@{/course/edit/{id}(id=${course.id})}" class="btn btn-outline-light"
+                    <a th:href="@{/course/edit/{id}(id=${course.id})}" class="btn btn-outline-light btn-sm"
                         sec:authorize="hasRole('ROLE_ADMIN')">
-                        <i class="bi bi-pencil me-2"></i> Edit Course
+                        <i class="bi bi-pencil me-1"></i> Edit
                     </a>
-                    <a th:href="@{/exam/create/{id}(id=${course.id})}" class="btn btn-outline-light"
+                    <a th:href="@{/exam/create/{id}(id=${course.id})}" class="btn btn-outline-light btn-sm"
                         sec:authorize="hasRole('ROLE_PROFESOR')" th:if="${setExam}">
-                        <i class="bi bi-pencil me-2"></i> Set Exam
+                        <i class="bi bi-pencil me-1"></i> Set Exam
                     </a>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
 
     <!-- Main Content Container -->
-    <div class="container mb-5">
+    <main class="container mb-5">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <div class="card border-0 shadow-sm detail-card">
+                <div class="card border-0 shadow-sm mb-4 detail-card">
                     <div class="card-body p-4">
                         <!-- Course Info Section -->
-                        <div class="mb-5">
+                        <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h2 class="fw-bold mb-0">Course Details</h2>
+                                <h2 class="h4 fw-bold mb-0">Course Details</h2>
                             </div>
-
-                            <div class="mb-4">
-                                <h5 class="fw-semibold">Description</h5>
-                                <p class="text-muted" th:text="${course.description}">Course description</p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h5 class="h6 fw-semibold text-uppercase text-muted">Professor</h5>
+                                    <div class="text-muted small">
+                                        <i class="bi bi-person me-2"></i>
+                                        <span th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Professor Name</span>
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        <span th:text="${course.professor.email}">professor@example.com</span>
+                                    </div>
+                                </div>
+                                
+                               <div class="col-md-6" th:if="${exam.id != 0}"> 
+                                <div class="d-flex align-items-center">
+                                    <h5 class="h6 fw-semibold text-uppercase text-muted mb-0">Exam</h5>
+                                    <a th:href="@{/exam/{id}(id=${exam.id})}" class="btn btn-sm ms-2">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                
+                                </div>
+                                    <div class="text-muted small"><i class="bi bi-calendar me-2 "></i>  <span th:text="${exam.examDate}"></span></div>
+                                    <div class="text-muted small"><i class="bi bi-clock me-2"></i>  <span th:text="${exam.timeSlot.startTime}"></span></div>
+                                    <div class="text-muted small"><i class="bi bi-door-open me-2"></i>  <span th:text="${exam.room.name}"></span></div>
+                                </div> 
                             </div>
-
+                            
                             <div class="mb-4">
-                                <h5 class="fw-semibold">Professor</h5>
-                                <p class="text-muted mb-1">
-                                    <span
-                                        th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Professor
-                                        Name</span>
-                                </p>
-                                <p class="text-muted">
-                                    <i class="bi bi-envelope me-2"></i>
-                                    <span th:text="${course.professor.email}">professor@example.com</span>
-                                </p>
+                                <h5 class="h6 fw-semibold text-uppercase text-muted">Description</h5>
+                                <p class="mb-0" th:text="${course.description}">Course description</p>
                             </div>
                         </div>
-
+                        
                         <!-- Students Table (for non-students) -->
                         <div sec:authorize="!hasRole('ROLE_STUDENT')">
-                            <hr class="my-4 border-1 opacity-10">
-
-                            <h5 class="fw-semibold mb-3">Enrolled Students</h5>
+                            <hr class="my-4">
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="h6 fw-semibold text-uppercase text-muted mb-0">Enrolled Students</h5>
+                            </div>
+                            
                             <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Email</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr class="bg-dark text-white">
+                                            <th class="border-0">ID</th>
+                                            <th class="border-0">Name</th>
+                                            <th class="border-0">Email</th>
+                                            <th class="border-0">Status</th>
+                                            <th class="border-0 text-end">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="student : ${course.students}">
                                             <td th:text="${student.id}">1</td>
-                                            <td th:text="${student.firstName}">John</td>
-                                            <td th:text="${student.lastName}">Doe</td>
                                             <td>
-                                                <i class="bi bi-envelope me-2 text-muted"></i>
-                                                <span th:text="${student.email}">john.doe@example.com</span>
+                                                <span th:text="${student.firstName + ' ' + student.lastName}">John Doe</span>
                                             </td>
                                             <td>
-                                                <span class="badge"
-                                                    th:classappend="${student.status == 'ACTIVE'} ? 'bg-success' : 'bg-warning'"
+                                                <span class="text-muted small" th:text="${student.email}">john.doe@example.com</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge" 
+                                                    th:classappend="${student.status == 'ACTIVE'} ? 'bg-dark' : 'bg-secondary'"
                                                     th:text="${student.status}">ACTIVE</span>
                                             </td>
-                                            <td>
+                                            <td class="text-end">
                                                 <a th:href="@{/user/{id}(id=${student.id})}"
-                                                    class="btn btn-sm btn-outline-dark btn-action">
+                                                    class="btn btn-sm btn-outline-dark">
                                                     <i class="bi bi-person me-1"></i> Profile
                                                 </a>
                                             </td>
@@ -134,9 +155,8 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script sec:authorize="!hasRole('ROLE_ADMIN')" th:replace="fragments/javaScript :: javaScript"></script>
 </body>
-
 </html>
