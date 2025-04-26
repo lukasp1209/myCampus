@@ -6,4 +6,6 @@ import com.example.my_campus_core.dto.response.ResponseDto;
 public interface ExamService {
     ResponseDto createNewExam(ExamRequestDto examRequestDto);
 
+    boolean examForCourseExists(int courseId);
+
 }

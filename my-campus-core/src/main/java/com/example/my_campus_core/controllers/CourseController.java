@@ -13,6 +13,7 @@ import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.security.CustomUserDetailsService;
 import com.example.my_campus_core.security.SecurityUtil;
 import com.example.my_campus_core.service.CourseService;
+import com.example.my_campus_core.service.ExamService;
 import com.example.my_campus_core.service.UserService;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -24,16 +25,19 @@ public class CourseController {
     private CourseService courseService;
     private CustomUserDetailsService customUserDetailsService;
     private UserService userService;
+    private ExamService examService;
 
     @Autowired
     public CourseController(
             CourseService courseService,
             UserService userService,
-            CustomUserDetailsService customUserDetailsService) {
+            CustomUserDetailsService customUserDetailsService,
+            ExamService examService) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.customUserDetailsService = customUserDetailsService;
+        this.examService = examService;
     }
 
     @GetMapping("/course/managment")
@@ -51,7 +55,7 @@ public class CourseController {
     @GetMapping("/course/{courseId}")
     public String getCoursePage(@PathVariable int courseId, Model model) {
         model.addAttribute("course", courseService.getCourseById(courseId));
-        ; // Retrieve the course by ID and add it to the model
+        model.addAttribute("setExam", !examService.examForCourseExists(courseId));
         return "./course"; // Return the name of the course view (e.g., course.html)
     }
 

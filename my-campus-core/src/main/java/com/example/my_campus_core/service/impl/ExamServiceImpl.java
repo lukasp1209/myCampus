@@ -54,4 +54,9 @@ public class ExamServiceImpl implements ExamService {
         return responseDto;
     }
 
+    @Override
+    public boolean examForCourseExists(int courseId) {
+        return examRepository.existsByCourseId(courseId);
+    }
+
 }
