@@ -1,8 +1,14 @@
 package com.example.my_campus_core.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.request.ExamRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.models.Exam;
@@ -14,6 +20,7 @@ import com.example.my_campus_core.repository.TimeSlotRepository;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.ExamService;
 import com.example.my_campus_core.service.ScheduleService;
+import com.example.my_campus_core.util.Mappers;
 
 @Service
 public class ExamServiceImpl implements ExamService {
@@ -23,6 +30,7 @@ public class ExamServiceImpl implements ExamService {
     private TimeSlotRepository timeSlotRepository;
     private ExamRepository examRepository;
     private ScheduleService scheduleService;
+    private Mappers mapper;
 
     @Autowired
     public ExamServiceImpl(CourseRepository courseRepository,
@@ -48,6 +56,7 @@ public class ExamServiceImpl implements ExamService {
         newExam.setTimeSlot(timeSlotRepository.findById(examRequestDto.getExamTime()).orElseThrow(null));
         newExam.setProfessor(newExam.getCourse().getProfessor());
         newExam.setAllStudents(newExam.getCourse().getStudents());
+        newExam.setExamDate(LocalDate.parse(examRequestDto.getExamDate()));
 
         Exam savedExam = examRepository.save(newExam);
         scheduleService.addExamToSchedule(examRequestDto.getExamDate(), savedExam);
@@ -57,6 +66,28 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public boolean examForCourseExists(int courseId) {
         return examRepository.existsByCourseId(courseId);
+    }
+
+    @Override
+    public ExamDto getExamCourseId(int courseId) {
+        if (examForCourseExists(courseId)) {
+            ExamDto examDto = mapper.examToExamDto(examRepository.findByCourseId(courseId));
+            return examDto;
+        }
+        return new ExamDto();
+    }
+
+    @Override
+    public List<ExamDto> getAllExamsForProfessorWithId(int professorId) {
+        List<ExamDto> examDtos = examRepository.findAllByProfessorId(professorId).stream()
+                .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
+
+        return examDtos;
+    }
+
+    @Override
+    public ExamDto getExamById(int examId) {
+        return mapper.examToExamDto(examRepository.findById(examId).orElseThrow(null));
     }
 
 }

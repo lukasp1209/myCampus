@@ -43,7 +43,7 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return "redirect:/user/register"; // Redirect to the dashboard or home page after successful login
+            return "redirect:/"; // Redirect to the dashboard or home page after successful login
         } catch (Exception e) {
             System.err.println("Invalid email or password: " + e.getMessage());
             return "redirect:/login?error"; // Redirect back to the login page with an error message

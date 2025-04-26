@@ -1,8 +1,10 @@
 package com.example.my_campus_core.models;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -41,10 +43,26 @@ public class Exam {
     @JoinTable(name = "exam_all_students", joinColumns = @JoinColumn(name = "exam_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
     private List<UserEntity> allStudents = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "exam_enrolled_students", joinColumns = @JoinColumn(name = "exam_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
+    private List<UserEntity> enrolledStudents = new ArrayList<>();
+
+    private LocalDate examDate;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     public void setAllStudents(List<UserEntity> students) {
         this.allStudents.clear();
         if (students != null) {
             this.allStudents.addAll(students);
+        }
+    }
+
+    public void setEnrolledStudents(List<UserEntity> students) {
+        this.enrolledStudents.clear();
+        if (students != null) {
+            this.enrolledStudents.addAll(students);
         }
     }
 }
