@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -241,5 +242,58 @@ public class ScheduleServiceImpl implements ScheduleService {
             System.err.println("Error" + e);
             return null;
         }
+    }
+
+    @Override
+    public List<TimeSlot> getAvailableTimeSlotsForExam(String date) {
+        LocalDate today = LocalDate.parse(date);
+        List<LocalDate> datesFromAndTo = timeUtil.getWeekStartAndEnd(today);
+        Schedule schedule = scheduleRepository
+                .findByDateFromAndDateTo(datesFromAndTo.get(0), datesFromAndTo.get(1));
+        if (schedule == null) {
+            List<TimeSlot> availableSlots = timeSlotRepository.findAllByDayOfWeek(today.getDayOfWeek());
+            return availableSlots;
+        }
+        List<TimeSlot> allSlotsForToday = schedule.getTimeSlotList().stream()
+                .filter(slot -> slot.getDayOfWeek() == today.getDayOfWeek()).collect(Collectors.toList());
+        List<TimeSlot> allBookedSlotsForToday = schedule.getLectureList().stream()
+                .filter(lecture -> lecture.getTimeSlot().getDayOfWeek() == today.getDayOfWeek())
+                .map(Lecture::getTimeSlot).collect(Collectors.toList());
+
+        List<TimeSlot> availableSlots = allSlotsForToday.stream().filter(slot -> !allBookedSlotsForToday.contains(slot))
+                .collect(Collectors.toList());
+        return availableSlots;
+    }
+
+    @Override
+    public List<RoomDto> getAvailableRoomsForTimeSlot(String date, int timeSlotId) {
+        LocalDate today = LocalDate.parse(date);
+        List<LocalDate> datesFromAndTo = timeUtil.getWeekStartAndEnd(today);
+        Schedule schedule = scheduleRepository
+                .findByDateFromAndDateTo(datesFromAndTo.get(0), datesFromAndTo.get(1));
+        // If no schedule exists, all rooms are available
+        if (schedule == null) {
+            return roomRepository.findAll().stream()
+                    .map(room -> mapper.roomToRoomDto(room))
+                    .collect(Collectors.toList());
+        }
+        TimeSlot desiredTimeSlot = timeSlotRepository.findById(timeSlotId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid timeSlotId"));
+        return roomRepository.findAll().stream()
+                .map(room -> mapper.roomToRoomDto(room))
+                .filter(room -> isRoomAvailable(room, desiredTimeSlot, schedule))
+                .collect(Collectors.toList());
+    }
+
+    public boolean isRoomAvailable(RoomDto room, TimeSlot desiredTimeSlot, Schedule schedule) {
+        List<Lecture> lecturesInRoom = schedule.getLectureList().stream()
+                .filter(lecture -> lecture.getRoom().getId() == room.getId()).collect(Collectors.toList());
+        List<Lecture> lecturesInRoomOnTimeSlot = lecturesInRoom.stream()
+                .filter(lecture -> lecture.getTimeSlot().getId() == desiredTimeSlot.getId())
+                .collect(Collectors.toList());
+        if (lecturesInRoomOnTimeSlot.size() == 0) {
+            return true;
+        }
+        return false;
     }
 }

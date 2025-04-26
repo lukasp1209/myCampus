@@ -22,4 +22,13 @@ public class TimeUtil {
         }
         return workdays;
     }
+
+    public static List<LocalDate> getWeekStartAndEnd(LocalDate date) {
+        List<LocalDate> weekStartAndEnd = new ArrayList<>();
+        LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate friday = date.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+        weekStartAndEnd.add(monday);
+        weekStartAndEnd.add(friday);
+        return weekStartAndEnd;
+    }
 }

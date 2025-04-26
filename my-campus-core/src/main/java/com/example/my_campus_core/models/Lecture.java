@@ -30,4 +30,5 @@ public class Lecture {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professor_id")
     private UserEntity professor;
+
 }

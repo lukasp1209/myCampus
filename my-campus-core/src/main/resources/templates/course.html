@@ -7,13 +7,16 @@
             border-radius: 0.5rem;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
+
         .btn-action {
             transition: all 0.2s ease;
         }
+
         .btn-action:hover {
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .table-hover tbody tr:hover {
             background-color: rgba(33, 37, 41, 0.03);
         }
@@ -34,16 +37,20 @@
                     </h1>
                 </div>
                 <div>
-                    <a th:href="@{/course/managment}" class="btn btn-outline-light" sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a th:href="@{/course/managment}" class="btn btn-outline-light"
+                        sec:authorize="hasRole('ROLE_ADMIN')">
                         <i class="bi bi-arrow-left me-1"></i> Back
                     </a>
                     <a th:href="@{/courses}" class="btn btn-outline-light" sec:authorize="!hasRole('ROLE_ADMIN')">
                         <i class="bi bi-arrow-left me-1"></i> Back
                     </a>
-                    <a th:href="@{/course/edit/{id}(id=${course.id})}" 
-                       class="btn btn-outline-light" 
-                       sec:authorize="hasRole('ROLE_ADMIN')">
+                    <a th:href="@{/course/edit/{id}(id=${course.id})}" class="btn btn-outline-light"
+                        sec:authorize="hasRole('ROLE_ADMIN')">
                         <i class="bi bi-pencil me-2"></i> Edit Course
+                    </a>
+                    <a th:href="@{/exam/create/{id}(id=${course.id})}" class="btn btn-outline-light"
+                        sec:authorize="hasRole('ROLE_PROFESOR')">
+                        <i class="bi bi-pencil me-2"></i> Set Exam
                     </a>
                 </div>
             </div>
@@ -61,16 +68,18 @@
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h2 class="fw-bold mb-0">Course Details</h2>
                             </div>
-                            
+
                             <div class="mb-4">
                                 <h5 class="fw-semibold">Description</h5>
                                 <p class="text-muted" th:text="${course.description}">Course description</p>
                             </div>
-                            
+
                             <div class="mb-4">
                                 <h5 class="fw-semibold">Professor</h5>
                                 <p class="text-muted mb-1">
-                                    <span th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Professor Name</span>
+                                    <span
+                                        th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Professor
+                                        Name</span>
                                 </p>
                                 <p class="text-muted">
                                     <i class="bi bi-envelope me-2"></i>
@@ -78,11 +87,11 @@
                                 </p>
                             </div>
                         </div>
-                        
+
                         <!-- Students Table (for non-students) -->
                         <div sec:authorize="!hasRole('ROLE_STUDENT')">
                             <hr class="my-4 border-1 opacity-10">
-                            
+
                             <h5 class="fw-semibold mb-3">Enrolled Students</h5>
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -106,13 +115,13 @@
                                                 <span th:text="${student.email}">john.doe@example.com</span>
                                             </td>
                                             <td>
-                                                <span class="badge" 
-                                                      th:classappend="${student.status == 'ACTIVE'} ? 'bg-success' : 'bg-warning'"
-                                                      th:text="${student.status}">ACTIVE</span>
+                                                <span class="badge"
+                                                    th:classappend="${student.status == 'ACTIVE'} ? 'bg-success' : 'bg-warning'"
+                                                    th:text="${student.status}">ACTIVE</span>
                                             </td>
                                             <td>
-                                                <a th:href="@{/user/{id}(id=${student.id})}" 
-                                                   class="btn btn-sm btn-outline-dark btn-action">
+                                                <a th:href="@{/user/{id}(id=${student.id})}"
+                                                    class="btn btn-sm btn-outline-dark btn-action">
                                                     <i class="bi bi-person me-1"></i> Profile
                                                 </a>
                                             </td>
@@ -129,4 +138,5 @@
 
     <script sec:authorize="!hasRole('ROLE_ADMIN')" th:replace="fragments/javaScript :: javaScript"></script>
 </body>
+
 </html>

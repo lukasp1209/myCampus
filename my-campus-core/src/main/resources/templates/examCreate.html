@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/commonHead :: head" pageTitle="Set Exam"></head>
+<style>
+    .form-step {
+        display: none;
+    }
+    .form-step.active {
+        display: block;
+    }
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+    .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #dee2e6;
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0.625rem;
+        font-weight: bold;
+    }
+    .step.active {
+        background-color: #000;
+        color: #fff;
+    }
+    .step.completed {
+        background-color: #6c757d;
+        color: #fff;
+    }
+    .step-connector {
+        height: 2px;
+        background-color: #dee2e6;
+        flex-grow: 1;
+        margin-top: 1.1875rem;
+    }
+    .step-connector.active,
+    .step-connector.completed {
+        background-color: #6c757d;
+    }
+    .time-slot.active {
+        background-color: #000 !important;
+        color: #fff !important;
+    }
+</style>
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>  
+    <div class="bg-dark text-white py-4 mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 fw-bold mb-0 text-white">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Schedule Exam
+                    </h1>
+                </div>
+                <div>
+                    <a th:href="@{/exams}" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="step-indicator">
+                            <div class="step active" id="step1-indicator">1</div>
+                            <div class="step-connector" id="connector1-2"></div>
+                            <div class="step" id="step2-indicator">2</div>
+                            <div class="step-connector" id="connector2-3"></div>
+                            <div class="step" id="step3-indicator">3</div>
+                        </div>
+                        
+                        <form th:action="@{/exams/set}" method="post">
+                            <input type="hidden" id="selectedDate" name="examDate">
+                            <input type="hidden" id="selectedTime" name="examTime">
+                            <input type="hidden" id="selectedRoom" name="roomId">
+                            
+                            <div th:replace="fragments/examCreate/examCreateStep1 :: examCreateStep1"></div>
+                            
+                            <div class="form-step" id="step2">
+                                <h4 class="mb-4">Select Exam Time</h4>
+                                <div class="mb-4">
+                                    <label for="examTime" class="form-label fw-semibold">Available Time Slots</label>
+                                    <div class="list-group" id="timeSlots">
+
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(2, 1)">
+                                        <i class="bi bi-arrow-left me-2"></i> Back
+                                    </button>
+                                    <button type="button" class="btn btn-dark" onclick="nextStep(2, 3); getAvailableRoomsForTimeSlot();" id="time-next-btn" disabled>
+                                        Next <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-step" id="step3">
+                                <h4 class="mb-4">Select Exam Room</h4>
+                                <div class="mb-4">
+                                    <label class="form-label fw-semibold">Available Rooms</label>
+                                    <div class="row" id="room-selection"></div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="description" class="form-label fw-semibold">Exam Instructions (Optional)</label>
+                                    <textarea class="form-control" id="description" name="description" rows "3"
+                                              placeholder="Special instructions for students"></textarea>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="prevStep(3, 2)">
+                                        <i class="bi bi-arrow-left me-2"></i> Back
+                                    </button>
+                                    <button type="submit" class="btn btn-dark">
+                                        <i class="bi bi-check-circle me-2"></i> Schedule Exam
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getAvailableTimeSlots(){
+            const date = document.getElementById("examDate").value;
+            let availableTimeSlots = [];
+            fetch(`/api/v1/schedule/exam/step/1?date=${date}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    availableTimeSlots = data;
+                    console.log(availableTimeSlots)
+                    const timeSlots = document.getElementById("timeSlots")
+                    if (availableTimeSlots.length === 0){
+                        timeSlots.innerHTML = "No available Time slots for " + date 
+                    }
+                    availableTimeSlots.forEach(slot => {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'list-group-item list-group-item-action time-slot';
+                        button.dataset.time = slot.id;
+                        button.textContent = slot.startTime + " - " + slot.endTime;
+                        button.addEventListener('click', function() {
+                            document.querySelectorAll('.time-slot').forEach(btn => btn.classList.remove('active'));
+                            this.classList.add('active');
+                            selectedTime = this.dataset.time;
+                            document.getElementById('time-next-btn').disabled = false;
+                        });
+                        timeSlots.appendChild(button);
+                    });
+                    
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        function getAvailableRoomsForTimeSlot(){
+            const date = document.getElementById("examDate").value
+            const time = document.getElementById("selectedTime").value;
+            let availableRooms = [];
+            fetch(`/api/v1/schedule/exam/step/2?date=${date}&timeSlotId=${time}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // console.log(data)
+                    loadAvailableRooms(data)
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+
+        }
+    
+
+        function nextStep(current, next) {
+            if (current === 1 && !validateDate()) return;
+            if (current === 2 && !validateTime()) return;
+            
+            document.getElementById(`step${current}`).classList.remove('active');
+            document.getElementById(`step${next}`).classList.add('active');
+            
+            document.getElementById(`step${current}-indicator`).classList.remove('active');
+            document.getElementById(`step${current}-indicator`).classList.add('completed');
+            document.getElementById(`step${next}-indicator`).classList.add('active');
+            
+            if (current === 1 && next === 2) {
+                document.getElementById(`connector${current}-${next}`).classList.add('completed');
+            }
+            if (current === 2 && next === 3) {
+                document.getElementById(`connector${current}-${next}`).classList.add('completed');
+                // loadAvailableRooms();
+            }
+        }
+
+        function prevStep(current, prev) {
+            document.getElementById(`step${current}`).classList.remove('active');
+            document.getElementById(`step${prev}`).classList.add('active');
+            
+            document.getElementById(`step${current}-indicator`).classList.apply('active');
+            document.getElementById(`step${prev}-indicator`).classList.remove('completed');
+            document.getElementById(`step${prev}-indicator`).classList.add('active');
+            
+            if (current === 3 && prev === 2) {
+                document.getElementById(`connector2-3`).classList.remove('completed');
+            }
+            if (current === 2 && prev === 1) {
+                document.getElementById(`connector1-2`).classList.remove('completed');
+            }
+        }
+
+        function validateDate() {
+            const dateInput = document.getElementById('examDate');
+            if (!dateInput.value) {
+                alert('Please select a date');
+                return false;
+            }
+            document.getElementById('selectedDate').value = dateInput.value;
+            return true;
+        }
+
+        function validateTime() {
+            if (!selectedTime) {
+                alert('Please select a time slot');
+                return false;
+            }
+            document.getElementById('selectedTime').value = selectedTime;
+            return true;
+        }
+
+        let selectedTime = null;
+        document.querySelectorAll('.time-slot').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.time-slot').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                selectedTime = this.dataset.time;
+                document.getElementById('time-next-btn').disabled = false;
+            });
+        });
+
+        function loadAvailableRooms(rooms) {
+            const roomContainer = document.getElementById('room-selection');
+            roomContainer.innerHTML = '';
+            
+            console.log(rooms)
+            
+            if (rooms.length === 0) {
+                roomContainer.innerHTML = '<div class="alert alert-warning">No rooms available for this time slot</div>';
+                return;
+            }
+            
+            rooms.forEach(room => {
+                const roomCard = document.createElement('div');
+                roomCard.className = 'col-md-6 mb-3';
+                roomCard.innerHTML = `
+                    <div class="card h-100" data-room-id="${room.id}" style="cursor: pointer;">
+                        <div class="card-body">
+                            <h5 class="card-title">${room.name}</h5>
+                        </div>
+                    </div>
+                `;
+                roomContainer.appendChild(roomCard);
+                
+                roomCard.querySelector('.card').addEventListener('click', function() {
+                    document.querySelectorAll('.card').forEach(card => {
+                        card.classList.remove('border-dark', 'bg-light');
+                    });
+                    this.classList.add('border-dark', 'bg-light');
+                    document.getElementById('selectedRoom').value = this.dataset.roomId;
+                });
+            });
+        }
+    </script>
+</body>
+</html>

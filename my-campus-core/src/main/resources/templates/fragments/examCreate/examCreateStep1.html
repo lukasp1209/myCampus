@@ -1,0 +1,31 @@
+<div th:fragment="examCreateStep1">
+
+    <div class="form-step active" id="step1">
+        <h4 class="mb-4">Select Exam Date</h4>
+        <div class="mb-4">
+            <label for="examDate" class="form-label fw-semibold">Choose a date</label>
+            <input type="date" class="form-control" id="examDate" required>
+        </div>
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-dark" onclick="nextStep(1, 2); getAvailableTimeSlots();">
+                Next <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+        </div>
+    </div>
+<script>
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const oneYearFromToday = new Date(today);
+    oneYearFromToday.setFullYear(today.getFullYear() + 1);
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    const examDateInput = document.getElementById('examDate');
+    examDateInput.min = formatDate(tomorrow);
+    examDateInput.max = formatDate(oneYearFromToday);
+    </script>
+</div>

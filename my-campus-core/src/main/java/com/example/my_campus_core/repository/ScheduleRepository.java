@@ -8,4 +8,5 @@ import com.example.my_campus_core.models.Schedule;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
     Schedule findByDateFromAndDateTo(LocalDate dateFrom, LocalDate dateTo);
+
 }
