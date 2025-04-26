@@ -81,7 +81,8 @@
                             <div class="step" id="step3-indicator">3</div>
                         </div>
                         
-                        <form th:action="@{/exams/set}" method="post">
+                        <form th:action="@{/exam/create}" method="post">
+                            <input type="hidden" name="courseId" th:value="${courseId}">
                             <input type="hidden" id="selectedDate" name="examDate">
                             <input type="hidden" id="selectedTime" name="examTime">
                             <input type="hidden" id="selectedRoom" name="roomId">

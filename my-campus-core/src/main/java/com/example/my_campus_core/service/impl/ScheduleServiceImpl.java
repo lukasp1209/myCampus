@@ -22,11 +22,13 @@ import com.example.my_campus_core.dto.CourseDto;
 import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
 import com.example.my_campus_core.dto.ScheduleDto;
+import com.example.my_campus_core.dto.request.ExamRequestDto;
 import com.example.my_campus_core.dto.request.ScheduleBodyDto;
 import com.example.my_campus_core.dto.request.ScheduleRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.dto.response.ScheduleSolutionResponseDto;
 import com.example.my_campus_core.models.Course;
+import com.example.my_campus_core.models.Exam;
 import com.example.my_campus_core.models.Lecture;
 import com.example.my_campus_core.models.Room;
 import com.example.my_campus_core.models.Schedule;
@@ -296,4 +298,20 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         return false;
     }
+
+    @Override
+    public void addExamToSchedule(String date, Exam exam) {
+        LocalDate today = LocalDate.parse(date);
+        List<LocalDate> datesFromAndTo = timeUtil.getWeekStartAndEnd(today);
+
+        Schedule schedule = scheduleRepository.findByDateFromAndDateTo(datesFromAndTo.get(0), datesFromAndTo.get(1));
+        if (schedule == null) {
+            // Add some logice to create new schedule
+        }
+        List<Exam> examList = schedule.getExamsList();
+        examList.add(exam);
+        schedule.setExamsList(examList);
+        scheduleRepository.saveAndFlush(schedule);
+    }
+
 }
