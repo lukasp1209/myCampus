@@ -8,12 +8,12 @@
 
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center">
-            <h1>User Management</h1>
-            <a href="/user/register" class="btn btn-success">Create New User</a>
+            <h1 data-testid="user-management-title">User Management</h1>
+            <a href="/user/register" class="btn btn-success" data-testid="user-management-create">Create New User</a>
         </div>
         <div class="row mt-3">
             <div class="col-md-12">
-                <div class="alert alert-info">
+                <div class="alert alert-info" data-testid="user-management-info">
                     Note: Only accounts with a status of <strong>Pending</strong> can be deleted. 
                     <p>
                         If a <strong>Student</strong> has finished their studies or is no longer attending the university for any reason, their status should be changed to <strong>Inactive</strong>. 
@@ -21,7 +21,7 @@
                         Please note that once the status is changed to <strong>Inactive</strong>, it cannot be reverted.
                     </p>
                 </div>
-                <table class="table table-striped">
+                <table class="table table-striped" data-testid="user-management-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -33,32 +33,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="user : ${users}">
+                        <tr th:each="user : ${users}" th:data-testid="'user-row-' + ${user.id}">
                             <td th:text="${user.id}"></td>
                             <td th:text="${user.firstName} + ' ' + ${user.lastName}"></td>
                             <td th:text="${user.email}"></td>
                             <td th:text="${user.role}"></td>
                             <td th:text="${user.status}"></td>
                             <td>
-                                <a th:href="@{/user/{id}(id=${user.id})}" class="btn btn-success btn-sm">View</a>
+                                <a th:href="@{/user/{id}(id=${user.id})}" class="btn btn-success btn-sm" th:data-testid="'user-view-' + ${user.id}">View</a>
                                 <!-- Button trigger modal -->
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                 th:attr="disabled=${user.status == 'Inactive'}, 
-                                data-bs-target='#changeStatusModal-'+${user.id}">
+                                data-bs-target='#changeStatusModal-'+${user.id}"
+                                th:data-testid="'user-change-status-' + ${user.id}">
                                     Change Status
                                 </button>
                                 <!-- Modal -->
                                 <div class="modal fade" th:id="'changeStatusModal-'+${user.id}" tabindex="-1"
-                                    aria-labelledby="changeStatusModalLabel" aria-hidden="true">
+                                    aria-labelledby="changeStatusModalLabel" aria-hidden="true"
+                                    th:data-testid="'user-status-modal-' + ${user.id}">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" th:id="'changeStatusModalLabel-'+${user.id}">Change User Status</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                                aria-label="Close" th:data-testid="'user-status-modal-close-' + ${user.id}"></button>
                                             </div>
                                             <div class="modal-body">
-                                            <div class="alert alert-info" role="alert">
+                                            <div class="alert alert-info" role="alert" th:data-testid="'user-status-info-' + ${user.id}">
                                                 <p>
                                                     Note: The status should be changed to <strong>Inactive</strong> under the following conditions:
                                                 </p>
@@ -67,18 +69,18 @@
                                                     <li><strong>For Professors:</strong> If they no longer work for the university.</li>
                                                 </ul>
                                             </div>
-                                                <form th:action="@{/user/{id}/status/change(id=${user.id})}" method="post">
+                                                <form th:action="@{/user/{id}/status/change(id=${user.id})}" method="post" th:data-testid="'user-status-form-' + ${user.id}">
                                                     <div class="form-group">
                                                         <label for="statusSelect">Select Status</label>
-                                                        <select class="form-select" id="statusSelect" name="status" th:name="status">
+                                                        <select class="form-select" id="statusSelect" name="status" th:name="status" th:data-testid="'user-status-select-' + ${user.id}">
                                                             <option th:value="Active" th:text="'Active'"></option>
                                                             <option th:value="Inactive" th:text="'Inactive'"></option>
                                                         </select>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Close</button>
-                                                        <button type="submit" class="btn btn-primary">Update Status</button>
+                                                            data-bs-dismiss="modal" th:data-testid="'user-status-modal-cancel-' + ${user.id}">Close</button>
+                                                        <button type="submit" class="btn btn-primary" th:data-testid="'user-status-submit-' + ${user.id}">Update Status</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -87,7 +89,8 @@
                                 </div>
 
                                 <button th:href="@{/user/delete/{id}(id=${user.id})}"
-                                    class="btn btn-danger btn-sm" th:attr="disabled=${user.status != 'Pending'}">Delete</button>
+                                    class="btn btn-danger btn-sm" th:attr="disabled=${user.status != 'Pending'}"
+                                    th:data-testid="'user-delete-' + ${user.id}">Delete</button>
                             </td>
                         </tr>
                     </tbody>
@@ -96,21 +99,22 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <nav>
+                <nav data-testid="user-management-pagination">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
                             th:classappend="${i == page} ? 'active'">
-                            <a class="page-link" th:href="@{/user(page=${i - 1})}" th:text="${i}"></a>
+                            <a class="page-link" th:href="@{/user(page=${i - 1})}" th:text="${i}"
+                               th:data-testid="'user-page-' + ${i}"></a>
                         </li>
                     </ul>
                 </nav>
             </div>
         </div>
-        <div th:if="${response}">
-            <div th:if="${response.status == 'success'}">
+        <div th:if="${response}" data-testid="user-management-response">
+            <div th:if="${response.status == 'success'}" data-testid="user-management-success">
                 <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
             </div>
-            <div th:if="${response.status == 'error'}">
+            <div th:if="${response.status == 'error'}" data-testid="user-management-error">
                 <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
             </div>
         </div>

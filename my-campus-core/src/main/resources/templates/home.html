@@ -8,8 +8,8 @@
 
     <div class="container mt-5">
         <div class="text-center">
-            <h1>Welcome to MyCampus</h1>
-            <p th:text="'Hello, ' + ${userName} + '!'"></p>
+            <h1 data-testid="home-title">Welcome to MyCampus</h1>
+            <p th:text="'Hello, ' + ${userName} + '!'" data-testid="home-greeting"></p>
         </div>
     </div>
 

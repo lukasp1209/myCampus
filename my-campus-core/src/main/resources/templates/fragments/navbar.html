@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light" th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" th:fragment="navbar" data-testid="navbar">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">My Campus</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand" href="/" data-testid="navbar-brand">My Campus</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" data-testid="navbar-toggler">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        <a class="nav-link active" aria-current="page" href="/" data-testid="nav-home">Home</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/user">User Management</a>
+                        <a class="nav-link active" aria-current="page" href="/user" data-testid="nav-user-management">User Management</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/course/managment">Course Management</a>
+                        <a class="nav-link active" aria-current="page" href="/course/managment" data-testid="nav-course-management">Course Management</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/schedule/managment">Schedule Management</a>
+                        <a class="nav-link active" aria-current="page" href="/schedule/managment" data-testid="nav-schedule-management">Schedule Management</a>
                     </li>
                     <li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/courses">Courses</a>
+                        <a class="nav-link active" aria-current="page" href="/courses" data-testid="nav-courses">Courses</a>
                     </li>
                     <li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')">
-                        <a class="nav-link active" aria-current="page" href="/exams">Exams</a>
+                        <a class="nav-link active" aria-current="page" href="/exams" data-testid="nav-exams">Exams</a>
                     </li>
                     <li class="nav-item">
                         </ul>
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')">
                                 <span class="nav-link active">
-                                    Hello, <a aria-current="page" id="myProfile" href="/user/" style="text-decoration: none; color: black;">My Profile</a>
+                                    Hello, <a aria-current="page" id="myProfile" href="/user/" style="text-decoration: none; color: black;" data-testid="nav-profile">My Profile</a>
                                 </span>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="/logout">Log out</a>
+                                <a class="nav-link active" aria-current="page" href="/logout" data-testid="nav-logout">Log out</a>
                             </li>
                         </ul>
                     </li>

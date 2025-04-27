@@ -5,22 +5,22 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card">
+                <div class="card" data-testid="login-card">
                     <div class="card-header text-center">
-                        <h3>Login</h3>
+                        <h3 data-testid="login-title">Login</h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/login}" method="post" role="form">
+                        <form th:action="@{/login}" method="post" role="form" data-testid="login-form">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="username" name="username" placeholder="Enter your email" required>
+                                <input type="email" class="form-control" id="username" name="username" placeholder="Enter your email" required data-testid="login-email">
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required data-testid="login-password">
                             </div>
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">Login</button>
+                                <button type="submit" class="btn btn-primary" data-testid="login-submit">Login</button>
                             </div>
                         </form>
                     </div>
@@ -28,11 +28,11 @@
             </div>
         </div>
     </div>
-    <div th:if="${response}">
-        <div th:if="${response.status == 'success'}">
+    <div th:if="${response}" data-testid="login-response">
+        <div th:if="${response.status == 'success'}" data-testid="login-success">
             <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
         </div>
-        <div th:if="${response.status == 'error'}">
+        <div th:if="${response.status == 'error'}" data-testid="login-error">
             <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
         </div>
     </div>

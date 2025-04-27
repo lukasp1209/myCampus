@@ -30,18 +30,18 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <div>
-                            <h1 class="display-5 fw-bold mb-0 text-white">
+                            <h1 class="display-5 fw-bold mb-0 text-white" data-testid="room-management-title">
                                 <i class="bi bi-door-open me-2"></i>
                                 Room Management
                             </h1>
-                            <p class="mb-0 text-white-50">View and manage all available rooms</p>
+                            <p class="mb-0 text-white-50" data-testid="room-management-subtitle">View and manage all available rooms</p>
                         </div>
                     </div>
                     <div>
-                        <a th:href="@{/schedule/managment}" class="btn btn-outline-light me-2">
+                        <a th:href="@{/schedule/managment}" class="btn btn-outline-light me-2" data-testid="room-management-back">
                             <i class="bi bi-arrow-left"></i> Back
                         </a>
-                        <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#addRoomModal">
+                        <button type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#addRoomModal" data-testid="room-management-add">
                             <i class="bi bi-plus-circle me-2"></i> Add New Room
                         </button>
                     </div>
@@ -52,21 +52,21 @@
         <main class="container my-5">
             <div class="row">
                 <!-- Rooms List -->
-                <div th:replace="fragments/scheduleManagmentRooms/scheduleManagmentRoomsTable :: scheduleManagmentRoomsTable"></div>
+                <div th:replace="fragments/scheduleManagmentRooms/scheduleManagmentRoomsTable :: scheduleManagmentRoomsTable" data-testid="room-management-table"></div>
                 <!-- Quick Stats Card -->
-                <div th:replace="fragments/scheduleManagmentRooms/scheduleManagmentRoomsStats :: scheduleManagmentRoomsStats"></div>
+                <div th:replace="fragments/scheduleManagmentRooms/scheduleManagmentRoomsStats :: scheduleManagmentRoomsStats" data-testid="room-management-stats"></div>
             </div>
         </main>
     </div>
 
     <!-- Add Room Modal -->
-    <div th:replace="fragments/scheduleManagmentRooms/scheduleManagmentRoomsAddRoomModal :: scheduleManagmentRoomsAddRoomModal"></div>
+    <div th:replace="fragments/scheduleManagmentRooms/scheduleManagmentRoomsAddRoomModal :: scheduleManagmentRoomsAddRoomModal" data-testid="room-management-add-modal"></div>
     <!-- Toast -->
-    <div th:if="${response}">
-        <div th:if="${response.status == 'success'}">
+    <div th:if="${response}" data-testid="room-management-response">
+        <div th:if="${response.status == 'success'}" data-testid="room-management-success">
             <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
         </div>
-        <div th:if="${response.status == 'error'}">
+        <div th:if="${response.status == 'error'}" data-testid="room-management-error">
             <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
         </div>
     </div>

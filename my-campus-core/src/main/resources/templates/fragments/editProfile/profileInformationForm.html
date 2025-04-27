@@ -1,4 +1,4 @@
-<div class="card border-light shadow-sm mb-4" th:fragment="profileInformationForm" th:object="${user}">
+<div class="card border-light shadow-sm mb-4" th:fragment="profileInformationForm" th:object="${user}" data-testid="profile-information-form">
     <div class="card-header bg-light">
         <h2 class="h5 mb-0 text-dark">
             <i class="bi bi-person-lines-fill me-2 text-secondary"></i>
@@ -20,28 +20,28 @@
                 </div>
             </div>
         </div>
-        <form th:action="@{/user/{id}/edit(id=${user.id})}" method="post">
+        <form th:action="@{/user/{id}/edit(id=${user.id})}" method="post" data-testid="profile-information-form-content">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label text-muted">First Name</label>
+                        <label for="firstName" class="form-label text-muted" data-testid="profile-firstname-label">First Name</label>
                         <input type="text" class="form-control" id="firstName" 
-                               th:value="${user.firstName}" name="firstName" required>
+                               th:value="${user.firstName}" name="firstName" required data-testid="profile-firstname-input">
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="lastName" class="form-label text-muted">Last Name</label>
+                        <label for="lastName" class="form-label text-muted" data-testid="profile-lastname-label">Last Name</label>
                         <input type="text" class="form-control" id="lastName" 
-                               th:value="${user.lastName}" name="lastName" required>
+                               th:value="${user.lastName}" name="lastName" required data-testid="profile-lastname-input">
                     </div>
                 </div>
             </div>
             
             <div class="mb-3">
-                <label for="email" class="form-label text-muted">Email</label>
+                <label for="email" class="form-label text-muted" data-testid="profile-email-label">Email</label>
                 <input type="email" class="form-control" id="email" 
-                       th:value="${user.email}" name="email" readonly>
+                       th:value="${user.email}" name="email" readonly data-testid="profile-email-input">
                 <small class="text-muted">Contact admin to change email</small>
             </div>
             
@@ -86,7 +86,7 @@
             </div>
             
             <div class="d-flex justify-content-end mt-3">
-                <button type="submit" class="btn btn-dark px-4">
+                <button type="submit" class="btn btn-dark px-4" data-testid="profile-information-save">
                     <i class="bi bi-check-circle me-2"></i> Update Profile
                 </button>
             </div>

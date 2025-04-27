@@ -6,25 +6,27 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col-12">
-                <h1 class="text-left">Courses</h1>
+                <h1 class="text-left" data-testid="courses-title">Courses</h1>
                 <br>
             </div>
         </div>
         <div class="row">
             <!-- Check if there are courses -->
-            <div th:if="${#lists.isEmpty(courses)}" class="col-12">
-            <p class="text-center text-muted">No courses assigned yet</p>
+            <div th:if="${#lists.isEmpty(courses)}" class="col-12" data-testid="no-courses-message">
+                <p class="text-center text-muted">No courses assigned yet</p>
             </div>
             <!-- Dynamically generated cards -->
-            <div class="col-md-4" th:each="course : ${courses}" th:unless="${#lists.isEmpty(courses)}">
-            <div class="card mb-4">
-                <div class="card-body">
-                <h5 class="card-title" th:text="${course.name}">Course Name</h5>
-                <p class="card-text" th:text="${course.description}">Course Description</p>
-                <p class="card-text"><strong>Professor:</strong> <span th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Professor Name</span></p>
-                <a th:href="@{/course/{id}(id=${course.id})}" class="btn btn-primary">View</a>
+            <div class="col-md-4" th:each="course : ${courses}" th:unless="${#lists.isEmpty(courses)}" th:data-testid="'course-card-' + ${course.id}">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${course.name}" th:data-testid="'course-name-' + ${course.id}">Course Name</h5>
+                        <p class="card-text" th:text="${course.description}" th:data-testid="'course-description-' + ${course.id}">Course Description</p>
+                        <p class="card-text" th:data-testid="'course-professor-' + ${course.id}">
+                            <strong>Professor:</strong> <span th:text="${course.professor.firstName + ' ' + course.professor.lastName}">Professor Name</span>
+                        </p>
+                        <a th:href="@{/course/{id}(id=${course.id})}" class="btn btn-primary" th:data-testid="'course-view-' + ${course.id}">View</a>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>

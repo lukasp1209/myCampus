@@ -35,16 +35,16 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="display-5 fw-bold mb-0 text-white">
+                    <h1 class="display-5 fw-bold mb-0 text-white" data-testid="exam-title">
                         <i class="bi bi-file-earmark-text me-2"></i>
                         Exam <span th:text="${exam.course.name}">Course Name</span>
                     </h1>
                 </div>
                 <div>
-                    <a th:href="@{/exams}" class="btn btn-outline-light">
+                    <a th:href="@{/exams}" class="btn btn-outline-light" data-testid="exam-back">
                         <i class="bi bi-arrow-left me-1"></i> Back
                     </a>
-                    <a th:href="@{/exam/edit/{id}(id=${exam.id})}" class="btn btn-outline-light" sec:authorize="hasRole('ROLE_PROFESOR')">
+                    <a th:href="@{/exam/edit/{id}(id=${exam.id})}" class="btn btn-outline-light" sec:authorize="hasRole('ROLE_PROFESOR')" data-testid="exam-edit">
                         <i class="bi bi-pencil me-1"></i> Edit
                     </a>                    
                 </div>
@@ -57,51 +57,51 @@
         <div class="row g-4">
             <!-- Exam Details Card -->
             <div class="col-lg-8">
-                <div class="card shadow-sm mb-4">
+                <div class="card shadow-sm mb-4" data-testid="exam-details-card">
                     <div class="card-header bg-white border-bottom-0">
-                        <h5 class="card-title mb-0">
+                        <h5 class="card-title mb-0" data-testid="exam-details-title">
                             <i class="bi bi-info-circle me-2"></i>Exam Details
                         </h5>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
                             <h6 class="text-muted">Description</h6>
-                            <p class="mb-0" th:text="${exam.description}">
+                            <p class="mb-0" th:text="${exam.description}" data-testid="exam-description">
 
                             </p>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <h6 class="text-muted">Professor</h6>
-                                <p class="mb-0" th:text="${exam.professor.firstName + ' ' + exam.professor.lastName}">Professor Name</p>
+                                <p class="mb-0" th:text="${exam.professor.firstName + ' ' + exam.professor.lastName}" data-testid="exam-professor">Professor Name</p>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <h6 class="text-muted">Room</h6>
-                                <p class="mb-0" th:text="${exam.room.name}">Room 1</p>
+                                <p class="mb-0" th:text="${exam.room.name}" data-testid="exam-room">Room 1</p>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <h6 class="text-muted">Date</h6>
-                                <p class="mb-0" th:text="${#temporals.format(exam.examDate, 'dd.MM.yyyy')}">10.1.2025</p>
+                                <p class="mb-0" th:text="${#temporals.format(exam.examDate, 'dd.MM.yyyy')}" data-testid="exam-date">10.1.2025</p>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <h6 class="text-muted">Time</h6>
-                                <p class="mb-0" th:text="${exam.timeSlot.startTime}">09:00</p>
+                                <p class="mb-0" th:text="${exam.timeSlot.startTime}" data-testid="exam-time">09:00</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Materials Card -->
-                <div class="card shadow-sm mb-4">
+                <div class="card shadow-sm mb-4" data-testid="all-students-card">
                     <div class="card shadow-sm">
                         <div class="card-header bg-white border-bottom-0">
-                            <h5 class="card-title mb-0">
+                            <h5 class="card-title mb-0" data-testid="all-students-title">
                                 <i class="bi bi-person-lines-fill me-2"></i>All Course Students
                             </h5>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover mb-0">
+                                <table class="table table-hover mb-0" data-testid="all-students-table">
                                     <thead class="table-light">
                                         <tr>
                                             <th>Student</th>
@@ -110,10 +110,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="student : ${exam.allStudents}">
+                                        <tr th:each="student : ${exam.allStudents}" th:data-testid="'all-student-row-' + ${student.id}">
                                             <td th:text="${student.id}">S12345</td>
                                             <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
-                                            <td><a class="btn btn-sm btn-outline-dark" th:href="@{/user/{id}(id=${student.id})}"><i class="bi bi-eye"></i> View</a></td>
+                                            <td><a class="btn btn-sm btn-outline-dark" th:href="@{/user/{id}(id=${student.id})}" th:data-testid="'view-student-' + ${student.id}"><i class="bi bi-eye"></i> View</a></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -126,18 +126,18 @@
             <!-- Students Section -->
             <div class="col-lg-4">
                 <!-- Enrolled Students Card -->
-                <div class="card shadow-sm mb-4">
+                <div class="card shadow-sm mb-4" data-testid="enrolled-students-card">
                     <div class="card-header bg-white border-bottom-0">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">
+                            <h5 class="card-title mb-0" data-testid="enrolled-students-title">
                                 <i class="bi bi-people-fill me-2"></i>Enrolled Students
                             </h5>
-                            <span class="badge bg-dark">24/45</span>
+                            <span class="badge bg-dark" data-testid="enrolled-count">24/45</span>
                         </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="table table-hover mb-0" data-testid="enrolled-students-table">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Student</th>
@@ -146,13 +146,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:if="${exam.enrolledStudents.isEmpty()}">
+                                    <tr th:if="${exam.enrolledStudents.isEmpty()}" data-testid="no-enrolled-students">
                                         <td>No Students Enrolled</td>
                                     </tr>
-                                    <tr th:each="student : ${exam.enrolledStudents}">
+                                    <tr th:each="student : ${exam.enrolledStudents}" th:data-testid="'enrolled-student-row-' + ${student.id}">
                                         <td th:text="${student.id}">S12345</td>
                                         <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
-                                        <td><span class="badge bg-dark">Enrolled</span></td>
+                                        <td><span class="badge bg-dark" th:data-testid="'enrolled-status-' + ${student.id}">Enrolled</span></td>
                                     </tr>
                                 </tbody>
                             </table>

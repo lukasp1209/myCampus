@@ -7,52 +7,52 @@
 
 <body>
     <div class="container mt-5">
-        <h1 class="text-center">Welcome to My Campus Setup</h1>
-        <div class="container mt-5" th:if="${response.status == 'error'}">
-            <div class="alert alert-danger text-center" role="alert">
-                <p th:text="${response.message}"></p>
+        <h1 class="text-center" data-testid="setup-title">Welcome to My Campus Setup</h1>
+        <div class="container mt-5" th:if="${response.status == 'error'}" data-testid="setup-error-container">
+            <div class="alert alert-danger text-center" role="alert" data-testid="setup-error-alert">
+                <p th:text="${response.message}" data-testid="setup-error-message"></p>
                 <span> Click
-                    <a href="/login"> here </a>
+                    <a href="/login" data-testid="setup-login-link"> here </a>
                     to redirect to login page
                 </span>
             </div>
         </div>
-        <div class="container mt-5" th:if="${response.status == 'success'}">
-            <div class="alert alert-success text-center" role="alert">
-                <p th:text="${response.message}"></p>
+        <div class="container mt-5" th:if="${response.status == 'success'}" data-testid="setup-success-container">
+            <div class="alert alert-success text-center" role="alert" data-testid="setup-success-alert">
+                <p th:text="${response.message}" data-testid="setup-success-message"></p>
             </div>
             <div class="row">
             <div class="d-flex justify-content-center">
-                <form th:action="@{/setup}" method="post" class="col-md-6">
+                <form th:action="@{/setup}" method="post" class="col-md-6" data-testid="setup-form">
                     <!-- Email Field -->
                     <div class="mb-3">
-                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <label for="email" class="form-label fw-semibold" data-testid="setup-email-label">Email Address</label>
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="bi bi-envelope"></i>
                             </span>
                             <input type="email" class="form-control py-2" id="email" name="email"
-                                placeholder="admin@example.com" required>
+                                placeholder="admin@example.com" required data-testid="setup-email-input">
                         </div>
-                        <div class="form-text text-muted small">Will be used for login</div>
+                        <div class="form-text text-muted small" data-testid="setup-email-help">Will be used for login</div>
                     </div>
 
                     <!-- Password Field -->
                     <div class="mb-4">
-                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <label for="password" class="form-label fw-semibold" data-testid="setup-password-label">Password</label>
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="bi bi-lock"></i>
                             </span>
                             <input type="password" class="form-control py-2" id="password" name="password"
-                                placeholder="Create a strong password" required>
+                                placeholder="Create a strong password" required data-testid="setup-password-input">
                         </div>
-                        <div class="form-text text-muted small">Recommended 8 characters with mixed case and numbers</div>
+                        <div class="form-text text-muted small" data-testid="setup-password-help">Recommended 8 characters with mixed case and numbers</div>
                     </div>
 
                     <!-- Form Actions -->
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-dark btn-lg btn-submit">
+                        <button type="submit" class="btn btn-dark btn-lg btn-submit" data-testid="setup-submit-button">
                             <i class="bi bi-save me-2"></i> Create Admin Account
                         </button>
                     </div>

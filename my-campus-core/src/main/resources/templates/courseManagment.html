@@ -29,13 +29,13 @@
             <div class="container">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h1 class="display-5 fw-bold mb-0 text-white">
+                        <h1 class="display-5 fw-bold mb-0 text-white" data-testid="course-management-title">
                             <i class="bi bi-book me-2"></i>
                             Course Management
                         </h1>
                     </div>
                     <div>
-                        <a th:href="@{/course/add}" class="btn btn-outline-light me-2">
+                        <a th:href="@{/course/add}" class="btn btn-outline-light me-2" data-testid="course-management-add">
                             <i class="bi bi-plus-circle me-1"></i> Add Course
                         </a>
                     </div>
@@ -45,10 +45,10 @@
 
         <!-- Courses Table Card -->
         <div class="container mb-5">
-            <div class="card border-0  shadow-sm card-hover">
+            <div class="card border-0  shadow-sm card-hover" data-testid="course-management-card">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-hover align-middle mb-0" data-testid="course-management-table">
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-4">ID</th>
@@ -59,7 +59,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="course : ${courses}">
+                                <tr th:each="course : ${courses}" th:data-testid="'course-row-' + ${course.id}">
                                     <td class="ps-4 fw-semibold text-muted" th:text="${course.id}">101</td>
                                     <td>
                                         <span class="fw-semibold" th:text="${course.name}">Introduction to
@@ -76,7 +76,8 @@
                                         <div class="d-flex flex-wrap gap-2">
                                             <span th:each="student : ${course.students}"
                                                 class="badge bg-dark badge-outline rounded-pill small py-1 px-2"
-                                                th:text="${student.firstName + ' ' + student.lastName}">
+                                                th:text="${student.firstName + ' ' + student.lastName}"
+                                                th:data-testid="'course-student-' + ${student.id}">
                                             </span>
                                             <span th:if="${#lists.isEmpty(course.students)}" class="text-muted small">No
                                                 students</span>
@@ -85,11 +86,13 @@
                                     <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
                                             <a th:href="@{/course/{courseId}(courseId=${course.id})}"
-                                                class="btn btn-sm btn-outline-dark">
+                                                class="btn btn-sm btn-outline-dark"
+                                                th:data-testid="'course-view-' + ${course.id}">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <a th:href="@{/course/edit/{courseId}(courseId=${course.id})}"
-                                                class="btn btn-sm btn-outline-dark">
+                                                class="btn btn-sm btn-outline-dark"
+                                                th:data-testid="'course-edit-' + ${course.id}">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                         </div>
@@ -102,11 +105,12 @@
             </div>
             <div class="row py-4">
                 <div class="col-md-12">
-                    <nav>
+                    <nav data-testid="course-management-pagination">
                         <ul class="pagination justify-content-center">
                             <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
                                 th:classappend="${i == page} ? 'active'">
-                                <a class="page-link bg-dark text-white" th:href="@{/course/managment(page=${i - 1})}" th:text="${i}"></a>
+                                <a class="page-link bg-dark text-white" th:href="@{/course/managment(page=${i - 1})}" 
+                                   th:text="${i}" th:data-testid="'course-page-' + ${i}"></a>
                             </li>
                         </ul>
                     </nav>
