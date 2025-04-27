@@ -1,4 +1,4 @@
-<div th:fragment="searchSelectProfessor">
+<div th:fragment="searchSelectProfessor" data-testid="professor-search">
     <style>
       .search-results {
         position: absolute;
@@ -25,24 +25,25 @@
       }
     </style>
     <div class="container mb-4">
-      <div class="search-component" data-entity-type="professor">
+      <div class="search-component" data-entity-type="professor" data-testid="professor-search-component">
         <div class="position-relative">
           <div class="input-group">
-            <input type="text" id="searchForProfessorsInput" class="form-control search-input" placeholder="Type professors name..." autocomplete="off">
-            <button class="btn btn-dark" type="button" id="searchButton">
+            <input type="text" id="searchForProfessorsInput" class="form-control search-input" placeholder="Type professors name..." autocomplete="off" data-testid="professor-search-input">
+            <button class="btn btn-dark" type="button" id="searchButton" data-testid="professor-search-button">
               <i class="bi bi-search"></i>
             </button>
             <div class="spinner-border spinner-border-sm position-absolute end-0 me-5 mt-2" 
                  id="searchSpinner" 
-                 role="status">
+                 role="status"
+                 data-testid="professor-search-spinner">
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
-          <div class="search-results"></div>
+          <div class="search-results" data-testid="professor-search-results"></div>
         </div>
-        <div class="cards-container mt-3">
+        <div class="cards-container mt-3" data-testid="professor-cards-container">
           <div th:if="${course}">
-            <div th:replace="fragments/editCourseForm/professorCard :: professorCard" th:with="course = ${course}"></div>
+            <div th:replace="fragments/editCourseForm/professorCard :: professorCard" th:with="course = ${course}" data-testid="professor-card"></div>
           </div>
         </div>
       </div>

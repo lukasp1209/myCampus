@@ -27,13 +27,13 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h1 class="display-5 fw-bold mb-0 text-white">
+                    <h1 class="display-5 fw-bold mb-0 text-white" data-testid="add-course-title">
                         <i class="bi bi-book me-2"></i>
                         Add New Course
                     </h1>
                 </div>
                 <div>
-                    <a th:href="@{/course/managment}" class="btn btn-outline-light">
+                    <a th:href="@{/course/managment}" class="btn btn-outline-light" data-testid="add-course-back">
                         <i class="bi bi-arrow-left me-1"></i> Back
                     </a>
                 </div>
@@ -45,22 +45,22 @@
     <div class="container mb-5">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <div class="card border-0 shadow-sm form-card">
+                <div class="card border-0 shadow-sm form-card" data-testid="add-course-card">
                     <div class="card-body p-4">
-                        <form th:action="@{/course/add}" method="post">
+                        <form th:action="@{/course/add}" method="post" data-testid="add-course-form">
                             <!-- Course Name Field -->
                             <div class="mb-4">
                                 <label for="name" class="form-label fw-semibold">Course Name</label>
                                 <input type="text" class="form-control py-2 px-3" 
                                        id="name" name="name" 
-                                       placeholder="Enter course name" required>
+                                       placeholder="Enter course name" required data-testid="course-name-input">
                                 <div class="form-text text-muted small">The official name of the course</div>
                             </div>
                             
                             <!-- Professor Selection -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">Professor</label>
-                                <div th:replace="fragments/searchSelectProfessor :: searchSelectProfessor"></div>
+                                <div th:replace="fragments/searchSelectProfessor :: searchSelectProfessor" data-testid="professor-select"></div>
                             </div>
                             
                             <hr class="my-4 border-1 opacity-10">
@@ -68,8 +68,8 @@
                             <!-- Student Selection -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold">Students</label>
-                                <div th:replace="fragments/searchSelectStudent :: searchSelectStudent"></div>
-                                <div id="additionalStudents" class="mt-2"></div>
+                                <div th:replace="fragments/searchSelectStudent :: searchSelectStudent" data-testid="student-select"></div>
+                                <div id="additionalStudents" class="mt-2" data-testid="additional-students"></div>
                             </div>
                             
                             <!-- Description Field -->
@@ -77,14 +77,14 @@
                                 <label for="description" class="form-label fw-semibold">Course Description</label>
                                 <textarea class="form-control py-2 px-3" id="description" 
                                           name="description" rows="4"
-                                          placeholder="Enter course description"></textarea>
+                                          placeholder="Enter course description" data-testid="course-description-input"></textarea>
                                 <div class="form-text text-muted small">Detailed information about the course content</div>
                             </div>
                             
                             <!-- Form Actions -->
                             <div class="d-flex justify-content-end mt-4">
                                 <button type="submit" name="action" value="submit" 
-                                        class="btn btn-dark px-4 btn-submit">
+                                        class="btn btn-dark px-4 btn-submit" data-testid="course-submit">
                                     <i class="bi bi-save me-2"></i> Save Course
                                 </button>
                             </div>

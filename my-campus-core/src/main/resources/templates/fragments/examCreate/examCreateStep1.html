@@ -1,13 +1,13 @@
 <div th:fragment="examCreateStep1">
 
-    <div class="form-step active" id="step1">
+    <div class="form-step active" id="step1" data-testid="exam-date-step">
         <h4 class="mb-4">Select Exam Date</h4>
         <div class="mb-4">
             <label for="examDate" class="form-label fw-semibold">Choose a date</label>
-            <input type="date" class="form-control" id="examDate" required>
+            <input type="date" class="form-control" id="examDate" required data-testid="exam-date-input">
         </div>
         <div class="d-flex justify-content-end">
-            <button type="button" class="btn btn-dark" onclick="nextStep(1, 2); getAvailableTimeSlots();">
+            <button type="button" class="btn btn-dark" onclick="nextStep(1, 2); getAvailableTimeSlots();" data-testid="exam-date-next">
                 Next <i class="bi bi-arrow-right ms-2"></i>
             </button>
         </div>

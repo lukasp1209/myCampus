@@ -24,31 +24,31 @@
 <body>
     <nav th:replace="fragments/navbar :: navbar"></nav>
     <!-- Main Content -->
-    <div class="container my-5" th:if="!${exception}">
+    <div class="container my-5" th:if="!${exception}" data-testid="error-container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm error-card">
+                <div class="card border-0 shadow-sm error-card" data-testid="error-card">
                     <div class="card-body p-5 text-center">
-                        <div class="error-icon">
+                        <div class="error-icon" data-testid="error-icon">
                             <i class="bi bi-exclamation-triangle-fill"></i>
                         </div>
                         
-                        <h2 class="fw-bold mb-3">
+                        <h2 class="fw-bold mb-3" data-testid="error-title">
                             <span th:text="${status} ?: 'Error'"></span> - 
                             <span th:text="${error} ?: 'Something went wrong'"></span>
                         </h2>
                         
-                        <p class="lead mb-4" th:text="${message} ?: 'We encountered an unexpected error while processing your request.'">
+                        <p class="lead mb-4" th:text="${message} ?: 'We encountered an unexpected error while processing your request.'" data-testid="error-message">
                             We encountered an unexpected error while processing your request.
                         </p>
                         
                         <div class="d-flex justify-content-center gap-3">
-                            <a href="/" class="btn btn-dark btn-home px-4">
+                            <a href="/" class="btn btn-dark btn-home px-4" data-testid="error-home-button">
                                 <i class="bi bi-house-door me-2"></i> Return Home
                             </a>
                         </div>
                         
-                        <div class="mt-4 text-muted small">
+                        <div class="mt-4 text-muted small" data-testid="error-details">
                             <i class="bi bi-info-circle me-1"></i>
                             <span th:text="${path} ?: ''"></span>
                             <span th:if="${path} and ${timestamp}"> | </span>
@@ -60,31 +60,31 @@
         </div>
     </div>
 
-    <div class="container my-5" th:if="${exception}">
+    <div class="container my-5" th:if="${exception}" data-testid="exception-container">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm error-card">
+                <div class="card border-0 shadow-sm error-card" data-testid="exception-card">
                     <div class="card-body p-5 text-center">
-                        <div class="error-icon">
+                        <div class="error-icon" data-testid="exception-icon">
                             <i class="bi bi-exclamation-triangle-fill"></i>
                         </div>
                         
-                        <h2 class="fw-bold mb-3">
-                            <span >Error</span> - 
+                        <h2 class="fw-bold mb-3" data-testid="exception-title">
+                            <span>Error</span> - 
                             <span th:text="${exception.status + ' ' +exception.code} ?: 'Something went wrong'"></span>
                         </h2>
                         
-                        <p class="lead mb-4" th:text="${exception.message} ?: 'We encountered an unexpected error while processing your request.'">
+                        <p class="lead mb-4" th:text="${exception.message} ?: 'We encountered an unexpected error while processing your request.'" data-testid="exception-message">
                             We encountered an unexpected error while processing your request.
                         </p>
                         
                         <div class="d-flex justify-content-center gap-3">
-                            <a href="/" class="btn btn-dark btn-home px-4">
+                            <a href="/" class="btn btn-dark btn-home px-4" data-testid="exception-home-button">
                                 <i class="bi bi-house-door me-2"></i> Return Home
                             </a>
                         </div>
                         
-                        <div class="mt-4 text-muted small">
+                        <div class="mt-4 text-muted small" data-testid="exception-details">
                             <i class="bi bi-info-circle me-1"></i>
                             <span th:text="${path} ?: ''"></span>
                             <span th:if="${path} and ${timestamp}"> | </span>

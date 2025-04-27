@@ -12,13 +12,13 @@
                 <div class="container">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h1 class="display-5 fw-bold mb-0 text-white">
+                            <h1 class="display-5 fw-bold mb-0 text-white" data-testid="edit-course-title">
                                 <i class="bi bi-book me-2"></i>
                                 Edit Course
                             </h1>
                         </div>
                         <div>
-                            <a th:href="@{/course/managment}" class="btn btn-outline-light me-2">
+                            <a th:href="@{/course/managment}" class="btn btn-outline-light me-2" data-testid="edit-course-back">
                                 <i class="bi bi-arrow-left"></i> Back
                             </a>
                         </div>
@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <div th:replace="fragments/editCourseForm/editCourseForm :: editCourseForm" th:with="course = ${course}"></div>
+            <div th:replace="fragments/editCourseForm/editCourseForm :: editCourseForm" th:with="course = ${course}" data-testid="edit-course-form"></div>
         </div>
     <script th:replace="fragments/searchScript :: searchScript"></script>
     <!-- <script th:replace="fragments/javaScript :: javaScript"></script> -->
