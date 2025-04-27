@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.request.ExamRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
+import com.example.my_campus_core.exceptions.InternalErrorException;
+import com.example.my_campus_core.exceptions.NotFoundException;
 import com.example.my_campus_core.models.Exam;
 import com.example.my_campus_core.models.TimeSlot;
 import com.example.my_campus_core.repository.CourseRepository;
@@ -25,7 +27,6 @@ import com.example.my_campus_core.util.Mappers;
 @Service
 public class ExamServiceImpl implements ExamService {
     private CourseRepository courseRepository;
-    private UserRepository userRepository;
     private RoomRepository roomRepository;
     private TimeSlotRepository timeSlotRepository;
     private ExamRepository examRepository;
@@ -40,7 +41,6 @@ public class ExamServiceImpl implements ExamService {
             ExamRepository examRepository,
             ScheduleService scheduleService) {
         this.courseRepository = courseRepository;
-        this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.timeSlotRepository = timeSlotRepository;
         this.examRepository = examRepository;
@@ -51,9 +51,15 @@ public class ExamServiceImpl implements ExamService {
     public ResponseDto createNewExam(ExamRequestDto examRequestDto) {
         ResponseDto responseDto = new ResponseDto();
         Exam newExam = new Exam();
-        newExam.setCourse(courseRepository.findById(examRequestDto.getCourseId()).orElseThrow(null));
-        newExam.setRoom(roomRepository.findById(examRequestDto.getRoomId()).orElseThrow(null));
-        newExam.setTimeSlot(timeSlotRepository.findById(examRequestDto.getExamTime()).orElseThrow(null));
+        newExam.setCourse(courseRepository.findById(examRequestDto.getCourseId())
+                .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                        " Please try again or contact platform support!")));
+        newExam.setRoom(roomRepository.findById(examRequestDto.getRoomId())
+                .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                        " Please try again or contact platform support!")));
+        newExam.setTimeSlot(timeSlotRepository.findById(examRequestDto.getExamTime())
+                .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                        " Please try again or contact platform support!")));
         newExam.setProfessor(newExam.getCourse().getProfessor());
         newExam.setAllStudents(newExam.getCourse().getStudents());
         newExam.setExamDate(LocalDate.parse(examRequestDto.getExamDate()));
@@ -87,7 +93,8 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public ExamDto getExamById(int examId) {
-        return mapper.examToExamDto(examRepository.findById(examId).orElseThrow(null));
+        return mapper.examToExamDto(examRepository.findById(examId)
+                .orElseThrow(() -> new NotFoundException("Exam with ID:" + examId + " does not exist")));
     }
 
 }

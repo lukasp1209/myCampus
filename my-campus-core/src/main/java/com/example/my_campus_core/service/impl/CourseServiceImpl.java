@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.example.my_campus_core.dto.CourseDto;
 import com.example.my_campus_core.dto.UserDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
+import com.example.my_campus_core.exceptions.InputMissingException;
+import com.example.my_campus_core.exceptions.NotFoundException;
 import com.example.my_campus_core.models.Course;
 import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
@@ -37,17 +39,21 @@ public class CourseServiceImpl implements CourseService {
         Course course = new Course();
         course.setName(courseDto.getName());
         course.setDescription(courseDto.getDescription());
-        course.setProfessor(userRepository.findById(courseDto.getProfessorId()).orElse(null));
+        course.setProfessor(userRepository.findById(courseDto.getProfessorId()).orElseThrow(
+                () -> new InputMissingException("Professor for course " + courseDto.getName() + " is not provided.")));
         List<UserEntity> students = new ArrayList<>();
-        for (int studentId : courseDto.getStudentsIds()) {
-            System.out.println("Student ID: " + studentId);
-            UserEntity student = userRepository.findById(studentId)
-                    .orElseThrow(() -> new IllegalArgumentException("User with ID " + studentId + " does not exist"));
-            if (student.getStatus() == "Pending") {
-                student.setStatus("Active");
-                userRepository.saveAndFlush(student);
+        if (courseDto.getStudentsIds() != null) {
+            for (int studentId : courseDto.getStudentsIds()) {
+                System.out.println("Student ID: " + studentId);
+                UserEntity student = userRepository.findById(studentId)
+                        .orElseThrow(
+                                () -> new NotFoundException("User with ID: " + studentId + " not found"));
+                if (student.getStatus() == "Pending") {
+                    student.setStatus("Active");
+                    userRepository.saveAndFlush(student);
+                }
+                students.add(student);
             }
-            students.add(student);
         }
         course.setStudents(students);
         courseRepository.save(course);
@@ -81,7 +87,7 @@ public class CourseServiceImpl implements CourseService {
 
         for (int studentId : studentIds) {
             UserEntity student = userRepository.findById(studentId)
-                    .orElseThrow(() -> new IllegalArgumentException("User with ID " + studentId + " does not exist"));
+                    .orElseThrow(() -> new NotFoundException("User with ID " + studentId + " does not exist"));
             if (student != null) {
                 students.add(mappers.userEntityToDto(student));
             }
@@ -92,7 +98,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public CourseDto getCourseById(int courseId) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException("Course with ID " + courseId + " does not exist"));
+                .orElseThrow(() -> new NotFoundException("Course with ID " + courseId + " does not exist"));
         List<Integer> studentIds = course.getStudents().stream()
                 .map(UserEntity::getId)
                 .toList();
@@ -152,13 +158,18 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public ResponseDto updateCourse(CourseDto courseDto) {
         ResponseDto responseDto = new ResponseDto();
-        Course course = courseRepository.findById(courseDto.getId()).orElseThrow(null);
+        Course course = courseRepository.findById(courseDto.getId())
+                .orElseThrow(() -> new NotFoundException("Course with ID:" + courseDto.getId() + " can't be updated"));
         if (course != null) {
             course.setName(courseDto.getName());
-            course.setProfessor(userRepository.findById(courseDto.getProfessorId()).orElseThrow(null));
+            course.setProfessor(userRepository.findById(courseDto.getProfessorId())
+                    .orElseThrow(() -> new NotFoundException("Professor with ID" + courseDto.getProfessorId()
+                            + "can't be found. Please reach out to platform support")));
             List<UserEntity> updatedStudents = new ArrayList<>();
             for (int student : courseDto.getStudentsIds()) {
-                UserEntity updatedStudent = userRepository.findById(student).orElseThrow(null);
+                UserEntity updatedStudent = userRepository.findById(student)
+                        .orElseThrow(() -> new NotFoundException("Student with ID" + student
+                                + "can't be found. Please reach out to platform support"));
                 updatedStudents.add(updatedStudent);
             }
             course.setStudents(updatedStudents);
