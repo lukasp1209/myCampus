@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.my_campus_core.dto.UserDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
+import com.example.my_campus_core.exceptions.NotFoundException;
+import com.example.my_campus_core.exceptions.UnsupportedEntityException;
 import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.UserService;
@@ -97,22 +99,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(int userId) {
-        Optional<UserEntity> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            UserEntity user = userOptional.get();
-            UserDto userDto = new UserDto();
-            userDto.setId(user.getId());
-            userDto.setFirstName(user.getFirstName());
-            userDto.setLastName(user.getLastName());
-            userDto.setEmail(user.getEmail());
-            userDto.setAddress(user.getAddress());
-            userDto.setStatus(user.getStatus());
-            userDto.setBirthDate(user.getBirthDate());
-            userDto.setRole(user.getRole());
-            return userDto;
-        } else {
-            throw new IllegalArgumentException("User not found with ID: " + userId);
-        }
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with ID: " + userId + " not found!"));
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setEmail(user.getEmail());
+        userDto.setAddress(user.getAddress());
+        userDto.setStatus(user.getStatus());
+        userDto.setBirthDate(user.getBirthDate());
+        userDto.setRole(user.getRole());
+        return userDto;
     }
 
     @Override
@@ -138,7 +136,7 @@ public class UserServiceImpl implements UserService {
         System.out.println("UserID " + userId);
         ResponseDto responseDto = new ResponseDto();
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+                .orElseThrow(() -> new NotFoundException("User with ID: " + userId + " not found!"));
         if (!user.getStatus().equals(status)) { // Only update if the status is different
             user.setStatus(status);
             System.out.println("Status changed to: " + user.getStatus());
@@ -162,7 +160,7 @@ public class UserServiceImpl implements UserService {
             decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8.toString());
         } catch (Exception e) {
             System.err.println("Error decoding email: " + e.getMessage());
-            throw new IllegalArgumentException("Invalid email format: " + email, e);
+            throw new UnsupportedEntityException("Invalid email format: " + email);
         }
         UserEntity user = userRepository.findByEmail(decodedEmail);
         UserDto userDto = new UserDto();
@@ -181,7 +179,7 @@ public class UserServiceImpl implements UserService {
     public ResponseDto editUserProfile(UserDto userDto) {
         ResponseDto responseDto = new ResponseDto();
         UserEntity user = userRepository.findById(userDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userDto.getId()));
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + userDto.getId()));
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setAddress(userDto.getAddress());

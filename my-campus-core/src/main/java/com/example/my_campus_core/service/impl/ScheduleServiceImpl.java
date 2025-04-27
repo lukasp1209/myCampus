@@ -22,11 +22,12 @@ import com.example.my_campus_core.dto.CourseDto;
 import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
 import com.example.my_campus_core.dto.ScheduleDto;
-import com.example.my_campus_core.dto.request.ExamRequestDto;
 import com.example.my_campus_core.dto.request.ScheduleBodyDto;
 import com.example.my_campus_core.dto.request.ScheduleRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.dto.response.ScheduleSolutionResponseDto;
+import com.example.my_campus_core.exceptions.InternalErrorException;
+import com.example.my_campus_core.exceptions.UnsupportedEntityException;
 import com.example.my_campus_core.models.Course;
 import com.example.my_campus_core.models.Exam;
 import com.example.my_campus_core.models.Lecture;
@@ -147,24 +148,22 @@ public class ScheduleServiceImpl implements ScheduleService {
                 }
             }
         }
-
         for (Integer courseId : scheduleRequestDto.getCourseIds()) {
-            Course course = courseRepository.findById(courseId).orElseThrow(null);
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                            " Please try again or contact platform support!"));
             CourseDto courseDto = mapper.courseToCourseDto(course);
             courses.add(courseDto);
         }
-
         for (Integer roomId : scheduleRequestDto.getRoomIds()) {
-            Room room = roomRepository.findById(roomId).orElseThrow(null);
+            Room room = roomRepository.findById(roomId)
+                    .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                            " Please try again or contact platform support!"));
             RoomDto roomDto = mapper.roomToRoomDto(room);
             rooms.add(roomDto);
         }
-
         ScheduleSolutionResponseDto scheduleSolution = scheduleGenerationRequest(courses, rooms, timeSlots).getBody();
-
-        System.out.println(scheduleSolution.getLectureList());
         List<LocalDate> weekDates = schedulePageGeneration(weekOffset);
-
         Schedule schedule = saveSchedule(scheduleSolution, weekDates.get(0), weekDates.get(4));
         ScheduleDto scheduleDto = Mappers.scheduleToScheduleDto(schedule);
         return scheduleDto;
@@ -202,23 +201,31 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<Lecture> lectures = new ArrayList<>();
         for (LectureDto lecture : scheduleSolution.getLectureList()) {
             Lecture newLecture = new Lecture();
-            newLecture.setCourse(courseRepository.findById(lecture.getCourse().getId()).orElseThrow(null));
+            newLecture.setCourse(courseRepository.findById(lecture.getCourse().getId())
+                    .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                            " Please try again or contact platform support!")));
             newLecture.setTimeSlot(lecture.getTimeSlot());
             newLecture.setRoom(lecture.getRoom());
-            newLecture.setProfessor(userRepository.findById(lecture.getProfessor().getId()).orElseThrow(null));
+            newLecture.setProfessor(userRepository.findById(lecture.getProfessor().getId())
+                    .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                            " Please try again or contact platform support!")));
             lectures.add(newLecture);
         }
         schedule.setLectureList(lectures);
         List<Room> rooms = new ArrayList<>();
         for (RoomDto room : scheduleSolution.getRoomList()) {
-            Room newRoom = roomRepository.findById(room.getId()).orElseThrow(null);
+            Room newRoom = roomRepository.findById(room.getId())
+                    .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                            " Please try again or contact platform support!"));
             rooms.add(newRoom);
         }
         schedule.setRoomList(rooms);
         List<TimeSlot> timeSlots = new ArrayList<>();
 
         for (TimeSlot timeSlot : scheduleSolution.getTimeSlotList()) {
-            TimeSlot newTimeSlot = timeSlotRepository.findById(timeSlot.getId()).orElseThrow(null);
+            TimeSlot newTimeSlot = timeSlotRepository.findById(timeSlot.getId())
+                    .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
+                            " Please try again or contact platform support!"));
             timeSlots.add(newTimeSlot);
         }
         schedule.setTimeSlotList(timeSlots);
@@ -280,7 +287,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     .collect(Collectors.toList());
         }
         TimeSlot desiredTimeSlot = timeSlotRepository.findById(timeSlotId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid timeSlotId"));
+                .orElseThrow(() -> new UnsupportedEntityException("Invalid time slot ID " + timeSlotId));
         return roomRepository.findAll().stream()
                 .map(room -> mapper.roomToRoomDto(room))
                 .filter(room -> isRoomAvailable(room, desiredTimeSlot, schedule))
