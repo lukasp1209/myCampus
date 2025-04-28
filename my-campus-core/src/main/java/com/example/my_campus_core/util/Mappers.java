@@ -85,8 +85,14 @@ public class Mappers {
             RoomDto newRoomDto = roomToRoomDto(room);
             roomDtos.add(newRoomDto);
         }
+        List<ExamDto> examDtos = new ArrayList<>();
+        for (Exam exam : schedule.getExamsList()) {
+            ExamDto examDto = examToExamDto(exam);
+            examDtos.add(examDto);
+        }
         scheduleDto.setRoomList(roomDtos);
         scheduleDto.setTimeSlotList(schedule.getTimeSlotList());
+        scheduleDto.setExamList(examDtos);
         return scheduleDto;
     }
 

@@ -35,4 +35,6 @@ public interface ScheduleService {
 
     void addExamToSchedule(String date, Exam exam);
 
+    ScheduleDto getScheduleForUserId(int userId, int weekOffset);
+
 }

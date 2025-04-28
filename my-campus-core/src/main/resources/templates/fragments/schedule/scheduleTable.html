@@ -1,0 +1,66 @@
+<div class="col-lg-8 mb-4" th:fragment="scheduleTable" data-testid="schedule">
+    <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <input type="text" id="userId" hidden>
+                <h3 class="h5 mb-0 text-dark">
+                    <i class="bi bi-calendar3 me-2"></i>
+                    Weekly Schedule
+                </h3>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-outline-secondary btn-sm scheduleController" th:if="${param.weekOffset != null}"
+                        th:href="@{/schedule/4(weekOffset=${T(java.lang.Integer).valueOf(param.weekOffset[0]) - 1})}">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <a class="btn btn-outline-secondary btn-sm scheduleController" th:if="${param.weekOffset == null}"
+                        th:href="@{/schedule/4(weekOffset=-1)}">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <div th:if="${datesInWeek != null and #arrays.length(datesInWeek) > 0}">
+                        <span th:text="${#temporals.format(datesInWeek[0], 'dd.MM.yyyy')}"></span>
+                        <span th:if="${#arrays.length(datesInWeek) > 1}"> -
+                            <span
+                                th:text="${#temporals.format(datesInWeek[#arrays.length(datesInWeek)-1], 'dd.MM.yyyy')}"></span>
+                        </span>
+                    </div>
+                    <a class="btn btn-outline-secondary btn-sm scheduleController" th:if="${param.weekOffset == null}"
+                        th:href="@{/schedule/4(weekOffset=1)}">
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                    <a class="btn btn-outline-secondary btn-sm scheduleController" th:if="${param.weekOffset != null}"
+                        th:href="@{/schedule/4(weekOffset=${T(java.lang.Integer).valueOf(param.weekOffset[0]) + 1})}">
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="text-center py-5" th:if="!${schedule}">
+                <i class="bi bi-calendar text-secondary" style="font-size: 3rem;"></i>
+                <p class="mt-3 text-muted">Schedule content will appear here</p>
+            </div>
+            <div th:if="${schedule}">
+                <div th:replace="fragments/scheduleTable :: scheduleTable" th:with="schedule=${schedule}"></div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const scheduleControllers = document.getElementsByClassName("scheduleController");
+            const currentPath = window.location.pathname; 
+            const pathParts = currentPath.split('/').filter(part => part !== '');
+            const userId = pathParts[pathParts.length - 1];
+            Array.from(scheduleControllers).forEach((controller) => {
+                const url = new URL(controller.href);
+                const pathParts = url.pathname.split('/'); // ["", "schedule", "4"]
+                pathParts[pathParts.length - 1] = userId.toString();
+                url.pathname = pathParts.join('/');
+                const newUrl = url.pathname + url.search;
+                controller.href = newUrl
+            });
+        });
+    </script>
+</div>

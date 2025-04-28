@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.my_campus_core.dto.CourseDto;
+import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
 import com.example.my_campus_core.dto.ScheduleDto;
@@ -26,6 +27,7 @@ import com.example.my_campus_core.dto.request.ScheduleBodyDto;
 import com.example.my_campus_core.dto.request.ScheduleRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.dto.response.ScheduleSolutionResponseDto;
+import com.example.my_campus_core.exceptions.AccessDeniedException;
 import com.example.my_campus_core.exceptions.InternalErrorException;
 import com.example.my_campus_core.exceptions.UnsupportedEntityException;
 import com.example.my_campus_core.models.Course;
@@ -34,11 +36,14 @@ import com.example.my_campus_core.models.Lecture;
 import com.example.my_campus_core.models.Room;
 import com.example.my_campus_core.models.Schedule;
 import com.example.my_campus_core.models.TimeSlot;
+import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
 import com.example.my_campus_core.repository.RoomRepository;
 import com.example.my_campus_core.repository.ScheduleRepository;
 import com.example.my_campus_core.repository.TimeSlotRepository;
 import com.example.my_campus_core.repository.UserRepository;
+import com.example.my_campus_core.security.CustomUserDetailsService;
+import com.example.my_campus_core.security.SecurityUtil;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
@@ -49,6 +54,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private UserRepository userRepository;
     private ScheduleRepository scheduleRepository;
     private TimeSlotRepository timeSlotRepository;
+    private CustomUserDetailsService customUserDetailsService;
     private Mappers mapper;
     private com.example.my_campus_core.util.TimeUtil timeUtil;
     @Value("${schedule-service.url}")
@@ -57,12 +63,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Autowired
     public ScheduleServiceImpl(RoomRepository roomRepository, CourseRepository courseRepository,
             UserRepository userRepository, ScheduleRepository scheduleRepository,
-            TimeSlotRepository timeSlotRepository) {
+            TimeSlotRepository timeSlotRepository, CustomUserDetailsService customUserDetailsService) {
         this.roomRepository = roomRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.scheduleRepository = scheduleRepository;
         this.timeSlotRepository = timeSlotRepository;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -319,6 +326,38 @@ public class ScheduleServiceImpl implements ScheduleService {
         examList.add(exam);
         schedule.setExamsList(examList);
         scheduleRepository.saveAndFlush(schedule);
+    }
+
+    @Override
+    public ScheduleDto getScheduleForUserId(int userId, int weekOffset) {
+        boolean isHisProfile = customUserDetailsService.isHisProfile(SecurityUtil.getSessionUser(), userId);
+        if (!isHisProfile) {
+            throw new AccessDeniedException("User with ID:" + userId + " can't access this schedule!");
+        }
+        ScheduleDto scheduleDto = getFullScheduleForWeek(weekOffset);
+        if (scheduleDto != null) {
+            scheduleDto.setLectureList(scheduleDto.getLectureList().stream()
+                    .filter(lecture -> userIsInLecture(lecture, userId)).collect(Collectors.toList()));
+            scheduleDto.setExamList(scheduleDto.getExamList().stream().filter(exam -> userIsInExam(exam, userId))
+                    .collect(Collectors.toList()));
+        }
+        return scheduleDto;
+    }
+
+    public boolean userIsInLecture(LectureDto lecture, int userId) {
+        if (lecture.getProfessor().getId() == userId)
+            return true;
+        if (lecture.getCourse().getStudents().stream().anyMatch(student -> student.getId() == userId))
+            return true;
+        return false;
+    }
+
+    public boolean userIsInExam(ExamDto examDto, int userId) {
+        if (examDto.getProfessor().getId() == userId)
+            return true;
+        if (examDto.getAllStudents().stream().anyMatch(student -> student.getId() == userId))
+            return true;
+        return false;
     }
 
 }
