@@ -62,7 +62,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDto> getAllCourses(int page) {
         int size = 10;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Course> courses = courseRepository.findAll(pageable);
         List<CourseDto> courseDtos = new ArrayList<>();
         System.out.println("ABC" + courses);
