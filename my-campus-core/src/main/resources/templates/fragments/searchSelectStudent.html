@@ -28,7 +28,7 @@
       <div class="search-component" data-entity-type="student">
         <div class="position-relative">
           <div class="input-group">
-            <input type="text" class="form-control search-input" placeholder="Type students name..." autocomplete="off">
+            <input type="text" class="form-control search-input" placeholder="Type students name..." autocomplete="off" data-testid="student-search-input">
             <button class="btn btn-dark" type="button" id="searchButton">
               <i class="bi bi-search"></i>
             </button>
@@ -38,11 +38,11 @@
               <span class="visually-hidden">Loading...</span>
             </div>
           </div>
-          <div class="search-results"></div>
+          <div class="search-results" data-testid="student-search-results"></div>
         </div>
         <div class="cards-container mt-3">
           <div th:if="${course}">
-            <div th:replace="fragments/editCourseForm/studentCards :: studentCards" th:with="course = ${course}"></div>
+            <div th:replace="fragments/editCourseForm/studentCards :: studentCards" th:with="course = ${course}" data-testid="student-card"></div>
           </div>
         </div>
       </div>

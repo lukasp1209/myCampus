@@ -101,7 +101,7 @@
         card.innerHTML = `
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
-              <div class="card-title">${result.firstName} ${result.lastName} | ${result.email}</div>
+              <div class="card-title" data-testid="search-added-item">${result.firstName} ${result.lastName} | ${result.email}</div>
               <div class="d-flex gap-2">
                 <input type="text" class="form-control mb-2" name="${this.config.hiddenInputName}" value="${result.id}" hidden>
                 <input type="text" name="${this.config.hiddenInputNameDto}" value="${result.id}" hidden>
