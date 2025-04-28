@@ -87,12 +87,12 @@
                                         <div class="btn-group" role="group">
                                             <a th:href="@{/course/{courseId}(courseId=${course.id})}"
                                                 class="btn btn-sm btn-outline-dark"
-                                                th:data-testid="'course-view-' + ${course.id}">
+                                                th:data-testid="course-view">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                             <a th:href="@{/course/edit/{courseId}(courseId=${course.id})}"
                                                 class="btn btn-sm btn-outline-dark"
-                                                th:data-testid="'course-edit-' + ${course.id}">
+                                                th:data-testid="course-edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                         </div>
