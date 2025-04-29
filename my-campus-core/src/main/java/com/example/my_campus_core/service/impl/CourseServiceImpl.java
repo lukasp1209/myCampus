@@ -19,6 +19,7 @@ import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.CourseService;
+import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
 @Service
@@ -26,9 +27,12 @@ public class CourseServiceImpl implements CourseService {
 
     private CourseRepository courseRepository;
     private UserRepository userRepository;
+    private ScheduleService scheduleService;
     private Mappers mappers;
 
-    public CourseServiceImpl(CourseRepository courseRepository, UserRepository userRepository, Mappers mappers) {
+    public CourseServiceImpl(ScheduleService scheduleService, CourseRepository courseRepository,
+            UserRepository userRepository, Mappers mappers) {
+        this.scheduleService = scheduleService;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.mappers = mappers;
@@ -160,7 +164,9 @@ public class CourseServiceImpl implements CourseService {
         ResponseDto responseDto = new ResponseDto();
         Course course = courseRepository.findById(courseDto.getId())
                 .orElseThrow(() -> new NotFoundException("Course with ID:" + courseDto.getId() + " can't be updated"));
+
         if (course != null) {
+
             course.setName(courseDto.getName());
             course.setProfessor(userRepository.findById(courseDto.getProfessorId())
                     .orElseThrow(() -> new NotFoundException("Professor with ID" + courseDto.getProfessorId()
@@ -174,9 +180,9 @@ public class CourseServiceImpl implements CourseService {
             }
             course.setStudents(updatedStudents);
             course.setDescription(courseDto.getDescription());
-
-            courseRepository.saveAndFlush(course);
-
+            Course updatedCourse = courseRepository.saveAndFlush(course);
+            if (updatedCourse.getStudents().equals(course.getStudents()))
+                scheduleService.updateScheduleOnCourseUpdate(updatedCourse);
             responseDto.setStatus("success");
             responseDto.setMessage("Course " + course.getName() + " successfully updated.");
 

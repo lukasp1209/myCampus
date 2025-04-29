@@ -46,7 +46,10 @@
                     </a>
                     <a th:href="@{/exam/edit/{id}(id=${exam.id})}" class="btn btn-outline-light" sec:authorize="hasRole('ROLE_PROFESOR')" data-testid="exam-edit">
                         <i class="bi bi-pencil me-1"></i> Edit
-                    </a>                    
+                    </a>      
+                    <a th:href="@{/exam/enroll/{id}(id=${exam.id})}" class="btn btn-outline-light" sec:authorize="hasRole('ROLE_STUDENT')" data-testid="exam-edit">
+                        <i class="bi bi-person-plus"></i> Enroll
+                    </a>              
                 </div>
             </div>
         </div>
@@ -92,7 +95,7 @@
                 </div>
                 
                 <!-- Materials Card -->
-                <div class="card shadow-sm mb-4" data-testid="all-students-card">
+                <div class="card shadow-sm mb-4" data-testid="all-students-card" sec:authorize="hasRole('ROLE_PROFESOR')">
                     <div class="card shadow-sm">
                         <div class="card-header bg-white border-bottom-0">
                             <h5 class="card-title mb-0" data-testid="all-students-title">
@@ -124,7 +127,7 @@
             </div>
             
             <!-- Students Section -->
-            <div class="col-lg-4">
+            <div class="col-lg-4" sec:authorize="hasRole('ROLE_PROFESOR')">
                 <!-- Enrolled Students Card -->
                 <div class="card shadow-sm mb-4" data-testid="enrolled-students-card">
                     <div class="card-header bg-white border-bottom-0">

@@ -15,6 +15,7 @@ import com.example.my_campus_core.exceptions.InternalErrorException;
 import com.example.my_campus_core.exceptions.NotFoundException;
 import com.example.my_campus_core.models.Exam;
 import com.example.my_campus_core.models.TimeSlot;
+import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
 import com.example.my_campus_core.repository.ExamRepository;
 import com.example.my_campus_core.repository.RoomRepository;
@@ -31,6 +32,7 @@ public class ExamServiceImpl implements ExamService {
     private TimeSlotRepository timeSlotRepository;
     private ExamRepository examRepository;
     private ScheduleService scheduleService;
+    private UserRepository userRepository;
     private Mappers mapper;
 
     @Autowired
@@ -45,6 +47,7 @@ public class ExamServiceImpl implements ExamService {
         this.timeSlotRepository = timeSlotRepository;
         this.examRepository = examRepository;
         this.scheduleService = scheduleService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -84,11 +87,16 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public List<ExamDto> getAllExamsForProfessorWithId(int professorId) {
-        List<ExamDto> examDtos = examRepository.findAllByProfessorId(professorId).stream()
-                .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
-
-        return examDtos;
+    public List<ExamDto> getAllExamsForUserWithId(int userId) {
+        UserEntity forUser = userRepository.findById(userId)
+                .orElseThrow(() -> new InternalErrorException("Something went wrong!"));
+        if ("ROLE_PROFESOR".equals(forUser.getRole()))
+            return examRepository.findAllByProfessorId(userId).stream()
+                    .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
+        if ("ROLE_STUDENT".equals(forUser.getRole()))
+            return examRepository.findAllByAllStudents_Id(userId).stream()
+                    .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     @Override

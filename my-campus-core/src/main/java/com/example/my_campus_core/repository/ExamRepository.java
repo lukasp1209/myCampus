@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.my_campus_core.models.Exam;
-import com.example.my_campus_core.models.Lecture;
 
 public interface ExamRepository extends JpaRepository<Exam, Integer> {
     boolean existsByCourseId(Integer courseId);
@@ -20,4 +19,8 @@ public interface ExamRepository extends JpaRepository<Exam, Integer> {
     List<Exam> findTop3ByAllStudents_IdAndExamDateGreaterThanEqualOrderByExamDateAsc(
             Integer studentId,
             LocalDate date);
+
+    List<Exam> findAllByCourseId(int courseId);
+
+    List<Exam> findAllByAllStudents_Id(int studentId);
 }

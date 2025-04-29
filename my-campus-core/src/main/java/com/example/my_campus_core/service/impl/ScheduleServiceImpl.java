@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
@@ -422,6 +421,25 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new NotFoundException("Lecture with id: " + lectureId + " not found"));
 
         return mapper.lectureToLectureDto(lecture);
+    }
+
+    @Override
+    public void updateScheduleOnCourseUpdate(Course course) {
+        if (course == null)
+            return;
+
+        List<UserEntity> students = course.getStudents();
+        List<Lecture> lectures = lectureRepository.findAllByCourse_Id(course.getId());
+        List<Exam> exams = examRepository.findAllByCourseId(course.getId());
+        if (lectures != null && !lectures.isEmpty()) {
+            lectures.forEach(lecture -> lecture.setAllStudents(students));
+            lectureRepository.saveAllAndFlush(lectures);
+        }
+        if (exams != null && !exams.isEmpty()) {
+            exams.forEach(exam -> exam.setAllStudents(students));
+            examRepository.saveAllAndFlush(exams);
+        }
+
     }
 
 }

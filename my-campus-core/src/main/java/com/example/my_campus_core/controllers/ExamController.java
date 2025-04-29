@@ -32,7 +32,7 @@ public class ExamController {
     @GetMapping("/exams")
     public String getExamsPage(Model model) {
         model.addAttribute("exams", examService
-                .getAllExamsForProfessorWithId(userService.getUserByEmail(securityUtil.getSessionUser()).getId()));
+                .getAllExamsForUserWithId(userService.getUserByEmail(securityUtil.getSessionUser()).getId()));
         return "./exams";
     }
 
@@ -43,13 +43,13 @@ public class ExamController {
     }
 
     @GetMapping("/exam/{examId}")
-    public String getMethodName(Model model, @PathVariable int examId) {
+    public String getExamPage(Model model, @PathVariable int examId) {
         model.addAttribute("exam", examService.getExamById(examId));
         return "./exam";
     }
 
     @PostMapping("/exam/create")
-    public String postMethodName(@ModelAttribute ExamRequestDto examRequestDto) {
+    public String createNewExam(@ModelAttribute ExamRequestDto examRequestDto) {
         System.out.println(examRequestDto);
         examService.createNewExam(examRequestDto);
         return "redirect:/exams";
