@@ -13,4 +13,6 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
     List<Lecture> findTop3ByAllStudents_IdAndDateGreaterThanEqualOrderByDateAsc(
             Integer studentId,
             LocalDate date);
+
+    List<Lecture> findAllByCourse_Id(int courseId);
 }

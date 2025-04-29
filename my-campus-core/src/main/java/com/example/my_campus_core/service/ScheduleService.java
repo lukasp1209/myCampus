@@ -10,6 +10,7 @@ import com.example.my_campus_core.dto.ScheduleDto;
 import com.example.my_campus_core.dto.request.ExamRequestDto;
 import com.example.my_campus_core.dto.request.ScheduleRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
+import com.example.my_campus_core.models.Course;
 import com.example.my_campus_core.models.Exam;
 import com.example.my_campus_core.models.TimeSlot;
 
@@ -44,4 +45,6 @@ public interface ScheduleService {
     List<ExamDto> getUpcomingExamsForUserId(int userId);
 
     LectureDto getLectureById(int lectureId);
+
+    void updateScheduleOnCourseUpdate(Course course);
 }
