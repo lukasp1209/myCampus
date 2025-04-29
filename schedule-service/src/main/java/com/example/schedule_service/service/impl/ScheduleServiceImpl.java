@@ -80,7 +80,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         System.out.println("Final best solution found with score: " + solvedSchedule);
         SCHEDULE_ID = SCHEDULE_ID + 1;
-        // return solvedSchedule;
         return solvedSchedule;
     }
 

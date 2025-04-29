@@ -3,12 +3,14 @@ package com.example.my_campus_core.service.impl;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.my_campus_core.dto.CourseDto;
+import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
 import com.example.my_campus_core.dto.ScheduleDto;
@@ -26,7 +29,9 @@ import com.example.my_campus_core.dto.request.ScheduleBodyDto;
 import com.example.my_campus_core.dto.request.ScheduleRequestDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.dto.response.ScheduleSolutionResponseDto;
+import com.example.my_campus_core.exceptions.AccessDeniedException;
 import com.example.my_campus_core.exceptions.InternalErrorException;
+import com.example.my_campus_core.exceptions.NotFoundException;
 import com.example.my_campus_core.exceptions.UnsupportedEntityException;
 import com.example.my_campus_core.models.Course;
 import com.example.my_campus_core.models.Exam;
@@ -34,11 +39,16 @@ import com.example.my_campus_core.models.Lecture;
 import com.example.my_campus_core.models.Room;
 import com.example.my_campus_core.models.Schedule;
 import com.example.my_campus_core.models.TimeSlot;
+import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
+import com.example.my_campus_core.repository.ExamRepository;
+import com.example.my_campus_core.repository.LectureRepository;
 import com.example.my_campus_core.repository.RoomRepository;
 import com.example.my_campus_core.repository.ScheduleRepository;
 import com.example.my_campus_core.repository.TimeSlotRepository;
 import com.example.my_campus_core.repository.UserRepository;
+import com.example.my_campus_core.security.CustomUserDetailsService;
+import com.example.my_campus_core.security.SecurityUtil;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
@@ -49,6 +59,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     private UserRepository userRepository;
     private ScheduleRepository scheduleRepository;
     private TimeSlotRepository timeSlotRepository;
+    private LectureRepository lectureRepository;
+    private CustomUserDetailsService customUserDetailsService;
+    private ExamRepository examRepository;
     private Mappers mapper;
     private com.example.my_campus_core.util.TimeUtil timeUtil;
     @Value("${schedule-service.url}")
@@ -57,12 +70,16 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Autowired
     public ScheduleServiceImpl(RoomRepository roomRepository, CourseRepository courseRepository,
             UserRepository userRepository, ScheduleRepository scheduleRepository,
-            TimeSlotRepository timeSlotRepository) {
+            TimeSlotRepository timeSlotRepository, CustomUserDetailsService customUserDetailsService,
+            LectureRepository lectureRepository, ExamRepository examRepository) {
         this.roomRepository = roomRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.scheduleRepository = scheduleRepository;
         this.timeSlotRepository = timeSlotRepository;
+        this.customUserDetailsService = customUserDetailsService;
+        this.lectureRepository = lectureRepository;
+        this.examRepository = examRepository;
     }
 
     @Override
@@ -209,6 +226,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             newLecture.setProfessor(userRepository.findById(lecture.getProfessor().getId())
                     .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong! \\n" + //
                             " Please try again or contact platform support!")));
+            newLecture.setDate(dateFrom.with(TemporalAdjusters.nextOrSame(lecture.getTimeSlot().getDayOfWeek())));
+            newLecture.setAllStudents(newLecture.getCourse().getStudents());
             lectures.add(newLecture);
         }
         schedule.setLectureList(lectures);
@@ -319,6 +338,90 @@ public class ScheduleServiceImpl implements ScheduleService {
         examList.add(exam);
         schedule.setExamsList(examList);
         scheduleRepository.saveAndFlush(schedule);
+    }
+
+    @Override
+    public ScheduleDto getScheduleForUserId(int userId, int weekOffset) {
+        isHisProfile(userId);
+        ScheduleDto scheduleDto = getFullScheduleForWeek(weekOffset);
+        if (scheduleDto != null) {
+            scheduleDto.setLectureList(scheduleDto.getLectureList().stream()
+                    .filter(lecture -> userIsInLecture(lecture, userId)).collect(Collectors.toList()));
+            scheduleDto.setExamList(scheduleDto.getExamList().stream().filter(exam -> userIsInExam(exam, userId))
+                    .collect(Collectors.toList()));
+        }
+        return scheduleDto;
+    }
+
+    public boolean userIsInLecture(LectureDto lecture, int userId) {
+        if (lecture.getProfessor().getId() == userId)
+            return true;
+        if (lecture.getCourse().getStudents().stream().anyMatch(student -> student.getId() == userId))
+            return true;
+        return false;
+    }
+
+    public boolean userIsInExam(ExamDto examDto, int userId) {
+        if (examDto.getProfessor().getId() == userId)
+            return true;
+        if (examDto.getAllStudents().stream().anyMatch(student -> student.getId() == userId))
+            return true;
+        return false;
+    }
+
+    public boolean isHisProfile(int userId) {
+        boolean isHisProfile = customUserDetailsService.isHisProfile(SecurityUtil.getSessionUser(), userId);
+        if (!isHisProfile) {
+            throw new AccessDeniedException("User with ID:" + userId + " can't access this schedule!");
+        }
+        return isHisProfile;
+    }
+
+    @Override
+    public List<LectureDto> getUpcomingLecturesforUserId(int userId) {
+        isHisProfile(userId);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new InternalErrorException("Internal Error"));
+        if ("ROLE_PROFESOR".equals(user.getRole())) {
+            return lectureRepository
+                    .findTop3ByProfessor_IdAndDateGreaterThanEqualOrderByDateAsc(userId, LocalDate.now()).stream()
+                    .map(lecture -> mapper.lectureToLectureDto(lecture)).collect(Collectors.toList());
+        }
+        if ("ROLE_STUDENT".equals(user.getRole())) {
+            return lectureRepository
+                    .findTop3ByAllStudents_IdAndDateGreaterThanEqualOrderByDateAsc(userId, LocalDate.now()).stream()
+                    .map(lecture -> mapper.lectureToLectureDto(lecture)).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<ExamDto> getUpcomingExamsForUserId(int userId) {
+        isHisProfile(userId);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new InternalErrorException("Internal Error"));
+        if ("ROLE_PROFESOR".equals(user.getRole())) {
+            return examRepository
+                    .findTop3ByProfessor_IdAndExamDateGreaterThanEqualOrderByExamDateAsc(userId, LocalDate.now())
+                    .stream()
+                    .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
+        }
+        if ("ROLE_STUDENT".equals(user.getRole())) {
+            return examRepository
+                    .findTop3ByAllStudents_IdAndExamDateGreaterThanEqualOrderByExamDateAsc(userId, LocalDate.now())
+                    .stream()
+                    .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public LectureDto getLectureById(int lectureId) {
+
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new NotFoundException("Lecture with id: " + lectureId + " not found"));
+
+        return mapper.lectureToLectureDto(lecture);
     }
 
 }

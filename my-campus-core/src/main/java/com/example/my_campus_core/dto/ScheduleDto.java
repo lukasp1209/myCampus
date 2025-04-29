@@ -20,6 +20,7 @@ public class ScheduleDto {
     private LocalDate dateFrom;
     private LocalDate dateTo;
     private List<LectureDto> lectureList = new ArrayList<>();
+    private List<ExamDto> examList = new ArrayList<>();
     private List<RoomDto> roomList = new ArrayList<>();
     private List<TimeSlot> timeSlotList = new ArrayList<>();
 

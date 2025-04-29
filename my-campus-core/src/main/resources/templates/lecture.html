@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commonHead :: head" pageTitle="Schedule Management">
+</head>
+
+<body class="bg-light">
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+    <!-- Header Section -->
+    <div class="bg-dark text-white py-4 mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 fw-bold mb-0 text-white" data-testid="lecture-title">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        Lecture <span th:text="${lecture.course.name}">Course Name</span>
+                    </h1>
+                </div>
+                <div>
+                    <a href="/" class="btn btn-outline-light" data-testid="lecture-back">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </a>                  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <div class="row g-4">
+            <!-- Lecture Details Card -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4" data-testid="lecture-details-card">
+                    <div class="card-header bg-white border-bottom-0">
+                        <h5 class="card-title mb-0" data-testid="lecture-details-title">
+                            <i class="bi bi-info-circle me-2"></i>Lecture Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6 class="text-muted">Description</h6>
+                            <p class="mb-0" th:text="${lecture.course.description}" data-testid="lecture-description">
+
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted">Professor</h6>
+                                <p class="mb-0" th:text="${lecture.professor.firstName + ' ' + lecture.professor.lastName}" data-testid="lecture-professor">Professor Name</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted">Room</h6>
+                                <p class="mb-0" th:text="${lecture.room.name}" data-testid="lecture-room">Room 1</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted">Date</h6>
+                                <p class="mb-0" th:text="${#temporals.format(lecture.date, 'dd.MM.yyyy')}" data-testid="lecture">10.1.2025</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h6 class="text-muted">Time</h6>
+                                <p class="mb-0" th:text="${lecture.timeSlot.startTime}" data-testid="lecture">09:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Materials Card -->
+                <div class="card shadow-sm mb-4" data-testid="all-students-card" sec:authorize="!hasRole('ROLE_STUDENT')">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white border-bottom-0">
+                            <h5 class="card-title mb-0" data-testid="all-students-title">
+                                <i class="bi bi-person-lines-fill me-2"></i>All Course Students
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0" data-testid="all-students-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>ID</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="student : ${lecture.allStudents}" th:data-testid="'all-student-row-' + ${student.id}">
+                                            <td th:text="${student.id}">S12345</td>
+                                            <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                                            <td><a class="btn btn-sm btn-outline-dark" th:href="@{/user/{id}(id=${student.id})}" th:data-testid="'view-student-' + ${student.id}"><i class="bi bi-eye"></i> View</a></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Students Section -->
+            <div class="col-lg-4">
+                <!-- Enrolled Students Card -->
+                <div class="card shadow-sm mb-4" data-testid="attended-students-card" sec:authorize="!hasRole('ROLE_STUDENT')" th:if="${lecture.attendedStudents}">
+                    <div class="card-header bg-white border-bottom-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0" data-testid="attended-students-card">
+                                <i class="bi bi-people-fill me-2"></i>Attended Students
+                            </h5>
+                            <span class="badge bg-dark" data-testid="attended-count">24/45</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" data-testid="attended-students-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>ID</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${lecture.attendedStudents.isEmpty()}" data-testid="no-enrolled-students">
+                                        <td>No Students Enrolled</td>
+                                    </tr>
+                                    <tr th:each="student : ${lecture.attendedStudents}" th:data-testid="'attended-student-row-' + ${student.id}">
+                                        <td th:text="${student.id}">S12345</td>
+                                        <td th:text="${student.firstName + ' ' + student.lastName}">John Doe</td>
+                                        <td><span class="badge bg-dark" th:data-testid="'attended-status-' + ${student.id}">Enrolled</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script th:replace="fragments/javaScript :: javaScript"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

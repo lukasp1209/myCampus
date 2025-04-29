@@ -63,7 +63,11 @@ public class Mappers {
         lectureDto.setProfessor(userEntityToDto(lecture.getProfessor()));
         lectureDto.setRoom(lecture.getRoom());
         lectureDto.setTimeSlot(lecture.getTimeSlot());
-
+        lectureDto.setDate(lecture.getDate());
+        lectureDto.setAllStudents(lecture.getAllStudents().stream().map(student -> userEntityToDto(student))
+                .collect(Collectors.toList()));
+        lectureDto.setAttendedStudents(lecture.getAttendedStudents().stream().map(student -> userEntityToDto(student))
+                .collect(Collectors.toList()));
         return lectureDto;
     }
 
@@ -85,8 +89,14 @@ public class Mappers {
             RoomDto newRoomDto = roomToRoomDto(room);
             roomDtos.add(newRoomDto);
         }
+        List<ExamDto> examDtos = new ArrayList<>();
+        for (Exam exam : schedule.getExamsList()) {
+            ExamDto examDto = examToExamDto(exam);
+            examDtos.add(examDto);
+        }
         scheduleDto.setRoomList(roomDtos);
         scheduleDto.setTimeSlotList(schedule.getTimeSlotList());
+        scheduleDto.setExamList(examDtos);
         return scheduleDto;
     }
 

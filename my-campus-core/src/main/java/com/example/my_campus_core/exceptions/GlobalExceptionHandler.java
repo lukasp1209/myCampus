@@ -47,4 +47,13 @@ public class GlobalExceptionHandler {
 
         return "redirect:/exception";
     }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public String handleInternalErrorException(AccessDeniedException exception,
+            RedirectAttributes redirectAttributes) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse("FORBIDDEN", exception.getMessage(), 403);
+        redirectAttributes.addFlashAttribute("exception", exceptionResponse);
+
+        return "redirect:/exception";
+    }
 }
