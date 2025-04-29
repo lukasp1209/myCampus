@@ -332,6 +332,19 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findByDateFromAndDateTo(datesFromAndTo.get(0), datesFromAndTo.get(1));
         if (schedule == null) {
             // Add some logice to create new schedule
+            Schedule newSchedule = new Schedule();
+            newSchedule.setDateFrom(datesFromAndTo.get(0));
+            newSchedule.setDateTo(datesFromAndTo.get(1));
+
+            newSchedule.setLectureList(new ArrayList<>());
+            List<Exam> examList = new ArrayList<>();
+            examList.add(exam);
+            newSchedule.setExamsList(examList);
+            newSchedule.setRoomList(roomRepository.findAll());
+            newSchedule.setTimeSlotList(timeSlotRepository.findAll());
+            scheduleRepository.saveAndFlush(newSchedule);
+            return;
+
         }
         List<Exam> examList = schedule.getExamsList();
         examList.add(exam);
