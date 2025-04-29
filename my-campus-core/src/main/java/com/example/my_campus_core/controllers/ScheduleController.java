@@ -1,14 +1,5 @@
 package com.example.my_campus_core.controllers;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.TextStyle;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +15,6 @@ import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.service.ScheduleService;
 
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ScheduleController {
@@ -63,7 +53,10 @@ public class ScheduleController {
     @GetMapping("/schedule/{userId}")
     public String getSchedulePage(@PathVariable int userId, @RequestParam(defaultValue = "0") int weekOffset,
             Model model) {
+        model.addAttribute("datesInWeek", scheduleService.schedulePageGeneration(weekOffset));
         model.addAttribute("schedule", scheduleService.getScheduleForUserId(userId, weekOffset));
+        model.addAttribute("upcomingLectures", scheduleService.getUpcomingLecturesforUserId(userId));
+        model.addAttribute("upcomingExams", scheduleService.getUpcomingExamsForUserId(userId));
         return "./schedule";
     }
 

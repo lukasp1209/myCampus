@@ -3,6 +3,8 @@ package com.example.my_campus_core.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.example.my_campus_core.dto.ExamDto;
+import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
 import com.example.my_campus_core.dto.ScheduleDto;
 import com.example.my_campus_core.dto.request.ExamRequestDto;
@@ -37,4 +39,9 @@ public interface ScheduleService {
 
     ScheduleDto getScheduleForUserId(int userId, int weekOffset);
 
+    List<LectureDto> getUpcomingLecturesforUserId(int userId);
+
+    List<ExamDto> getUpcomingExamsForUserId(int userId);
+
+    LectureDto getLectureById(int lectureId);
 }

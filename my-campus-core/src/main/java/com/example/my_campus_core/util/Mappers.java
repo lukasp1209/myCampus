@@ -63,7 +63,11 @@ public class Mappers {
         lectureDto.setProfessor(userEntityToDto(lecture.getProfessor()));
         lectureDto.setRoom(lecture.getRoom());
         lectureDto.setTimeSlot(lecture.getTimeSlot());
-
+        lectureDto.setDate(lecture.getDate());
+        lectureDto.setAllStudents(lecture.getAllStudents().stream().map(student -> userEntityToDto(student))
+                .collect(Collectors.toList()));
+        lectureDto.setAttendedStudents(lecture.getAttendedStudents().stream().map(student -> userEntityToDto(student))
+                .collect(Collectors.toList()));
         return lectureDto;
     }
 

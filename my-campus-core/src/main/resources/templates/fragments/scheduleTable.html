@@ -37,15 +37,17 @@
                                 <div class="card border-0 shadow-sm mb-2 hover-shadow" data-testid="lecture-card">
                                     <div class="card-body p-3">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div class="d-flex g-4">
+                                            <div class="d-flex gap-1 justify-content-center align-items-center">
                                                 <h6 class="card-title mb-0 fw-bold text-truncate" 
                                                     th:text="${lecture.course.name}"
                                                     style="max-width: 180px;" data-testid="lecture-course-name">Course Name</h6>
                                                 <span class="badge bg-dark bg-opacity-5 fs-7 text-light" 
                                                     th:text="${lecture.course.id}" data-testid="lecture-course-id">Course ID</span>
-                                                <a th:href="@{/lecture/{id}(id=${lecture.id})}" sec:authorize="!hasRole('ROLE_ADMIN')"></a>
-                                            </div>
-                                            <span class="badge bg-primary bg-opacity-10 text-primary fs-8">Lecture</span>
+                                                </div>
+                                                <div>
+                                                    <span class="badge bg-primary bg-opacity-10 text-primary fs-8">Lecture</span>
+                                                    <a th:href="@{/lecture/{id}(id=${lecture.id})}" sec:authorize="!hasRole('ROLE_ADMIN')" class="btn btn-dark btn-sm px-1 py-0"><i class="bi bi-eye"></i></a>
+                                                </div>
                                         </div>
                                         
                                         <div class="d-flex justify-content-between align-items-center mb-2 text-light">
@@ -82,7 +84,7 @@
                                 <div class="card border-0 shadow-sm mb-2 hover-shadow" data-testid="exam-card">
                                     <div class="card-body p-3">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div class="d-flex g-4">
+                                            <div class="d-flex gap-1">
                                                 <h6 class="card-title mb-0 fw-bold text-truncate" 
                                                     th:text="${exam.course.name}"
                                                     style="max-width: 180px;" data-testid="exam-course-name">Course Name</h6>
@@ -90,7 +92,10 @@
                                                     th:text="${exam.course.id}" data-testid="exam-course-id">Course ID</span>
                                                 <a th:href="@{/exam/{id}(id=${exam.id})}" sec:authorize="!hasRole('ROLE_ADMIN')"></a>
                                             </div>
-                                            <span class="badge bg-danger bg-opacity-10 text-danger fs-8">Exam</span>
+                                            <div>
+                                                <span class="badge bg-danger bg-opacity-10 text-danger fs-8">Exam</span>
+                                                <a th:href="@{/exam/{id}(id=${exam.id})}" sec:authorize="!hasRole('ROLE_ADMIN')" class="btn btn-dark btn-sm px-1 py-0"><i class="bi bi-eye"></i></a>
+                                            </div>
                                         </div>
                                         
                                         <div class="d-flex justify-content-between align-items-center mb-2 text-light">
