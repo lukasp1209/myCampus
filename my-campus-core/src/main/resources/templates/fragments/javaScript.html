@@ -16,6 +16,8 @@
                     const hiddenInput = document.getElementById("hiddenCurrentUserId");
                     myProfileElement.textContent = data.firstName + ' ' + data.lastName;
                     myProfileElement.href = '/user/' + data.id;
+                    const scheduleLink = document.getElementById("scheduleNavLink")
+                    scheduleLink.href= '/schedule/' + data.id
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);

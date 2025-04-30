@@ -13,7 +13,7 @@ public interface ExamService {
 
     ExamDto getExamCourseId(int courseId);
 
-    List<ExamDto> getAllExamsForProfessorWithId(int professorId);
+    List<ExamDto> getAllExamsForUserWithId(int professorId);
 
     ExamDto getExamById(int examId);
 

@@ -24,6 +24,9 @@
                         <a class="nav-link active" aria-current="page" href="/courses" data-testid="nav-courses">Courses</a>
                     </li>
                     <li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')">
+                        <a class="nav-link active" aria-current="page" href="/schedule/" data-testid="nav-schedule" id="scheduleNavLink">Schedule</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')">
                         <a class="nav-link active" aria-current="page" href="/exams" data-testid="nav-exams">Exams</a>
                     </li>
                     <li class="nav-item">
