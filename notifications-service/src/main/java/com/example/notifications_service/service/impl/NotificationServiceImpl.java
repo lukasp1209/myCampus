@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.example.notifications_service.controllers.NotificationConsumer;
 import com.example.notifications_service.dto.NotificationConsumerDto;
@@ -35,5 +36,12 @@ public class NotificationServiceImpl implements NotificationService {
     public List<Notification> getNotifcationsForUser(Integer userId) {
         List<Notification> notifications = notificationRepository.findByUserId(userId);
         return notifications;
+    }
+
+    @Override
+    public void notificationRead(int notificationId) {
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        notification.setStatus(Notification.Status.READ);
+        notificationRepository.saveAndFlush(notification);
     }
 }

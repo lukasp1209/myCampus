@@ -32,4 +32,11 @@ public class NotificationControllerREST {
         return new ResponseEntity<>(notificationService.getNotifcationsForUser(userId), HttpStatus.OK);
     }
 
+    @PostMapping("/status/{notificationId}")
+    public ResponseEntity notificationRead(@PathVariable int notificationId) {
+        notificationService.notificationRead(notificationId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
