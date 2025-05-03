@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   postgres:
     image: postgres:13-alpine
@@ -6,8 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: core_backend
     ports:
-      # Exposed for external tools
-      - "1111:5432"  
+      - "1111:5432"  # Exposed for external tools
     volumes:
       - postgres-core-data:/var/lib/postgresql/data
     healthcheck:
@@ -15,6 +16,27 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - app-network
+
+
+  postgres2:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: notifications_db
+    ports:
+      - "1112:5432"  # Exposed for external tools
+    volumes:
+      - postgres-notifications-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -22,24 +44,68 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      # Access pgAdmin at http://localhost:5050
-      - "5050:80"  
+      - "5050:80"  # Access pgAdmin at http://localhost:5050
     depends_on:
       - postgres
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"    # AMQP port for Spring Boot communication
+      - "15672:15672"  # Management UI port
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app-network
+
   my-campus-core:
     build: ./
     ports:
       - "80:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/core_backend
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
       - SCHEDULE_SERVICE_URL=http://schedule-service:8081
     depends_on:
       postgres:
-        condition: service_healthy 
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      schedule-service:
+        condition: service_started
+    networks:
+      - app-network
+
   schedule-service:
     build: ../schedule-service/
     ports:
       - "8081:8081"
+    networks:
+      - app-network
 
 volumes:
   postgres-core-data:
+    name: postgres-core-data
+  rabbitmq_data:
+    name: rabbitmq_data
+  postgres-notifications-data:
+
+networks:
+  app-network:
+    driver: bridge

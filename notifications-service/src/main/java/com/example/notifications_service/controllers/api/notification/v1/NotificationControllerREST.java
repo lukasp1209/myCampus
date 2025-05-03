@@ -27,11 +27,6 @@ public class NotificationControllerREST {
         this.notificationService = notificationService;
     }
 
-    @PostMapping("new")
-    public void newNotification(@RequestBody NotificationDto notificationDto) {
-        notificationService.newNotification(notificationDto);
-    }
-
     @GetMapping("{userId}")
     public ResponseEntity getMethodName(@PathVariable int userId) {
         return new ResponseEntity<>(notificationService.getNotifcationsForUser(userId), HttpStatus.OK);
