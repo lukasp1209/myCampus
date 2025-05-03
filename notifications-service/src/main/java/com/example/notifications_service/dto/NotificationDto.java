@@ -7,4 +7,5 @@ public class NotificationDto {
     private int id;
     private int userId;
     private String message;
+    private String Status;
 }
