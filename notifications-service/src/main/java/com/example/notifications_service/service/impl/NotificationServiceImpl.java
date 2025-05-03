@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.notifications_service.controllers.NotificationConsumer;
+import com.example.notifications_service.dto.NotificationConsumerDto;
 import com.example.notifications_service.dto.NotificationDto;
 import com.example.notifications_service.models.Notification;
 import com.example.notifications_service.repository.NotificationRepository;
@@ -22,7 +24,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void newNotification(NotificationDto notificationDto) {
+    public void newNotification(NotificationConsumerDto notificationDto) {
         Notification notification = new Notification();
         notification.setUserId(notificationDto.getUserId());
         notification.setMessage(notificationDto.getMessage());

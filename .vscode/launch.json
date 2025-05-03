@@ -9,6 +9,16 @@
             "projectName": "schedule-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-NotificationsServiceApplication<notifications-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.notifications_service.NotificationsServiceApplication",
+            "projectName": "notifications-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
