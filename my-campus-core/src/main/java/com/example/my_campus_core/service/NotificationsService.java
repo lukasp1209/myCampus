@@ -1,7 +1,8 @@
 package com.example.my_campus_core.service;
 
-import com.example.my_campus_core.dto.Notification;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public interface NotificationsService {
-    void sendNotification(Notification notification);
+    void sendNotification(String message, int userId);
 }

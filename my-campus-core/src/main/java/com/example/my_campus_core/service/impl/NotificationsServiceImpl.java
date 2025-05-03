@@ -14,7 +14,10 @@ public class NotificationsServiceImpl implements NotificationsService {
     private RabbitTemplate rabbitTemplate;
 
     @Override
-    public void sendNotification(Notification notification) {
+    public void sendNotification(String message, int userId) {
+        Notification notification = new Notification();
+        notification.setMessage(message);
+        notification.setUserId(userId);
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, notification);
     }
 
