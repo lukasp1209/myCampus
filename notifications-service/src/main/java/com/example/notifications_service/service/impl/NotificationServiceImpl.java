@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -34,7 +35,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> getNotifcationsForUser(Integer userId) {
-        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        List<Notification> notifications = notificationRepository.findByUserId(userId,
+                Sort.by(Sort.Direction.DESC, "id"));
         return notifications;
     }
 

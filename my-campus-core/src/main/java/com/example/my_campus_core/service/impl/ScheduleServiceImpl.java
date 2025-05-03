@@ -3,6 +3,7 @@ package com.example.my_campus_core.service.impl;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ import com.example.my_campus_core.repository.TimeSlotRepository;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.security.CustomUserDetailsService;
 import com.example.my_campus_core.security.SecurityUtil;
+import com.example.my_campus_core.service.NotificationsService;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
@@ -62,6 +64,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     private CustomUserDetailsService customUserDetailsService;
     private ExamRepository examRepository;
     private Mappers mapper;
+    private NotificationsService notificationsService;
     private com.example.my_campus_core.util.TimeUtil timeUtil;
     @Value("${schedule-service.url}")
     private String scheduleServiceUrl;
@@ -70,7 +73,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleServiceImpl(RoomRepository roomRepository, CourseRepository courseRepository,
             UserRepository userRepository, ScheduleRepository scheduleRepository,
             TimeSlotRepository timeSlotRepository, CustomUserDetailsService customUserDetailsService,
-            LectureRepository lectureRepository, ExamRepository examRepository) {
+            LectureRepository lectureRepository, ExamRepository examRepository,
+            NotificationsService notificationsService) {
         this.roomRepository = roomRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
@@ -79,6 +83,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.customUserDetailsService = customUserDetailsService;
         this.lectureRepository = lectureRepository;
         this.examRepository = examRepository;
+        this.notificationsService = notificationsService;
     }
 
     @Override
@@ -182,7 +187,25 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<LocalDate> weekDates = schedulePageGeneration(weekOffset);
         Schedule schedule = saveSchedule(scheduleSolution, weekDates.get(0), weekDates.get(4));
         ScheduleDto scheduleDto = Mappers.scheduleToScheduleDto(schedule);
+        sendNotificationsForNewSchedule(schedule);
         return scheduleDto;
+    }
+
+    public void sendNotificationsForNewSchedule(Schedule schedule) {
+        schedule.getLectureList().forEach(lecture -> {
+            notificationsService.sendNotification("Lecture " + lecture.getCourse().getName()
+                    + " has beed scheduled on " + lecture.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                    + " at " + lecture.getTimeSlot().getStartTime()
+                    + " in " + lecture.getRoom().getName() + ".", lecture.getProfessor().getId());
+            lecture.getAllStudents().forEach(student -> {
+                notificationsService.sendNotification("Lecture " + lecture.getCourse().getName()
+                        + " has beed scheduled on "
+                        + lecture.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                        + " at " + lecture.getTimeSlot().getStartTime()
+                        + " in " + lecture.getRoom().getName() + ".", student.getId());
+            });
+        });
+
     }
 
     public ResponseEntity<ScheduleSolutionResponseDto> scheduleGenerationRequest(
