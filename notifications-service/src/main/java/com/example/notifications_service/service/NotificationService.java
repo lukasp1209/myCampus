@@ -11,4 +11,6 @@ public interface NotificationService {
     void newNotification(NotificationConsumerDto notificationDto);
 
     List<Notification> getNotifcationsForUser(Integer userId);
+
+    void notificationRead(int notificationId);
 }

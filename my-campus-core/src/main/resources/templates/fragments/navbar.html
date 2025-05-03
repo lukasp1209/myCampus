@@ -32,6 +32,9 @@
                     <li class="nav-item">
                         </ul>
                         <ul class="navbar-nav ms-auto">
+                            <li sec:authorize="!hasRole('ROLE_ADMIN')">
+                                <div th:replace="fragments/notifications :: notifications"></div>
+                            </li>
                             <li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')">
                                 <span class="nav-link active">
                                     Hello, <a aria-current="page" id="myProfile" href="/user/" style="text-decoration: none; color: black;" data-testid="nav-profile">My Profile</a>
