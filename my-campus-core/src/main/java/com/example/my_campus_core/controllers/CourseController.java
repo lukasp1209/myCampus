@@ -1,5 +1,7 @@
 package com.example.my_campus_core.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.my_campus_core.dto.CourseDto;
+import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.security.CustomUserDetailsService;
 import com.example.my_campus_core.security.SecurityUtil;
@@ -20,7 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class CourseController {
-
+    private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
     private CourseService courseService;
     private CustomUserDetailsService customUserDetailsService;
     private UserService userService;
@@ -41,27 +44,43 @@ public class CourseController {
 
     @GetMapping("/course/managment")
     public String getCourseManagmentPage(@RequestParam(defaultValue = "0") int page, Model model) {
-        model.addAttribute("courses", courseService.getAllCourses(page)); // Add the list of courses to the model
+        logger.info("Accessing course management page with page number: {}", page);
+        model.addAttribute("courses", courseService.getAllCourses(page));
         model.addAttribute("page", page);
         int totalPages = courseService.totalCourses(10);
-        if (totalPages == 0)
+        if (totalPages == 0) {
+            logger.debug("No courses found, setting total pages to 1");
             totalPages++;
+        }
         model.addAttribute("totalPages", totalPages);
-        System.out.println("Total Pages " + courseService.totalCourses(10));
-        return "./courseManagment"; // Return the name of the course management view (e.g., courseManagment.html)
+        logger.debug("Total pages calculated: {}", totalPages);
+        return "./courseManagment";
     }
 
     @GetMapping("/course/{courseId}")
     public String getCoursePage(@PathVariable int courseId, Model model) {
-        model.addAttribute("course", courseService.getCourseById(courseId));
-        model.addAttribute("setExam", !examService.examForCourseExists(courseId));
-        model.addAttribute("exam", examService.getExamCourseId(courseId));
-        System.out.println(examService.getExamCourseId(courseId));
-        return "./course"; // Return the name of the course view (e.g., course.html)
+        logger.info("Accessing course page for course ID: {}", courseId);
+        CourseDto course = courseService.getCourseById(courseId);
+        if (course == null) {
+            logger.warn("Course not found for ID: {}", courseId);
+            return "redirect:/course/managment";
+        }
+        model.addAttribute("course", course);
+        
+        boolean hasExam = examService.examForCourseExists(courseId);
+        logger.debug("Exam exists for course {}: {}", courseId, hasExam);
+        model.addAttribute("setExam", !hasExam);
+        
+        ExamDto exam = examService.getExamCourseId(courseId);
+        logger.debug("Retrieved exam for course {}: {}", courseId, exam);
+        model.addAttribute("exam", exam);
+        
+        return "./course";
     }
 
     @GetMapping("/courses")
     public String getCoursesPage(Model model) {
+        logger.info("Courses page /courses accessed!");
         model.addAttribute("courses",
                 courseService
                         .getCoursesByUserId(customUserDetailsService.getUserIdByEmail(SecurityUtil.getSessionUser()),
