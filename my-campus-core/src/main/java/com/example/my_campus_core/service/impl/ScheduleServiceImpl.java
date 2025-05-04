@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.my_campus_core.dto.AttendanceDto;
 import com.example.my_campus_core.dto.CourseDto;
 import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.LectureDto;
@@ -476,6 +477,23 @@ public class ScheduleServiceImpl implements ScheduleService {
             examRepository.saveAllAndFlush(exams);
         }
 
+    }
+
+    @Override
+    public boolean isLectureNow(int lectureId) {
+        LocalDate today = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        AttendanceDto attendance = new AttendanceDto();
+        Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> new NotFoundException("Lecture with ID: " + lectureId + " not found!"));
+        if (lecture.getDate().equals(today)) {
+            if (time.isAfter(lecture.getTimeSlot().getStartTime())
+                    && time.isBefore(lecture.getTimeSlot().getEndTime())) {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
 }
