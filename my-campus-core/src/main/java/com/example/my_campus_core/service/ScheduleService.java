@@ -3,6 +3,7 @@ package com.example.my_campus_core.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.example.my_campus_core.dto.AttendanceDto;
 import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.LectureDto;
 import com.example.my_campus_core.dto.RoomDto;
@@ -47,4 +48,6 @@ public interface ScheduleService {
     LectureDto getLectureById(int lectureId);
 
     void updateScheduleOnCourseUpdate(Course course);
+
+    boolean isLectureNow(int lectureId);
 }
