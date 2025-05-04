@@ -20,7 +20,12 @@
                             </form>
                     `
                 }else{
-                    console.log("Attended this course!!")
+                    const statusAttendance = document.getElementById("statusAttendance")
+                    statusAttendance.innerHTML = `
+                        <span class="text-success">
+                            <i class="bi bi-check-circle"></i> Attended
+                        </span>
+                    `
                 }
             }).catch(error => console.error(error))
     })
