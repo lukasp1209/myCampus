@@ -1,6 +1,7 @@
 package com.example.my_campus_core.service.impl;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +15,6 @@ import com.example.my_campus_core.dto.response.ResponseDto;
 import com.example.my_campus_core.exceptions.InternalErrorException;
 import com.example.my_campus_core.exceptions.NotFoundException;
 import com.example.my_campus_core.models.Exam;
-import com.example.my_campus_core.models.TimeSlot;
 import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
 import com.example.my_campus_core.repository.ExamRepository;
@@ -22,6 +22,7 @@ import com.example.my_campus_core.repository.RoomRepository;
 import com.example.my_campus_core.repository.TimeSlotRepository;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.ExamService;
+import com.example.my_campus_core.service.NotificationsService;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
@@ -34,6 +35,7 @@ public class ExamServiceImpl implements ExamService {
     private ScheduleService scheduleService;
     private UserRepository userRepository;
     private Mappers mapper;
+    private NotificationsService notificationsService;
 
     @Autowired
     public ExamServiceImpl(CourseRepository courseRepository,
@@ -41,13 +43,15 @@ public class ExamServiceImpl implements ExamService {
             RoomRepository roomRepository,
             TimeSlotRepository timeSlotRepository,
             ExamRepository examRepository,
-            ScheduleService scheduleService) {
+            ScheduleService scheduleService,
+            NotificationsService notificationsService) {
         this.courseRepository = courseRepository;
         this.roomRepository = roomRepository;
         this.timeSlotRepository = timeSlotRepository;
         this.examRepository = examRepository;
         this.scheduleService = scheduleService;
         this.userRepository = userRepository;
+        this.notificationsService = notificationsService;
     }
 
     @Override
@@ -69,6 +73,13 @@ public class ExamServiceImpl implements ExamService {
 
         Exam savedExam = examRepository.save(newExam);
         scheduleService.addExamToSchedule(examRequestDto.getExamDate(), savedExam);
+        savedExam.getAllStudents().forEach(student -> {
+            notificationsService.sendNotification("Exam for course " + savedExam.getCourse().getName()
+                    + " has been set on " + savedExam.getExamDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                    + " at " + savedExam.getTimeSlot().getStartTime() + " in " + savedExam.getRoom().getName()
+                    + " room.",
+                    student.getId());
+        });
         return responseDto;
     }
 
