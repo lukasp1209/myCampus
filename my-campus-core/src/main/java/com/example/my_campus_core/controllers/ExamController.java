@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.my_campus_core.dto.UserDto;
 import com.example.my_campus_core.dto.request.ExamRequestDto;
@@ -45,6 +46,8 @@ public class ExamController {
     @GetMapping("/exam/{examId}")
     public String getExamPage(Model model, @PathVariable int examId) {
         model.addAttribute("exam", examService.getExamById(examId));
+        model.addAttribute("enrolled",
+                examService.amIEnrolled(userService.getUserByEmail(securityUtil.getSessionUser()).getId(), examId));
         return "./exam";
     }
 
@@ -52,6 +55,14 @@ public class ExamController {
     public String createNewExam(@ModelAttribute ExamRequestDto examRequestDto) {
         System.out.println(examRequestDto);
         examService.createNewExam(examRequestDto);
+        return "redirect:/exams";
+    }
+
+    @PostMapping("/exam/{examId}/enroll")
+    public String enrollToExam(@PathVariable int examId, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("response", examService
+                .enrollStudentToExam(userService.getUserByEmail(securityUtil.getSessionUser()).getId(), examId));
+
         return "redirect:/exams";
     }
 

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.my_campus_core.dto.ExamDto;
 import com.example.my_campus_core.dto.request.ExamRequestDto;
@@ -106,7 +107,15 @@ public class ExamServiceImpl implements ExamService {
                     .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
         if ("ROLE_STUDENT".equals(forUser.getRole()))
             return examRepository.findAllByAllStudents_Id(userId).stream()
-                    .map(exam -> mapper.examToExamDto(exam)).collect(Collectors.toList());
+                    .map(exam -> {
+                        ExamDto examDto = mapper.examToExamDto(exam);
+                        if (examDto.getEnrolledStudents().contains(Mappers.userEntityToDto(forUser))) {
+                            examDto.setEnrolled(true);
+                        } else {
+                            examDto.setEnrolled(false);
+                        }
+                        return examDto;
+                    }).collect(Collectors.toList());
         return new ArrayList<>();
     }
 
@@ -114,6 +123,27 @@ public class ExamServiceImpl implements ExamService {
     public ExamDto getExamById(int examId) {
         return mapper.examToExamDto(examRepository.findById(examId)
                 .orElseThrow(() -> new NotFoundException("Exam with ID:" + examId + " does not exist")));
+    }
+
+    @Transactional
+    @Override
+    public ResponseDto enrollStudentToExam(int userId, int examId) {
+        ResponseDto responseDto = new ResponseDto();
+        UserEntity enrollStudent = userRepository.findById(userId)
+                .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong"));
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new InternalErrorException("Oops! Something went wrong"));
+
+        exam.getEnrolledStudents().add(enrollStudent);
+        Exam examSaved = examRepository.save(exam);
+        responseDto.setStatus("success");
+        responseDto.setMessage("Successfully enrolled to " + exam.getCourse().getName() + " exam.");
+        return responseDto;
+    }
+
+    @Override
+    public boolean amIEnrolled(int userId, int examId) {
+        return examRepository.isStudentEnrolledInExam(userId, examId);
     }
 
 }
