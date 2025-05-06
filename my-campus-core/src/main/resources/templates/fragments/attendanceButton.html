@@ -14,6 +14,7 @@
                 console.log(data)
                 if (!data.attending) {
                     const attendanceForm = document.getElementById('attendanceForm')
+                    if(attendanceForm === null) return
                     attendanceForm.innerHTML = `
                             <form method="post" action="/attendance/${data.lectureId}?userId=${data.userId}">
                                 <button class="btn btn-outline-light" type="submit">Mark as Attending</button>

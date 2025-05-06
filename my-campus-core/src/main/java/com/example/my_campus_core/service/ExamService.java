@@ -17,4 +17,8 @@ public interface ExamService {
 
     ExamDto getExamById(int examId);
 
+    ResponseDto enrollStudentToExam(int userId, int examId);
+
+    boolean amIEnrolled(int userId, int examId);
+
 }

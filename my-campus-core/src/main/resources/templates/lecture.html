@@ -17,7 +17,7 @@
                     </h1>
                 </div>
                 <div class="d-flex gap-2">
-                    <div sec:authorize="hasRole('ROLE_STUDENT')" id="attendanceForm">
+                    <div sec:authorize="hasRole('ROLE_STUDENT')" id="attendanceForm" th:if="${isLectureNow}">
                         
                     </div>
                     <a href="/" class="btn btn-outline-light" data-testid="lecture-back">
@@ -149,6 +149,7 @@
             <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
         </div>
     </div>
+    
 
 
     <script th:replace="fragments/javaScript :: javaScript"></script>

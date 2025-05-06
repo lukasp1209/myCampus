@@ -21,7 +21,7 @@ public class LectureController {
     @GetMapping("/lecture/{lectureId}")
     public String getLecturePage(@PathVariable int lectureId, Model model) {
         model.addAttribute("lecture", scheduleService.getLectureById(lectureId));
-        model.addAttribute("markAttendance", scheduleService.isLectureNow(lectureId));
+        model.addAttribute("isLectureNow", scheduleService.isLectureNow(lectureId));
         return "./lecture";
     }
 
