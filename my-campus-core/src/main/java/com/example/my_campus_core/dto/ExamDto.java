@@ -25,6 +25,7 @@ public class ExamDto {
     private UserDto professor;
     private List<UserDto> allStudents;
     private List<UserDto> enrolledStudents;
+    private boolean enrolled;
     private LocalDate examDate;
     private String description;
 
