@@ -2,6 +2,7 @@ package com.example.my_campus_core.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import com.example.my_campus_core.models.UserEntity;
 import com.example.my_campus_core.repository.CourseRepository;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.CourseService;
+import com.example.my_campus_core.service.NotificationsService;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
@@ -28,14 +30,16 @@ public class CourseServiceImpl implements CourseService {
     private CourseRepository courseRepository;
     private UserRepository userRepository;
     private ScheduleService scheduleService;
+    private NotificationsService notificationsService;
     private Mappers mappers;
 
     public CourseServiceImpl(ScheduleService scheduleService, CourseRepository courseRepository,
-            UserRepository userRepository, Mappers mappers) {
+            UserRepository userRepository, Mappers mappers, NotificationsService notificationsService) {
         this.scheduleService = scheduleService;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.mappers = mappers;
+        this.notificationsService = notificationsService;
     }
 
     @Override
@@ -60,7 +64,18 @@ public class CourseServiceImpl implements CourseService {
             }
         }
         course.setStudents(students);
-        courseRepository.save(course);
+        Course newCourse = courseRepository.save(course);
+        String messageProfessor = "You have been assigned to teach: " + newCourse.getName() + ".";
+        notificationsService.sendNotification(messageProfessor, newCourse.getProfessor().getId());
+        if (newCourse.getStudents().isEmpty())
+            return;
+        newCourse.getStudents().forEach(student -> {
+            String messageStudent = "You have been enrolled in: " + newCourse.getName() +
+                    ", taught by Professor " + newCourse.getProfessor().getFirstName() +
+                    " " + newCourse.getProfessor().getLastName() + ".";
+            notificationsService.sendNotification(messageStudent, student.getId());
+        });
+
     }
 
     @Override
@@ -185,6 +200,7 @@ public class CourseServiceImpl implements CourseService {
                 scheduleService.updateScheduleOnCourseUpdate(updatedCourse);
             responseDto.setStatus("success");
             responseDto.setMessage("Course " + course.getName() + " successfully updated.");
+            updateCourseNotifications(course, updatedCourse);
 
         } else {
             responseDto.setStatus("error");
@@ -200,5 +216,60 @@ public class CourseServiceImpl implements CourseService {
         int totalPages = (int) Math.ceil((double) totalCourses / size);
 
         return totalPages;
+    }
+
+    public void updateCourseNotifications(Course course, Course updatedCourse) {
+        if (course.getProfessor().equals(updatedCourse.getProfessor())) {
+            notificationsService.sendNotification("Course " + updatedCourse.getName() + " has been updated",
+                    updatedCourse.getProfessor().getId());
+        } else {
+            notificationsService.sendNotification(
+                    "Removed as professor from: " + course.getName(),
+                    course.getProfessor().getId());
+
+            notificationsService.sendNotification(
+                    "Assigned as professor to: " + updatedCourse.getName(),
+                    updatedCourse.getProfessor().getId());
+        }
+
+        if (course.getStudents().equals(updatedCourse.getStudents())) {
+            updatedCourse.getStudents().forEach(student -> {
+                notificationsService.sendNotification("Course " + updatedCourse.getName() + " has been updated",
+                        student.getId());
+            });
+        } else {
+            List<UserEntity> newStudents = updatedCourse.getStudents().stream()
+                    .filter(student -> !course.getStudents().contains(student))
+                    .collect(Collectors.toList());
+            List<UserEntity> removedStudents = course.getStudents().stream()
+                    .filter(student -> !updatedCourse.getStudents().contains(student))
+                    .collect(Collectors.toList());
+
+            List<UserEntity> oldStudents = course.getStudents().stream()
+                    .filter(student -> updatedCourse.getStudents().contains(student))
+                    .collect(Collectors.toList());
+            if (!oldStudents.isEmpty()) {
+                oldStudents.forEach(student -> {
+                    notificationsService.sendNotification("Course " + updatedCourse.getName() + "has been updated",
+                            student.getId());
+                });
+            }
+            if (!newStudents.isEmpty()) {
+                newStudents.forEach(student -> {
+                    notificationsService.sendNotification("You have been enrolled in: " + updatedCourse.getName() +
+                            ", taught by Professor " + updatedCourse.getProfessor().getFirstName() +
+                            " " + updatedCourse.getProfessor().getLastName() + ".",
+                            student.getId());
+                });
+            }
+            if (!removedStudents.isEmpty()) {
+                removedStudents.forEach(student -> {
+                    notificationsService.sendNotification("You have been removed from: " + updatedCourse.getName() +
+                            ", taught by Professor " + updatedCourse.getProfessor().getFirstName() +
+                            " " + updatedCourse.getProfessor().getLastName() + ".",
+                            student.getId());
+                });
+            }
+        }
     }
 }

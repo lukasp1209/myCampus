@@ -1,0 +1,67 @@
+<div th:fragment="notifications">
+
+    <div class="dropdown position-relative">
+        <!-- Notification Icon -->
+        <button class="btn btn-link text-dark p-0 position-relative" type="button" id="notificationDropdownButton"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell fs-4"></i>
+            <span id="notificationBadge" class="position-absolute badge rounded-circle bg-danger border border-white"
+                style="width: 16px; height: 16px; top: 5%; right: 5%; transform: translate(15%, 20%); padding: 0; font-size: 1;">
+
+            </span>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <ul class="dropdown-menu dropdown-menu-end p-0" style="width: 300px; max-height: 400px; overflow-y: auto;"
+            aria-labelledby="notificationDropdownButton">
+            <li>
+                <div class="p-2 border-bottom bg-light">
+                    <h6 class="mb-0 text-dark">Notifications</h6>
+                </div>
+            </li>
+            <li id="notificationsContainer">
+                <div class="p-3 text-center text-muted">
+                    Loading notifications...
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        function handleNotificationHover(element) {
+            const notificationId = element.getAttribute('data-id');
+            // Only proceed if the notification is unread (optional)
+            if (element.style.backgroundColor === 'rgb(240, 240, 240)') {
+                // Make POST request
+                fetch(`http://localhost:8082/api/notification/v1/status/${notificationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Update UI to show it's read
+                            element.style.backgroundColor = '#FFFFFF';
+                            const badgeElement = document.getElementById("notificationBadge");
+                         
+                                const currentValue = Number(badgeElement.textContent);
+                                console.log("currentValue: "+currentValue)
+                                if (!isNaN(currentValue)) {
+                                    badgeElement.textContent = currentValue - 1;
+                                }
+                            
+
+
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating notification status:', error);
+                    });
+            }
+        }
+
+
+    </script>
+
+</div>

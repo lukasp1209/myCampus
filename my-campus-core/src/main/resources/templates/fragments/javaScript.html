@@ -1,27 +1,83 @@
 <script th:inline="javascript" th:fragment="javaScript">
-        document.addEventListener("DOMContentLoaded", function () {
-            const email = /*[[${#authentication.principal.username}]]*/ '';
-            const apiUrl = `/api/user/v1/info?email=${encodeURIComponent(email)}`;
+    document.addEventListener("DOMContentLoaded", function () {
+        const email = /*[[${#authentication.principal.username}]]*/ '';
+        const apiUrl = `/api/user/v1/info?email=${encodeURIComponent(email)}`;
+        let userId;
+        const badge = document.getElementById('notificationBadge');
+        const container = document.getElementById('notificationsContainer');
 
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const myProfileElement = document.getElementById("myProfile");
+                const hiddenInput = document.getElementById("hiddenCurrentUserId");
+                myProfileElement.textContent = data.firstName + ' ' + data.lastName;
+                myProfileElement.href = '/user/' + data.id;
+                const scheduleLink = document.getElementById("scheduleNavLink")
+                scheduleLink.href = '/schedule/' + data.id
+                userId = data.id
+                // Make the API call
+                fetch(`http://localhost:8082/api/notification/v1/${userId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Notification API response:', data);
+                        updateNotifications(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching notifications:', error);
+                        container.innerHTML = `
+                                <div class="p-3 text-center text-muted">
+                                    Failed to load notifications
+                                </div>
+                            `;
+                    })
+          
+            }).catch(error => {
+                console.error(error)
+            })
 
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const myProfileElement = document.getElementById("myProfile");
-                    const hiddenInput = document.getElementById("hiddenCurrentUserId");
-                    myProfileElement.textContent = data.firstName + ' ' + data.lastName;
-                    myProfileElement.href = '/user/' + data.id;
-                    const scheduleLink = document.getElementById("scheduleNavLink")
-                    scheduleLink.href= '/schedule/' + data.id
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
-                });
-        });
+        function updateNotifications(notifications) {
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = `
+                        <div class="p-3 text-center text-muted">
+                            No new notifications
+                        </div>
+                    `;
+                badge.style.display = 'none';
+                return;
+            }
+            let unreadNotifications = notifications.filter(notification => notification.status != "READ");
+            // Update badge
+            badge.textContent = unreadNotifications.length;
+            badge.style.display = 'block';
 
-    </script>
+            // Update dropdown content
+            let html = '';
+            notifications.forEach(notification => {
+                html += `
+                                <li>
+                                    <div class="px-3 py-2 border-bottom notification-item" 
+                                        style="background-color:${notification.status === "READ" ? '#FFFFFF' : '#F0F0F0'};"
+                                        data-id="${notification.id}"
+                                        onclick="handleNotificationHover(this)">
+                                        <p class="mb-0 text-dark">${notification.message || 'New notification'}</p>
+                                    </div>
+                                </li>
+                            `;
+            });
+
+            container.innerHTML = html;
+        }
+    });
+
+</script>
