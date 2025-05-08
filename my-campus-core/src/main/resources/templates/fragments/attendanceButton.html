@@ -1,0 +1,32 @@
+<script th:inline="javascript" th:fragment="attendanceButton">
+    document.addEventListener("DOMContentLoaded", function () {
+        const email = /*[[${#authentication.principal.username}]]*/ '';
+        const lectureId = /*[[${lecture.id}]]*/ '';
+        const apiUrl = `/api/v1/attendance/${lectureId}?userEmail=${encodeURIComponent(email)}`
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data)
+                if (!data.attending) {
+                    const attendanceForm = document.getElementById('attendanceForm')
+                    attendanceForm.innerHTML = `
+                            <form method="post" action="/attendance/${data.lectureId}?userId=${data.userId}">
+                                <button class="btn btn-outline-light" type="submit">Mark as Attending</button>
+                            </form>
+                    `
+                }else{
+                    const statusAttendance = document.getElementById("statusAttendance")
+                    statusAttendance.innerHTML = `
+                        <span class="text-success">
+                            <i class="bi bi-check-circle"></i> Attended
+                        </span>
+                    `
+                }
+            }).catch(error => console.error(error))
+    })
+</script>
