@@ -11,5 +11,5 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 # Copy the JAR file using the exact name from your target folder
 COPY --from=builder /app/target/notifications-service-*.jar ./app.jar
-EXPOSE 8080
+EXPOSE 8082
 ENTRYPOINT ["java", "-jar", "app.jar"]

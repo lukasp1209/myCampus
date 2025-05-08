@@ -99,6 +99,13 @@ services:
     networks:
       - app-network
 
+  notifications-service:
+    build: ../notifications-service
+    ports:
+      - "8082:8082"
+    networks:
+      - app-network
+      
 volumes:
   postgres-core-data:
     name: postgres-core-data
