@@ -33,7 +33,7 @@
             // Only proceed if the notification is unread (optional)
             if (element.style.backgroundColor === 'rgb(240, 240, 240)') {
                 // Make POST request
-                fetch(`http://localhost:8082/api/notification/v1/status/${notificationId}`, {
+                fetch(`http://my-campus.lukaspenner.de:8082/api/notification/v1/status/${notificationId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

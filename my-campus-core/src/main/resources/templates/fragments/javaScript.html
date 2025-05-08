@@ -22,7 +22,7 @@
                 scheduleLink.href = '/schedule/' + data.id
                 userId = data.id
                 // Make the API call
-                fetch(`http://localhost:8082/api/notification/v1/${userId}`)
+                fetch(`http://my-campus.lukaspenner.de:8082/api/notification/v1/${userId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error(`HTTP error! status: ${response.status}`);
