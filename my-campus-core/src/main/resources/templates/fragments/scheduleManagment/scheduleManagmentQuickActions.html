@@ -1,0 +1,23 @@
+<div class="col-lg-4 mb-4" th:fragment="scheduleManagmentQuickActions">
+    <div class="card border-0 shadow-sm card-hover h-100">
+        <div class="card-header bg-white border-0 py-3">
+            <h3 class="h5 mb-0 text-dark">
+                <i class="bi bi-lightning-charge me-2"></i>
+                Quick Actions
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="d-grid gap-2">
+                <a th:href="@{/schedule/managment/rooms}" class="btn btn-outline-custom text-start">
+                    <i class="bi bi-door-open me-2"></i> Manage Rooms
+                </a>
+                <a href="/user" class="btn btn-outline-custom text-start">
+                    <i class="bi bi-people me-2"></i> Manage Users
+                </a>
+                <a href="/course/managment" class="btn btn-outline-custom text-start">
+                    <i class="bi bi-book me-2"></i> Manage Courses
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

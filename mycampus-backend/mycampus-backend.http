@@ -1,6 +1,0 @@
-@mycampus_backend_HostAddress = http://localhost:5224
-
-GET {{mycampus_backend_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commonHead :: head" pageTitle="Weekly Schedule">
+</head>
+
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+    <div class="container-fluid px-0">
+        <div class="bg-dark text-white py-4 mb-4">
+            <div class="container">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="display-5 fw-bold mb-0 text-white" data-testid="weekly-schedule-title">
+                            <i class="bi bi-calendar-week me-2"></i>
+                            Manage Schedule
+                        </h1>
+                        <p class="mb-0 text-white-50" data-testid="weekly-schedule-subtitle">Manage Weekly Scheduel</p>
+                    </div>
+                    <div>
+                        <a th:href="@{/schedule/managment}" class="btn btn-outline-light me-2" data-testid="weekly-schedule-back">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info mx-4" role="alert" data-testid="weekly-schedule-info">
+            <i class="bi bi-info-circle me-2"></i>
+            Selecting a course once means scheduling one lecture for that course in the week. It is possible to have multiple lectures for a course in a week by selecting it multiple times.
+        </div>
+
+
+<!-- Main Content -->
+<main class="container my-5">
+ <div class="row g-4">
+    <div class="col-lg-9 container mt-4">
+        <form th:action="@{/schedule/managment/schedule/add(weekOffset=${param.weekOffset != null ? param.weekOffset[0] : 0 })}"  method="post" role="form" data-testid="weekly-schedule-form">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 data-testid="schedule-title">Schedule</h1>
+                <button type="submit" class="btn btn-dark" id="generateScheduleBtn" data-testid="generate-schedule-button">Generate Schedule</button>
+            </div>
+            <h2 class="mb-4" data-testid="courses-title">Courses to schedule</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" id="coursesGrid" style="min-height: 200px;" data-testid="courses-grid"></div>
+            <h2 class="mb-4" data-testid="rooms-title">Rooms to schedule</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" id="roomGrid" data-testid="rooms-grid">
+                <div th:replace="fragments/scheduleWeeklySchedule/scheduleWeeklyScheduleRoomList :: scheduleWeeklyScheduleRoomList" data-testid="room-list"></div>
+            </div>
+        </form>
+    </div>
+    <div class="col-lg-3 container mt-">
+        <div th:replace="fragments/scheduleWeeklySchedule/scheduleWeeklyScheduleAddCardCourse :: scheduleWeeklyScheduleAddCardCourse" data-testid="add-course-card"></div>
+        <div th:replace="fragments/scheduleWeeklySchedule/scheduleWeeklyScheduleAddCardRooms :: scheduleWeeklyScheduleAddCardRooms" data-testid="add-room-card"></div>
+    </div>
+ </div>    
+    <style>
+        .card {
+            transition: all 0.2s ease;
+            background-color: #f8f9fa;
+        }
+        .card:hover {
+            background-color: #e9ecef;
+        }
+        .card-title {
+            font-weight: 500;
+        }
+        .bi-person {
+            font-size: 1.2rem;
+        }
+    </style>
+</main>
+<div th:if="${response}" data-testid="weekly-schedule-response">
+    <div th:if="${response.status == 'success'}" data-testid="weekly-schedule-success">
+        <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
+    </div>
+    <div th:if="${response.status == 'error'}" data-testid="weekly-schedule-error">
+        <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="spinnerModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-testid="spinner-modal">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: transparent; border: none;">
+        <div class="modal-body text-center">
+          <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;" data-testid="spinner">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-light mt-2" data-testid="spinner-text">Generating schedule...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+    crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('generateScheduleBtn').addEventListener('click', function() {
+          var spinnerModal = new bootstrap.Modal(document.getElementById('spinnerModal'));
+          spinnerModal.show();
+        });
+    </script>
+</body>
+
+</html>

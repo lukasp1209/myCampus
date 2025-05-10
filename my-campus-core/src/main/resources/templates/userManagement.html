@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/commonHead :: head" pageTitle="User Management"></head>
+
+<body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 data-testid="user-management-title">User Management</h1>
+            <a href="/user/register" class="btn btn-success" data-testid="user-management-create">Create New User</a>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="alert alert-info" data-testid="user-management-info">
+                    Note: Only accounts with a status of <strong>Pending</strong> can be deleted. 
+                    <p>
+                        If a <strong>Student</strong> has finished their studies or is no longer attending the university for any reason, their status should be changed to <strong>Inactive</strong>. 
+                        Similarly, if a <strong>Professor</strong> no longer works for the university, their status should also be changed to <strong>Inactive</strong>. 
+                        Please note that once the status is changed to <strong>Inactive</strong>, it cannot be reverted.
+                    </p>
+                </div>
+                <table class="table table-striped" data-testid="user-management-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}" th:data-testid="'user-row-' + ${user.id}">
+                            <td th:text="${user.id}"></td>
+                            <td th:text="${user.firstName} + ' ' + ${user.lastName}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.role}"></td>
+                            <td th:text="${user.status}"></td>
+                            <td>
+                                <a th:href="@{/user/{id}(id=${user.id})}" class="btn btn-success btn-sm" th:data-testid="'user-view-' + ${user.id}">View</a>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                th:attr="disabled=${user.status == 'Inactive'}, 
+                                data-bs-target='#changeStatusModal-'+${user.id}"
+                                th:data-testid="'user-change-status-' + ${user.id}">
+                                    Change Status
+                                </button>
+                                <!-- Modal -->
+                                <div class="modal fade" th:id="'changeStatusModal-'+${user.id}" tabindex="-1"
+                                    aria-labelledby="changeStatusModalLabel" aria-hidden="true"
+                                    th:data-testid="'user-status-modal-' + ${user.id}">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" th:id="'changeStatusModalLabel-'+${user.id}">Change User Status</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close" th:data-testid="'user-status-modal-close-' + ${user.id}"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                            <div class="alert alert-info" role="alert" th:data-testid="'user-status-info-' + ${user.id}">
+                                                <p>
+                                                    Note: The status should be changed to <strong>Inactive</strong> under the following conditions:
+                                                </p>
+                                                <ul>
+                                                    <li><strong>For Students:</strong> If they have finished their studies, stopped their studies, or were expelled from the university.</li>
+                                                    <li><strong>For Professors:</strong> If they no longer work for the university.</li>
+                                                </ul>
+                                            </div>
+                                                <form th:action="@{/user/{id}/status/change(id=${user.id})}" method="post" th:data-testid="'user-status-form-' + ${user.id}">
+                                                    <div class="form-group">
+                                                        <label for="statusSelect">Select Status</label>
+                                                        <select class="form-select" id="statusSelect" name="status" th:name="status" th:data-testid="'user-status-select-' + ${user.id}">
+                                                            <option th:value="Active" th:text="'Active'"></option>
+                                                            <option th:value="Inactive" th:text="'Inactive'"></option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal" th:data-testid="'user-status-modal-cancel-' + ${user.id}">Close</button>
+                                                        <button type="submit" class="btn btn-primary" th:data-testid="'user-status-submit-' + ${user.id}">Update Status</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button th:href="@{/user/delete/{id}(id=${user.id})}"
+                                    class="btn btn-danger btn-sm" th:attr="disabled=${user.status != 'Pending'}"
+                                    th:data-testid="'user-delete-' + ${user.id}">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <nav data-testid="user-management-pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${i == page} ? 'active'">
+                            <a class="page-link" th:href="@{/user(page=${i - 1})}" th:text="${i}"
+                               th:data-testid="'user-page-' + ${i}"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div th:if="${response}" data-testid="user-management-response">
+            <div th:if="${response.status == 'success'}" data-testid="user-management-success">
+                <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
+            </div>
+            <div th:if="${response.status == 'error'}" data-testid="user-management-error">
+                <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+            crossorigin="anonymous"></script>
+            <script th:replace="fragments/javaScript :: javaScript"></script>
+</body>
+
+</html>
