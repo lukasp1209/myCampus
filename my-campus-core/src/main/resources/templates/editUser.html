@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/commonHead :: head">
-</head>
-<body>
+  <head th:replace="fragments/commonHead :: head"> </head>
+  <body>
     <nav th:replace="fragments/navbar :: navbar"></nav>
-    <div class="container my-5" > 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="display-5 fw-bold text-dark">
-                <i class="bi bi-person-gear me-2 text-muted"></i>Edit User Profile
-            </h1>
-            <a th:href="@{/user/{id}(id=${user.id})}" class="btn btn-outline-dark">
-                <i class="bi bi-arrow-left me-1"></i> Back to Profile
-            </a>
-        </div>
-        <!-- Profile Information Form -->
-        <div th:replace="fragments/editProfile/profileInformationForm :: profileInformationForm" th:with="user=${user}"></div>
-    
-        <!-- Password Change Form -->
-        <div th:replace="fragments/editProfile/passwordChangeForm :: passwordChangeForm" th:with="user=${user}"></div>
 
+    <!-- 🟤 Dunkler Header-Block wie im Admin-View -->
+    <div class="bg-dark text-white py-4 mb-4">
+      <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="display-5 fw-bold mb-0 text-white">
+          <i class="bi bi-person-gear me-2"></i> Edit User Profile
+        </h1>
+        <a th:href="@{/user/{id}(id=${user.id})}" class="btn btn-outline-light">
+          <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+      </div>
+    </div>
+
+    <div class="container mb-5">
+      <!-- Profile Information Form -->
+      <div
+        th:replace="fragments/editProfile/profileInformationForm :: profileInformationForm"
+        th:with="user=${user}"
+      ></div>
+
+      <!-- Password Change Form -->
+      <div
+        th:replace="fragments/editProfile/passwordChangeForm :: passwordChangeForm"
+        th:with="user=${user}"
+      ></div>
     </div>
 
     <script th:replace="fragments/javaScript :: javaScript"></script>
-</body>
+  </body>
 </html>
