@@ -1,84 +1,94 @@
-<div class="container my-5" th:fragment="adminProfileView" xmlns:th="http://www.thymeleaf.org">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="display-5 fw-bold text-dark">
-            <i class="bi bi-person-gear me-2 text-muted"></i>Admin Profile View
-        </h1>
+<div
+  class="container-fluid px-0"
+  th:fragment="adminProfileView"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <!-- Schwarzer Header im selben Stil -->
+  <div class="bg-dark text-white py-4 mb-4">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
         <div>
-            <button class="btn btn-dark me-2">
-                <i class="bi bi-pencil-square me-2"></i> Change Status
-            </button>
-            <form th:action="@{/user/delete/{id}(id=${user.id})}" method="post" class="d-inline">
-                <button type="submit" class="btn btn-danger me-2" 
-                th:attr="disabled=${user.status != 'Pending'}"
-                        onclick="return confirm('Are you sure you want to delete this user?')">
-                    <i class="bi bi-trash3 me-2"></i> Delete
-                </button>
-            </form>
-            <a href="/user" class="btn btn-outline-dark">
-                <i class="bi bi-arrow-left me-1"></i> Back
-            </a>
+          <h1 class="display-5 fw-bold mb-0 text-white">
+            <i class="bi bi-person-circle me-2"></i> Admin Profile View
+          </h1>
         </div>
+        <div>
+          <a href="/user" class="btn btn-outline-light">
+            <i class="bi bi-arrow-left me-1"></i> Back
+          </a>
+        </div>
+      </div>
     </div>
-    
-    <div class="card border-light shadow-sm mb-4">
-        <div class="card-header bg-light">
-            <h2 class="h5 mb-0 text-dark">
-                <i class="bi bi-person-vcard me-2 text-secondary"></i>
-                <span th:text="${user.firstName + ' ' + user.lastName}">John Doe</span>
-            </h2>
-        </div>
-        <div class="card-body bg-white">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <h3 class="h6 text-muted">Email</h3>
-                        <p class="fs-5">
-                            <i class="bi bi-envelope me-2 text-secondary"></i>
-                            <span th:text="${user.email}">johndoe@example.com</span>
-                        </p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <h3 class="h6 text-muted">Role</h3>
-                        <p class="fs-5">
-                            <i class="bi bi-shield me-2 text-secondary"></i>
-                            <span th:text="${user.role}">ROLE_STUDENT</span>
-                        </p>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <h3 class="h6 text-muted">Birthdate</h3>
-                        <p class="fs-5">
-                            <i class="bi bi-calendar3 me-2 text-secondary"></i>
-                            <span th:if="${user.birthDate != null}" 
-                                  th:text="${#temporals.format(user.birthDate, 'MMMM dd, yyyy')}">
-                                January 01, 2000
-                            </span>
-                            <span th:unless="${user.birthDate != null}" class="text-muted">
-                                Not available
-                            </span>
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <h3 class="h6 text-muted">Address</h3>
-                        <p class="fs-5">
-                            <i class="bi bi-geo-alt me-2 text-secondary"></i>
-                            <span th:if="${user.address != null}"
-                                  th:text="${user.address.street + ' ' + user.address.houseNumber + ', ' + 
-                                           user.address.city + '. ' + user.address.zip + ', ' + 
-                                           user.address.country}">
-                                123 Main St, Springfield, 12345, USA
-                            </span>
-                            <span th:unless="${user.address != null}" class="text-muted">
-                                Address not provided
-                            </span>
-                        </p>
-                    </div>
-                </div>
+  </div>
+
+  <!-- Profil-Informationen -->
+  <div class="container mb-5">
+    <div class="card border-0 shadow-sm card-hover">
+      <div class="card-header bg-light">
+        <h2 class="h5 mb-0 text-dark">
+          <i class="bi bi-person-vcard me-2 text-secondary"></i>
+          <span th:text="${user.firstName + ' ' + user.lastName}"
+            >John Doe</span
+          >
+        </h2>
+      </div>
+      <div class="card-body bg-white">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <h3 class="h6 text-muted">Email</h3>
+              <p class="fs-5">
+                <i class="bi bi-envelope me-2 text-secondary"></i>
+                <span th:text="${user.email}">johndoe@example.com</span>
+              </p>
             </div>
+
+            <div class="mb-3">
+              <h3 class="h6 text-muted">Role</h3>
+              <p class="fs-5">
+                <i class="bi bi-shield me-2 text-secondary"></i>
+                <span th:text="${user.role}">ROLE_STUDENT</span>
+              </p>
+            </div>
+
+            <div class="mb-3">
+              <h3 class="h6 text-muted">Birthdate</h3>
+              <p class="fs-5">
+                <i class="bi bi-calendar3 me-2 text-secondary"></i>
+                <span
+                  th:if="${user.birthDate != null}"
+                  th:text="${#temporals.format(user.birthDate, 'MMMM dd, yyyy')}"
+                >
+                  January 01, 2000
+                </span>
+                <span th:unless="${user.birthDate != null}" class="text-muted">
+                  Not available
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="mb-3">
+              <h3 class="h6 text-muted">Address</h3>
+              <p class="fs-5">
+                <i class="bi bi-geo-alt me-2 text-secondary"></i>
+                <span
+                  th:if="${user.address != null}"
+                  th:text="${user.address.street + ' ' + user.address.houseNumber + ', ' + 
+                                           user.address.city + '. ' + user.address.zip + ', ' + 
+                                           user.address.country}"
+                >
+                  123 Main St, Springfield, 12345, USA
+                </span>
+                <span th:unless="${user.address != null}" class="text-muted">
+                  Address not provided
+                </span>
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>

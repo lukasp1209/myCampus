@@ -1,123 +1,168 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
-<head th:replace="fragments/commonHead :: head" pageTitle="Course Management">
+  <head th:replace="fragments/commonHead :: head" pageTitle="Course Management">
     <style>
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
-        }
+      .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+      }
 
-        .badge-outline {
-            background-color: transparent;
-            border: 1px solid #dee2e6;
-            color: #212529;
-        }
+      .badge-outline {
+        background-color: transparent;
+        border: 1px solid #dee2e6;
+        color: #212529;
+      }
 
-        .table-hover tbody tr:hover {
-            background-color: rgba(0, 0, 0, 0.02);
-        }
+      .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
     </style>
-</head>
+  </head>
 
-<body class="bg-light">
+  <body class="bg-light">
     <nav th:replace="fragments/navbar :: navbar"></nav>
 
     <div class="container-fluid px-0">
-        <div class="bg-dark text-white py-4 mb-4">
-            <div class="container">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="display-5 fw-bold mb-0 text-white" data-testid="course-management-title">
-                            <i class="bi bi-book me-2"></i>
-                            Course Management
-                        </h1>
-                    </div>
-                    <div>
-                        <a th:href="@{/course/add}" class="btn btn-outline-light me-2" data-testid="course-management-add">
-                            <i class="bi bi-plus-circle me-1"></i> Add Course
+      <div class="bg-dark text-white py-4 mb-4">
+        <div class="container">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h1
+                class="display-5 fw-bold mb-0 text-white"
+                data-testid="course-management-title"
+              >
+                <i class="bi bi-book me-2"></i>
+                Course Management
+              </h1>
+            </div>
+            <div>
+              <a
+                th:href="@{/course/add}"
+                class="btn btn-outline-light me-2"
+                data-testid="course-management-add"
+              >
+                <i class="bi bi-plus-circle me-1"></i> Add Course
+              </a>
+              <a
+                th:href="@{/}"
+                class="btn btn-outline-light me-2"
+                data-testid="course-management-back"
+              >
+                <i class="bi bi-arrow-left me-1"></i> Back
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Table Card -->
+      <div class="container mb-5">
+        <div
+          class="card border-0 shadow-sm card-hover"
+          data-testid="course-management-card"
+        >
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table
+                class="table table-hover align-middle mb-0"
+                data-testid="course-management-table"
+              >
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-4">ID</th>
+                    <th>Course Name</th>
+                    <th>Professor</th>
+                    <th>Students</th>
+                    <th class="text-end pe-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    th:each="course : ${courses}"
+                    th:data-testid="'course-row-' + ${course.id}"
+                  >
+                    <td
+                      class="ps-4 fw-semibold text-muted"
+                      th:text="${course.id}"
+                    >
+                      101
+                    </td>
+                    <td>
+                      <span class="fw-semibold" th:text="${course.name}"
+                        >Introduction to Programming</span
+                      >
+                    </td>
+                    <td
+                      th:if="${course.professor != null}"
+                      th:text="${course.professor.firstName + ' ' + course.professor.lastName}"
+                    >
+                      John Doe
+                    </td>
+                    <td th:unless="${course.professor != null}">
+                      <span class="text-muted">Not assigned</span>
+                    </td>
+                    <td>
+                      <div class="d-flex flex-wrap gap-2">
+                        <span
+                          th:each="student : ${course.students}"
+                          class="badge bg-dark badge-outline rounded-pill small py-1 px-2"
+                          th:text="${student.firstName + ' ' + student.lastName}"
+                          th:data-testid="'course-student-' + ${student.id}"
+                        >
+                        </span>
+                        <span
+                          th:if="${#lists.isEmpty(course.students)}"
+                          class="text-muted small"
+                          >No students</span
+                        >
+                      </div>
+                    </td>
+                    <td class="text-end pe-4">
+                      <div class="btn-group" role="group">
+                        <a
+                          th:href="@{/course/{courseId}(courseId=${course.id})}"
+                          class="btn btn-sm btn-outline-dark"
+                          th:data-testid="course-view"
+                        >
+                          <i class="bi bi-eye"></i>
                         </a>
-                    </div>
-                </div>
+                        <a
+                          th:href="@{/course/edit/{courseId}(courseId=${course.id})}"
+                          class="btn btn-sm btn-outline-dark"
+                          th:data-testid="course-edit"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+          </div>
         </div>
-
-        <!-- Courses Table Card -->
-        <div class="container mb-5">
-            <div class="card border-0  shadow-sm card-hover" data-testid="course-management-card">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" data-testid="course-management-table">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-4">ID</th>
-                                    <th>Course Name</th>
-                                    <th>Professor</th>
-                                    <th>Students</th>
-                                    <th class="text-end pe-4">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="course : ${courses}" th:data-testid="'course-row-' + ${course.id}">
-                                    <td class="ps-4 fw-semibold text-muted" th:text="${course.id}">101</td>
-                                    <td>
-                                        <span class="fw-semibold" th:text="${course.name}">Introduction to
-                                            Programming</span>
-                                    </td>
-                                    <td th:if="${course.professor != null}"
-                                        th:text="${course.professor.firstName + ' ' + course.professor.lastName}">
-                                        John Doe
-                                    </td>
-                                    <td th:unless="${course.professor != null}">
-                                        <span class="text-muted">Not assigned</span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <span th:each="student : ${course.students}"
-                                                class="badge bg-dark badge-outline rounded-pill small py-1 px-2"
-                                                th:text="${student.firstName + ' ' + student.lastName}"
-                                                th:data-testid="'course-student-' + ${student.id}">
-                                            </span>
-                                            <span th:if="${#lists.isEmpty(course.students)}" class="text-muted small">No
-                                                students</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <div class="btn-group" role="group">
-                                            <a th:href="@{/course/{courseId}(courseId=${course.id})}"
-                                                class="btn btn-sm btn-outline-dark"
-                                                th:data-testid="course-view">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a th:href="@{/course/edit/{courseId}(courseId=${course.id})}"
-                                                class="btn btn-sm btn-outline-dark"
-                                                th:data-testid="course-edit">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="row py-4">
-                <div class="col-md-12">
-                    <nav data-testid="course-management-pagination">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
-                                th:classappend="${i == page} ? 'active'">
-                                <a class="page-link bg-dark text-white" th:href="@{/course/managment(page=${i - 1})}" 
-                                   th:text="${i}" th:data-testid="'course-page-' + ${i}"></a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-            </div>
+        <div class="row py-4">
+          <div class="col-md-12">
+            <nav data-testid="course-management-pagination">
+              <ul class="pagination justify-content-center">
+                <li
+                  class="page-item"
+                  th:each="i : ${#numbers.sequence(1, totalPages)}"
+                  th:classappend="${i == page} ? 'active'"
+                >
+                  <a
+                    class="page-link bg-dark text-white"
+                    th:href="@{/course/managment(page=${i - 1})}"
+                    th:text="${i}"
+                    th:data-testid="'course-page-' + ${i}"
+                  ></a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-</body>
-
+      </div>
+    </div>
+  </body>
 </html>

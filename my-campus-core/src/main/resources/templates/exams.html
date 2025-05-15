@@ -1,85 +1,151 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/commonHead :: head" pageTitle="Add Course">
-</head>
-<body>
-    <nav th:replace="fragments/navbar :: navbar"></nav> 
+  <head th:replace="fragments/commonHead :: head" pageTitle="Add Course">
+  </head>
+  <body>
+    <nav th:replace="fragments/navbar :: navbar"></nav>
     <div class="bg-dark text-white py-4 mb-4">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="display-5 fw-bold mb-0 text-white" data-testid="exams-title">
-                        <i class="bi bi-file-earmark-text me-2"></i>
-                        Exams
-                    </h1>
-                </div>
-                <div>
-                    <a th:href="@{/}" class="btn btn-outline-light" data-testid="exams-back">
-                        <i class="bi bi-arrow-left me-1"></i> Back
-                    </a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h1
+              class="display-5 fw-bold mb-0 text-white"
+              data-testid="exams-title"
+            >
+              <i class="bi bi-file-earmark-text me-2"></i>
+              Exams
+            </h1>
+          </div>
+          <div>
+            <a
+              th:href="@{/}"
+              class="btn btn-outline-light"
+              data-testid="exams-back"
+            >
+              <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
+          </div>
         </div>
+      </div>
     </div>
     <div class="container">
-        <table class="table table-striped table-hover" data-testid="exams-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Course Name</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Room</th>
-                    <th sec:authorize="hasRole('ROLE_STUDENT')">Status</th>
-                    <th sec:authorize="hasRole('ROLE_PROFESOR')">Enrolled Students</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:if="${exams}" th:each="exam : ${exams}" th:data-testid="'exam-row-' + ${exam.id}">
-                    <td th:text="${exam.id}">1</td>
-                    <td th:text="${exam.course.name}">Mathematics</td>
-                    <td th:text="${#temporals.format(exam.examDate, 'dd.MM.yyyy')}">2023-12-01</td>
-                    <td th:text="${exam.timeSlot.startTime}">10:00 AM</td>
-                    <td th:text="${exam.room.name}">Room 101</td>
-                    <td sec:authorize="hasRole('ROLE_STUDENT')">
-                        <span th:if="${exam.enrolled}" class="badge" style="background-color: black;">Enrolled</span>
-                        <span th:if="${!exam.enrolled}" class="badge" style="background-color: black;">Pending</span>
-                    </td>
-                    <td sec:authorize="hasRole('ROLE_PROFESOR')">
-                        <span class="badge" style="background-color: black;" th:data-testid="'exam-students-' + ${exam.id}" th:if="${!exam.enrolledStudents.isEmpty()}" th:each="student : ${exam.enrolledStudents}" th:text="${student.firstName + ' ' + student.lastName}"></span>
-                        <span class="badge" style="background-color: black;" th:if="${exam.enrolledStudents.isEmpty()}">No students enrolled</span>
-                    </td>
-                    <td class="d-flex gap-1">
-                        <a th:href="@{/exam/{id}(id=${exam.id})}" class="btn btn-sm btn-dark" th:data-testid="'exam-view-' + ${exam.id}">
-                            <i class="bi bi-eye"></i> View
-                        </a>
-                        <a th:href="@{/exam/edit/{id}(id=${exam.id})}" class="btn btn-sm btn-dark" th:data-testid="'exam-edit-' + ${exam.id}" sec:authorize="hasRole('ROLE_PROFESOR')">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <th:block sec:authorize="hasRole('ROLE_STUDENT')" th:if="${!exam.enrolled}">
-                            <form th:action="@{/exam/{id}/enroll(id=${exam.id})}" method="post">
-                                <button class="btn btn-sm btn-dark"  data-testid="exam-edit">
-                                    <i class="bi bi-person-plus"></i> Enroll
-                                </button> 
-                            </form>
-                        </th:block>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+      <table class="table table-striped table-hover" data-testid="exams-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Course Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Room</th>
+            <th sec:authorize="hasRole('ROLE_STUDENT')">Status</th>
+            <th sec:authorize="hasRole('ROLE_PROFESOR')">Enrolled Students</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            th:if="${exams}"
+            th:each="exam : ${exams}"
+            th:data-testid="'exam-row-' + ${exam.id}"
+          >
+            <td th:text="${exam.id}">1</td>
+            <td th:text="${exam.course.name}">Mathematics</td>
+            <td th:text="${#temporals.format(exam.examDate, 'dd.MM.yyyy')}">
+              2023-12-01
+            </td>
+            <td th:text="${exam.timeSlot.startTime}">10:00 AM</td>
+            <td th:text="${exam.room.name}">Room 101</td>
+            <td sec:authorize="hasRole('ROLE_STUDENT')">
+              <span
+                th:if="${exam.enrolled}"
+                class="badge"
+                style="background-color: black"
+                >Enrolled</span
+              >
+              <span
+                th:if="${!exam.enrolled}"
+                class="badge"
+                style="background-color: black"
+                >Pending</span
+              >
+            </td>
+            <td sec:authorize="hasRole('ROLE_PROFESOR')">
+              <span
+                class="badge"
+                style="background-color: black"
+                th:data-testid="'exam-students-' + ${exam.id}"
+                th:if="${!exam.enrolledStudents.isEmpty()}"
+                th:each="student : ${exam.enrolledStudents}"
+                th:text="${student.firstName + ' ' + student.lastName}"
+              ></span>
+              <span
+                class="badge"
+                style="background-color: black"
+                th:if="${exam.enrolledStudents.isEmpty()}"
+                >No students enrolled</span
+              >
+            </td>
+            <td class="d-flex gap-1">
+              <div class="btn-group" role="group">
+                <a
+                  th:href="@{/exam/{id}(id=${exam.id})}"
+                  class="btn btn-sm btn-outline-dark"
+                  th:data-testid="'exam-view-' + ${exam.id}"
+                >
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a
+                  th:href="@{/exam/edit/{id}(id=${exam.id})}"
+                  class="btn btn-sm btn-outline-dark"
+                  th:data-testid="'exam-edit-' + ${exam.id}"
+                  sec:authorize="hasRole('ROLE_PROFESOR')"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+              </div>
+              <th:block
+                sec:authorize="hasRole('ROLE_STUDENT')"
+                th:if="${!exam.enrolled}"
+              >
+                <form
+                  th:action="@{/exam/{id}/enroll(id=${exam.id})}"
+                  method="post"
+                >
+                  <button
+                    class="btn btn-sm btn-outline-dark"
+                    data-testid="exam-edit"
+                  >
+                    <i class="bi bi-person-plus"></i>
+                  </button>
+                </form>
+              </th:block>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <div th:if="${response}" data-testid="register-response">
-        <div th:if="${response.status == 'success'}" data-testid="register-success">
-            <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
-        </div>
-        <div th:if="${response.status == 'error'}" data-testid="register-error">
-            <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
-        </div>
+      <div
+        th:if="${response.status == 'success'}"
+        data-testid="register-success"
+      >
+        <div
+          th:replace="fragments/toasts/successToast :: successToast"
+          th:with="response=${response}"
+        ></div>
+      </div>
+      <div th:if="${response.status == 'error'}" data-testid="register-error">
+        <div
+          th:replace="fragments/toasts/errorToast :: errorToast"
+          th:with="response=${response}"
+        ></div>
+      </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
-    crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+      crossorigin="anonymous"
+    ></script>
     <script th:replace="fragments/javaScript :: javaScript"></script>
-</body>
+  </body>
 </html>

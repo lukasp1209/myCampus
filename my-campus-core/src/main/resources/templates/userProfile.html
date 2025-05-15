@@ -1,36 +1,62 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head  th:replace="fragments/commonHead :: head">
-
-</head>
-<body>
+  <head th:replace="fragments/commonHead :: head"> </head>
+  <body>
     <nav th:replace="fragments/navbar :: navbar"></nav>
     <!-- Admin View -->
     <div sec:authorize="hasRole('ROLE_ADMIN')" data-testid="admin-profile-view">
-        <div th:replace="fragments/userProfile/adminProfileView :: adminProfileView" data-testid="admin-profile-content"></div>
+      <div
+        th:replace="fragments/userProfile/adminProfileView :: adminProfileView"
+        data-testid="admin-profile-content"
+      ></div>
     </div>
     <!-- Student or Profesor Self Profile -->
-     <div sec:authorize="!hasRole('ROLE_ADMIN')" th:if="${isHisProfile}" data-testid="self-profile-view">
-         <div th:replace="fragments/userProfile/studentProfessorSelfProfile :: studentProfessorSelfProfile" data-testid="self-profile-content"></div>
+    <div
+      sec:authorize="!hasRole('ROLE_ADMIN')"
+      th:if="${isHisProfile}"
+      data-testid="self-profile-view"
+    >
+      <div
+        th:replace="fragments/userProfile/studentProfessorSelfProfile :: studentProfessorSelfProfile"
+        data-testid="self-profile-content"
+      ></div>
     </div>
 
     <!-- Student or Professor Not His Profile -->
-     <div sec:authorize="!hasRole('ROLE_ADMIN')" th:if="${!isHisProfile}" data-testid="other-profile-view">
-        <div th:replace="fragments/userProfile/studentProfessorNotSelfProfile :: studentProfessorNotSelfProfile" data-testid="other-profile-content"></div>
-     </div>
+    <div
+      sec:authorize="!hasRole('ROLE_ADMIN')"
+      th:if="${!isHisProfile}"
+      data-testid="other-profile-view"
+    >
+      <div
+        th:replace="fragments/userProfile/studentProfessorNotSelfProfile :: studentProfessorNotSelfProfile"
+        data-testid="other-profile-content"
+      ></div>
+    </div>
 
-     <div th:if="${response}" data-testid="profile-response">
-        <div th:if="${response.status == 'success'}" data-testid="profile-success">
-            <div th:replace="fragments/toasts/successToast :: successToast" th:with="response=${response}"></div>
-        </div>
-        <div th:if="${response.status == 'error'}" data-testid="profile-error">
-            <div th:replace="fragments/toasts/errorToast :: errorToast" th:with="response=${response}"></div>
-        </div>
-     </div>
+    <div th:if="${response}" data-testid="profile-response">
+      <div
+        th:if="${response.status == 'success'}"
+        data-testid="profile-success"
+      >
+        <div
+          th:replace="fragments/toasts/successToast :: successToast"
+          th:with="response=${response}"
+        ></div>
+      </div>
+      <div th:if="${response.status == 'error'}" data-testid="profile-error">
+        <div
+          th:replace="fragments/toasts/errorToast :: errorToast"
+          th:with="response=${response}"
+        ></div>
+      </div>
+    </div>
 
     <script th:replace="fragments/javaScript :: javaScript"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
-    crossorigin="anonymous"></script>
-</body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
