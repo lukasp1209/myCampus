@@ -15,12 +15,23 @@ import com.example.my_campus_core.repository.ScheduleRepository;
 import com.example.my_campus_core.repository.UserRepository;
 import com.example.my_campus_core.service.AttendanceService;
 
+/**
+ * Implementation of the AttendanceService interface that handles attendance-related operations.
+ * This service manages student attendance tracking for lectures.
+ */
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
 
     private UserRepository userRepository;
     private LectureRepository lectureRepository;
 
+    /**
+     * Constructs a new AttendanceServiceImpl with required dependencies.
+     *
+     * @param scheduleRepository Repository for schedule-related operations
+     * @param lectureRepository Repository for lecture-related operations
+     * @param userRepository Repository for user-related operations
+     */
     @Autowired
     public AttendanceServiceImpl(ScheduleRepository scheduleRepository, LectureRepository lectureRepository,
             UserRepository userRepository) {
@@ -28,6 +39,14 @@ public class AttendanceServiceImpl implements AttendanceService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Checks if a user is marked as attending a specific lecture.
+     *
+     * @param lectureId The ID of the lecture to check
+     * @param userId The ID of the user to check
+     * @return AttendanceDto containing the attendance status
+     * @throws NotFoundException if the user or lecture is not found
+     */
     @Override
     public AttendanceDto amIMarkedAsAttending(int lectureId, int userId) {
         AttendanceDto attendanceDto = new AttendanceDto();
@@ -46,6 +65,14 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceDto;
     }
 
+    /**
+     * Marks a user as attending a specific lecture.
+     *
+     * @param lectureId The ID of the lecture
+     * @param userId The ID of the user to mark as attending
+     * @return ResponseDto indicating the result of the operation
+     * @throws NotFoundException if the user or lecture is not found
+     */
     @Override
     public ResponseDto setAsAttending(int lectureId, int userId) {
         UserEntity currentUser = userRepository.findById(userId)

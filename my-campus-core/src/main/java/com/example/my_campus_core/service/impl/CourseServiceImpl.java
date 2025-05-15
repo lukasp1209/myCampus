@@ -24,6 +24,10 @@ import com.example.my_campus_core.service.NotificationsService;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
+/**
+ * Implementation of the CourseService interface that handles course-related operations.
+ * This service manages course creation, updates, and retrieval of course information.
+ */
 @Service
 public class CourseServiceImpl implements CourseService {
 
@@ -33,6 +37,15 @@ public class CourseServiceImpl implements CourseService {
     private NotificationsService notificationsService;
     private Mappers mappers;
 
+    /**
+     * Constructs a new CourseServiceImpl with required dependencies.
+     *
+     * @param scheduleService Service for schedule-related operations
+     * @param courseRepository Repository for course-related operations
+     * @param userRepository Repository for user-related operations
+     * @param mappers Utility for mapping between entities and DTOs
+     * @param notificationsService Service for notification-related operations
+     */
     public CourseServiceImpl(ScheduleService scheduleService, CourseRepository courseRepository,
             UserRepository userRepository, Mappers mappers, NotificationsService notificationsService) {
         this.scheduleService = scheduleService;
@@ -42,6 +55,14 @@ public class CourseServiceImpl implements CourseService {
         this.notificationsService = notificationsService;
     }
 
+    /**
+     * Adds a new course to the system.
+     * Notifies the professor and enrolled students about the course creation.
+     *
+     * @param courseDto The course data transfer object containing course information
+     * @throws InputMissingException if the professor is not provided
+     * @throws NotFoundException if a student is not found
+     */
     @Override
     public void addCourse(CourseDto courseDto) {
         Course course = new Course();
@@ -78,6 +99,12 @@ public class CourseServiceImpl implements CourseService {
 
     }
 
+    /**
+     * Retrieves a paginated list of all courses.
+     *
+     * @param page The page number (0-based)
+     * @return List of CourseDto objects containing course information
+     */
     @Override
     public List<CourseDto> getAllCourses(int page) {
         int size = 10;
@@ -101,6 +128,13 @@ public class CourseServiceImpl implements CourseService {
         return courseDtos;
     }
 
+    /**
+     * Retrieves a list of students enrolled in a course.
+     *
+     * @param studentIds List of student IDs to retrieve
+     * @return List of UserDto objects containing student information
+     * @throws NotFoundException if a student is not found
+     */
     public List<UserDto> getStudentsInCourse(List<Integer> studentIds) {
         List<UserDto> students = new ArrayList<>();
 
@@ -114,6 +148,13 @@ public class CourseServiceImpl implements CourseService {
         return students;
     }
 
+    /**
+     * Retrieves a course by its ID.
+     *
+     * @param courseId The ID of the course to retrieve
+     * @return CourseDto containing the course information
+     * @throws NotFoundException if the course does not exist
+     */
     @Override
     public CourseDto getCourseById(int courseId) {
         Course course = courseRepository.findById(courseId)
@@ -132,6 +173,13 @@ public class CourseServiceImpl implements CourseService {
         return courseDto;
     }
 
+    /**
+     * Retrieves courses associated with a specific user based on their role.
+     *
+     * @param userId The ID of the user
+     * @param userRole The role of the user (ROLE_STUDENT or ROLE_PROFESSOR)
+     * @return List of CourseDto objects containing course information
+     */
     @Override
     public List<CourseDto> getCoursesByUserId(int userId, String userRole) {
         List<Course> courses = "ROLE_STUDENT".equals(userRole)
@@ -149,6 +197,12 @@ public class CourseServiceImpl implements CourseService {
         return courseDtos;
     }
 
+    /**
+     * Searches for courses by name.
+     *
+     * @param searchTerm The term to search for in course names
+     * @return List of CourseDto objects matching the search term
+     */
     @Override
     public List<CourseDto> searchForCourses(String searchTerm) {
         List<Course> courses = courseRepository.findByNameContainingIgnoreCase(searchTerm);
@@ -174,6 +228,14 @@ public class CourseServiceImpl implements CourseService {
         return courseDtos;
     }
 
+    /**
+     * Updates an existing course.
+     * Notifies affected professors and students about the changes.
+     *
+     * @param courseDto The course data transfer object containing updated information
+     * @return ResponseDto indicating the result of the update operation
+     * @throws NotFoundException if the course or any referenced user is not found
+     */
     @Override
     public ResponseDto updateCourse(CourseDto courseDto) {
         ResponseDto responseDto = new ResponseDto();
@@ -210,6 +272,12 @@ public class CourseServiceImpl implements CourseService {
         return responseDto;
     }
 
+    /**
+     * Calculates the total number of pages for course pagination.
+     *
+     * @param size The number of items per page
+     * @return The total number of pages
+     */
     @Override
     public int totalCourses(int size) {
         int totalCourses = (int) courseRepository.count();
@@ -218,6 +286,12 @@ public class CourseServiceImpl implements CourseService {
         return totalPages;
     }
 
+    /**
+     * Sends notifications to professors and students about course updates.
+     *
+     * @param course The original course
+     * @param updatedCourse The updated course
+     */
     public void updateCourseNotifications(Course course, Course updatedCourse) {
         if (course.getProfessor().equals(updatedCourse.getProfessor())) {
             notificationsService.sendNotification("Course " + updatedCourse.getName() + " has been updated",

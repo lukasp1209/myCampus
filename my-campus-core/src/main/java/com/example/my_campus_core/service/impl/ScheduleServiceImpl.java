@@ -54,6 +54,11 @@ import com.example.my_campus_core.service.NotificationsService;
 import com.example.my_campus_core.service.ScheduleService;
 import com.example.my_campus_core.util.Mappers;
 
+/**
+ * Implementation of the ScheduleService interface that handles schedule-related operations.
+ * This service manages room scheduling, course scheduling, and exam scheduling.
+ * It also handles schedule generation and validation.
+ */
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
     private RoomRepository roomRepository;
@@ -70,6 +75,19 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Value("${schedule-service.url}")
     private String scheduleServiceUrl;
 
+    /**
+     * Constructs a new ScheduleServiceImpl with all required dependencies.
+     *
+     * @param roomRepository Repository for room-related operations
+     * @param courseRepository Repository for course-related operations
+     * @param userRepository Repository for user-related operations
+     * @param scheduleRepository Repository for schedule-related operations
+     * @param timeSlotRepository Repository for time slot-related operations
+     * @param customUserDetailsService Service for user details operations
+     * @param lectureRepository Repository for lecture-related operations
+     * @param examRepository Repository for exam-related operations
+     * @param notificationsService Service for notification-related operations
+     */
     @Autowired
     public ScheduleServiceImpl(RoomRepository roomRepository, CourseRepository courseRepository,
             UserRepository userRepository, ScheduleRepository scheduleRepository,
@@ -87,6 +105,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.notificationsService = notificationsService;
     }
 
+    /**
+     * Creates a new room in the system.
+     *
+     * @param roomDto The room data transfer object containing room information
+     * @return ResponseDto indicating the result of the room creation operation
+     */
     @Override
     public ResponseDto createRoom(RoomDto roomDto) {
         ResponseDto responseDto = new ResponseDto();
@@ -103,6 +127,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         return responseDto;
     }
 
+    /**
+     * Retrieves all rooms in the system.
+     *
+     * @return List of RoomDto objects containing room information
+     */
     @Override
     public List<RoomDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -112,12 +141,23 @@ public class ScheduleServiceImpl implements ScheduleService {
         return rooms.stream().map(room -> mapper.roomToRoomDto(room)).toList();
     }
 
+    /**
+     * Gets the total number of rooms in the system.
+     *
+     * @return Integer representing the total number of rooms
+     */
     @Override
     public Integer totalNumberRooms() {
         int totalRooms = roomRepository.findAll().size();
         return totalRooms;
     }
 
+    /**
+     * Retrieves all rooms except those specified in the roomIds list.
+     *
+     * @param roomIds List of room IDs to exclude from the result
+     * @return List of RoomDto objects containing room information
+     */
     @Override
     public List<RoomDto> getAllRoomsIgnoreRooms(List<Integer> roomIds) {
         List<Room> rooms = roomRepository.findAllByIdNotIn(roomIds);
@@ -128,6 +168,12 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .toList();
     }
 
+    /**
+     * Validates the schedule generation request.
+     *
+     * @param scheduleRequestDto The schedule request data
+     * @return ResponseDto indicating the validation result
+     */
     @Override
     public ResponseDto scheduleGenerationValidtaion(ScheduleRequestDto scheduleRequestDto) {
         ResponseDto responseDto = new ResponseDto();
@@ -149,6 +195,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     }
 
+    /**
+     * Generates a schedule based on the provided request and week offset.
+     *
+     * @param scheduleRequestDto The schedule request data
+     * @param weekOffset The week offset for schedule generation
+     * @return ScheduleDto containing the generated schedule
+     */
     @Override
     public ScheduleDto scheduleGeneration(ScheduleRequestDto scheduleRequestDto, int weekOffset) {
         List<CourseDto> courses = new ArrayList<>();
@@ -192,6 +245,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleDto;
     }
 
+    /**
+     * Sends notifications to professors and students about the new schedule.
+     *
+     * @param schedule The schedule for which notifications should be sent
+     */
     public void sendNotificationsForNewSchedule(Schedule schedule) {
         schedule.getLectureList().forEach(lecture -> {
             notificationsService.sendNotification("Lecture " + lecture.getCourse().getName()
@@ -209,6 +267,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     }
 
+    /**
+     * Makes a request to the schedule service to generate a schedule.
+     *
+     * @param courses List of courses to be scheduled
+     * @param rooms List of available rooms
+     * @param timeSlots List of available time slots
+     * @return ResponseEntity containing the schedule solution
+     */
     public ResponseEntity<ScheduleSolutionResponseDto> scheduleGenerationRequest(
             List<CourseDto> courses,
             List<RoomDto> rooms,
@@ -236,6 +302,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     }
 
+    /**
+     * Saves the generated schedule to the database.
+     *
+     * @param scheduleSolution The schedule solution to save
+     * @param dateFrom The start date of the schedule
+     * @param dateTo The end date of the schedule
+     * @return The saved Schedule entity
+     */
     public Schedule saveSchedule(ScheduleSolutionResponseDto scheduleSolution, LocalDate dateFrom, LocalDate dateTo) {
         Schedule schedule = new Schedule();
         List<Lecture> lectures = new ArrayList<>();
@@ -276,12 +350,24 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
+    /**
+     * Generates a list of dates for a specific week.
+     *
+     * @param weekOffset The week offset from the current week
+     * @return List of LocalDate objects representing the week's dates
+     */
     @Override
     public List<LocalDate> schedulePageGeneration(int weekOffset) {
         List<LocalDate> workdays = timeUtil.getCurrentWeekWorkdays(weekOffset);
         return workdays;
     }
 
+    /**
+     * Retrieves the full schedule for a specific week.
+     *
+     * @param weekOffset The week offset from the current week
+     * @return ScheduleDto containing the week's schedule
+     */
     @Override
     public ScheduleDto getFullScheduleForWeek(int weekOffset) {
         List<LocalDate> datesInWeek = schedulePageGeneration(weekOffset);
@@ -295,6 +381,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
     }
 
+    /**
+     * Gets available time slots for an exam on a specific date.
+     *
+     * @param date The date to check for available time slots
+     * @return List of available TimeSlot objects
+     */
     @Override
     public List<TimeSlot> getAvailableTimeSlotsForExam(String date) {
         LocalDate today = LocalDate.parse(date);
@@ -316,6 +408,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         return availableSlots;
     }
 
+    /**
+     * Gets available rooms for a specific time slot on a given date.
+     *
+     * @param date The date to check
+     * @param timeSlotId The ID of the time slot
+     * @return List of available RoomDto objects
+     */
     @Override
     public List<RoomDto> getAvailableRoomsForTimeSlot(String date, int timeSlotId) {
         LocalDate today = LocalDate.parse(date);
@@ -336,6 +435,14 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Checks if a room is available for a specific time slot in a schedule.
+     *
+     * @param room The room to check
+     * @param desiredTimeSlot The time slot to check
+     * @param schedule The schedule to check against
+     * @return true if the room is available, false otherwise
+     */
     public boolean isRoomAvailable(RoomDto room, TimeSlot desiredTimeSlot, Schedule schedule) {
         List<Lecture> lecturesInRoom = schedule.getLectureList().stream()
                 .filter(lecture -> lecture.getRoom().getId() == room.getId()).collect(Collectors.toList());
@@ -348,6 +455,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         return false;
     }
 
+    /**
+     * Adds an exam to the schedule.
+     *
+     * @param date The date of the exam
+     * @param exam The exam to add
+     */
     @Override
     public void addExamToSchedule(String date, Exam exam) {
         LocalDate today = LocalDate.parse(date);
@@ -376,6 +489,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduleRepository.saveAndFlush(schedule);
     }
 
+    /**
+     * Retrieves the schedule for a specific user.
+     *
+     * @param userId The ID of the user
+     * @param weekOffset The week offset from the current week
+     * @return ScheduleDto containing the user's schedule
+     */
     @Override
     public ScheduleDto getScheduleForUserId(int userId, int weekOffset) {
         isHisProfile(userId);
@@ -389,6 +509,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleDto;
     }
 
+    /**
+     * Checks if a user is enrolled in a specific lecture.
+     *
+     * @param lecture The lecture to check
+     * @param userId The ID of the user
+     * @return true if the user is in the lecture, false otherwise
+     */
     public boolean userIsInLecture(LectureDto lecture, int userId) {
         if (lecture.getProfessor().getId() == userId)
             return true;
@@ -397,6 +524,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         return false;
     }
 
+    /**
+     * Checks if a user is enrolled in a specific exam.
+     *
+     * @param examDto The exam to check
+     * @param userId The ID of the user
+     * @return true if the user is in the exam, false otherwise
+     */
     public boolean userIsInExam(ExamDto examDto, int userId) {
         if (examDto.getProfessor().getId() == userId)
             return true;
@@ -405,6 +539,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         return false;
     }
 
+    /**
+     * Checks if the current user is accessing their own profile.
+     *
+     * @param userId The ID of the user to check
+     * @return true if it's the user's own profile, false otherwise
+     */
     public boolean isHisProfile(int userId) {
         boolean isHisProfile = customUserDetailsService.isHisProfile(SecurityUtil.getSessionUser(), userId);
         if (!isHisProfile) {
@@ -413,6 +553,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         return isHisProfile;
     }
 
+    /**
+     * Retrieves upcoming lectures for a specific user.
+     *
+     * @param userId The ID of the user
+     * @return List of LectureDto objects containing upcoming lecture information
+     */
     @Override
     public List<LectureDto> getUpcomingLecturesforUserId(int userId) {
         isHisProfile(userId);
@@ -431,6 +577,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         return new ArrayList<>();
     }
 
+    /**
+     * Retrieves upcoming exams for a specific user.
+     *
+     * @param userId The ID of the user
+     * @return List of ExamDto objects containing upcoming exam information
+     */
     @Override
     public List<ExamDto> getUpcomingExamsForUserId(int userId) {
         isHisProfile(userId);
@@ -451,6 +603,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         return new ArrayList<>();
     }
 
+    /**
+     * Retrieves a lecture by its ID.
+     *
+     * @param lectureId The ID of the lecture to retrieve
+     * @return LectureDto containing the lecture information
+     */
     @Override
     public LectureDto getLectureById(int lectureId) {
 
@@ -460,6 +618,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         return mapper.lectureToLectureDto(lecture);
     }
 
+    /**
+     * Updates the schedule when a course is updated.
+     *
+     * @param course The updated course
+     */
     @Override
     public void updateScheduleOnCourseUpdate(Course course) {
         if (course == null)
@@ -479,6 +642,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     }
 
+    /**
+     * Checks if a lecture is currently in progress.
+     *
+     * @param lectureId The ID of the lecture to check
+     * @return true if the lecture is currently in progress, false otherwise
+     */
     @Override
     public boolean isLectureNow(int lectureId) {
         LocalDate today = LocalDate.now();
